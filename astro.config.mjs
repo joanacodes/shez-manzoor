@@ -25,7 +25,8 @@ export default defineConfig({
   // Small stylesheets: inlining them saves render-blocking requests on every page
   build: { format: 'directory', inlineStylesheets: 'always' },
   compressHTML: true,
-  prefetch: { prefetchAll: false, defaultStrategy: 'hover' },
+  // internal pages start loading on hover or touch, so navigation feels instant
+  prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
   redirects: {
     // Old Squarespace URLs that already rank
     '/epk/releases': to('/music/'),
