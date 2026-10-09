@@ -1,0 +1,158 @@
+---
+import { Picture, getImage } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Icon from '../components/Icon.astro';
+import photo from '../assets/shez-live.webp';
+import { award, bios, links, person, pressQuote } from '../data/site';
+import { projects } from '../data/projects';
+import { releases } from '../data/releases';
+import { breadcrumbSchema, graph, personSchema } from '../lib/schema';
+
+const site = Astro.site;
+const pressPhoto = await getImage({ src: photo, format: 'jpg', width: 1500, quality: 90 });
+const jsonLd = graph([
+  personSchema(site),
+  breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Press kit', path: '/epk/' }], site),
+]);
+const words = (t: string) => t.split(/\s+/).filter(Boolean).length;
+const blocks = [
+  { id: 'bio-short', title: 'Short biography', text: [bios.short] },
+  { id: 'bio-medium', title: 'Medium biography', text: [bios.medium] },
+  { id: 'bio-long', title: 'Full biography', text: [...bios.long] },
+];
+---
+
+<Base
+  title="Press kit | Shez Manzoor (SHEZ): biographies, photos and facts"
+  description="Electronic press kit for Shez Manzoor (SHEZ): short, medium and full biographies to copy, a press photo, key credits, releases and contacts."
+  path="/epk/"
+  jsonLd={jsonLd}
+>
+  <PageHead
+    kicker="Press kit"
+    title="Press"
+    titleEm="kit"
+    intro="Biographies, a press photo and key facts for journalists, promoters and programmers. Everything here is ready to copy."
+    crumbs={[{ name: 'Press kit', path: '/epk/' }]}
+  />
+
+  <section class="section epk" aria-labelledby="bios-title" data-section-light="mixed">
+    <div class="wrap epk__grid">
+      <div class="epk__bios">
+        <h2 id="bios-title" class="epk__h">Biographies</h2>
+        {
+          blocks.map((b) => (
+            <article class="bio-block" data-reveal>
+              <header class="bio-block__head">
+                <h3 class="bio-block__title">
+                  {b.title}
+                  <span class="label">{b.text.reduce((n, t) => n + words(t), 0)} words</span>
+                </h3>
+                <button class="copy" type="button" data-copy={b.id}>
+                  <Icon name="copy" /> <span data-copy-label>Copy</span>
+                </button>
+              </header>
+              <div class="bio-block__text" id={b.id}>
+                {b.text.map((t) => <p>{t}</p>)}
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <aside class="epk__side">
+        <figure class="press-photo" data-reveal>
+          <Picture
+            src={photo}
+            alt="Press photo: Shez Manzoor performing live with an electric guitar"
+            widths={[360, 540, 720]}
+            sizes="(min-width: 960px) 30vw, 88vw"
+            formats={['avif', 'webp']}
+            fallbackFormat="jpg"
+            loading="lazy"
+          />
+          <figcaption>
+            <a class="btn btn--solid" href={pressPhoto.src} download="shez-manzoor-live.jpg">
+              <Icon name="download" /> Download photo (JPG)
+            </a>
+            <span class="label">Live in London · photographer credit to confirm</span>
+          </figcaption>
+        </figure>
+
+        <div class="keyfacts" data-reveal>
+          <h2 class="epk__h">Key facts</h2>
+          <dl>
+            <div><dt>Name</dt><dd>{person.name}</dd></div>
+            <div><dt>Artist name</dt><dd>{person.artistName}</dd></div>
+            <div><dt>Based in</dt><dd>{person.location}</dd></div>
+            <div><dt>Award</dt><dd>{award.name} {award.year}, {award.category}, {award.work}</dd></div>
+            <div><dt>Screen credits</dt><dd>{projects.map((p) => p.title).join(' · ')}</dd></div>
+            <div><dt>Releases</dt><dd>{releases.map((r) => r.title).join(' · ')}</dd></div>
+          </dl>
+        </div>
+
+        <figure class="epk-quote" data-reveal>
+          <blockquote><p>“{pressQuote.text}”</p></blockquote>
+          <figcaption>{pressQuote.source}</figcaption>
+        </figure>
+
+        <div class="links" data-reveal>
+          <h2 class="epk__h">Links</h2>
+          <ul role="list">
+            <li><a href={links.spotify} rel="noopener" target="_blank">Spotify <Icon name="arrow-up-right" /></a></li>
+            <li><a href={links.instagram} rel="noopener" target="_blank">Instagram <Icon name="arrow-up-right" /></a></li>
+            <li><a href={links.agent.url} rel="noopener" target="_blank">{links.agent.name} (film &amp; TV) <Icon name="arrow-up-right" /></a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .epk { padding-top: 0; }
+  .epk__grid { display: grid; gap: 3.5rem; }
+  .epk__h { font-size: var(--fs-h3); margin-bottom: 1.25rem; }
+  .bio-block { padding: 1.4rem; border-radius: var(--radius); border: 1px solid var(--hair-2); background: rgb(255 255 255 / 0.02); }
+  .bio-block + .bio-block { margin-top: 1rem; }
+  .bio-block__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+  .bio-block__title { display: grid; gap: 0.2rem; font-family: var(--serif); font-size: 1.5rem; line-height: 1.1; }
+  .bio-block__text { color: var(--ink-2); }
+  .bio-block__text p + p { margin-top: 0.9em; }
+  .copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 40px;
+    padding: 0 0.9rem;
+    border-radius: 999px;
+    border: 1px solid var(--hair-2);
+    font-size: 0.85rem;
+    transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+  }
+  .copy :global(svg) { inline-size: 1rem; block-size: 1rem; }
+  .copy:hover { border-color: var(--lavender); }
+  .copy:global(.is-done) { background: var(--mint); color: var(--stage); border-color: var(--mint); }
+
+  .press-photo :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius); }
+  .press-photo figcaption { display: grid; gap: 0.75rem; justify-items: start; margin-top: 1rem; }
+
+  .keyfacts { margin-top: 3rem; }
+  .keyfacts dl div { padding: 0.8rem 0; border-top: 1px solid var(--hair); display: grid; gap: 0.2rem; }
+  .keyfacts dt { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
+
+  .epk-quote { margin-top: 3rem; padding-left: 1.25rem; border-left: 2px solid var(--violet); }
+  .epk-quote p { font-family: var(--serif); font-style: italic; font-size: clamp(1.5rem, 5.4vw, 2rem); line-height: 1.15; }
+  .epk-quote figcaption { margin-top: 0.75rem; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--lavender); }
+
+  .links { margin-top: 3rem; }
+  .links ul { padding: 0; display: grid; }
+  .links a { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 0; border-top: 1px solid var(--hair); text-decoration: none; transition: color 0.3s; }
+  .links a:hover { color: var(--accent); }
+  .links :global(svg) { inline-size: 1.1rem; block-size: 1.1rem; }
+
+  @media (min-width: 1000px) {
+    .epk__grid { grid-template-columns: 1.35fr 1fr; gap: 5rem; align-items: start; }
+  }
+</style>

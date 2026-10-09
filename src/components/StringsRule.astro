@@ -1,0 +1,31 @@
+---
+/** Six fine strings used as a divider. They shimmer when the mouse crosses them. */
+---
+
+<div class="srule" aria-hidden="true">
+  {Array.from({ length: 6 }, (_, i) => <span style={`--i:${i}`} />)}
+</div>
+
+<style>
+  .srule { display: grid; gap: 6px; padding-block: 6px; }
+  .srule span {
+    display: block;
+    height: calc(1.6px - var(--i) * 0.16px);
+    background: linear-gradient(90deg, transparent, var(--lavender) 18%, #a9cbf2 50%, var(--mint) 82%, transparent);
+    opacity: calc(0.75 - var(--i) * 0.06);
+    transform-origin: center;
+  }
+  .srule:hover span { animation: twang 0.9s var(--ease-out); animation-delay: calc(var(--i) * 40ms); }
+  @keyframes twang {
+    0% { transform: translateY(0); }
+    15% { transform: translateY(-2.5px) scaleY(2); }
+    30% { transform: translateY(2px); }
+    45% { transform: translateY(-1.4px); }
+    60% { transform: translateY(1px); }
+    80% { transform: translateY(-0.4px); }
+    100% { transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .srule:hover span { animation: none; }
+  }
+</style>

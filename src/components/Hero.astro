@@ -1,0 +1,473 @@
+---
+import { href } from '../lib/url';
+import Icon from './Icon.astro';
+
+const portrait = [
+  [39, 12, 4, 68],
+  [43.4, 12, 22.4, 68],
+  [47.8, 12, 40.8, 68],
+  [52.2, 12, 59.2, 68],
+  [56.6, 12, 77.6, 68],
+  [61, 12, 96, 68],
+];
+const landscape = [
+  [65, 10, 49, 104],
+  [67, 10, 57.4, 104],
+  [69, 10, 65.8, 104],
+  [71, 10, 74.2, 104],
+  [73, 10, 82.6, 104],
+  [75, 10, 91, 104],
+];
+const tints = ['#b9a2ff', '#b6b4ff', '#a9cbf2', '#9fdcdc', '#8fe8c9', '#7cefc0'];
+---
+
+<section class="hero" data-hero aria-labelledby="hero-title">
+  <div class="hero__stage" aria-hidden="true">
+    <div class="hero__fallback">
+      <div class="beam beam--a"></div>
+      <div class="beam beam--b"></div>
+      {
+        [
+          { set: portrait, cls: 'strings strings--portrait', id: 'p', y1: 12, y2: 68 },
+          { set: landscape, cls: 'strings strings--landscape', id: 'l', y1: 10, y2: 104 },
+        ].map(({ set, cls, id, y1, y2 }) => (
+          <svg class={cls} viewBox="0 0 100 100" preserveAspectRatio="none" focusable="false">
+            <defs>
+              <linearGradient id={`fade-${id}`} gradientUnits="userSpaceOnUse" x1="0" y1={y1} x2="0" y2={y2}>
+                <stop offset="0" stop-color="#fff" stop-opacity="0" />
+                <stop offset="0.16" stop-color="#fff" stop-opacity="0.95" />
+                <stop offset="0.6" stop-color="#fff" stop-opacity="0.75" />
+                <stop offset="1" stop-color="#fff" stop-opacity="0" />
+              </linearGradient>
+              <mask id={`mask-${id}`} maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="110">
+                <rect x="0" y="0" width="100" height="110" fill={`url(#fade-${id})`} />
+              </mask>
+            </defs>
+            <g mask={`url(#mask-${id})`}>
+              <g class="strings__halo">
+                {set.map(([x1, ya, x2, yb], i) => (
+                  <line x1={x1} y1={ya} x2={x2} y2={yb} stroke={tints[i]} vector-effect="non-scaling-stroke" />
+                ))}
+              </g>
+              <g class="strings__core">
+                {set.map(([x1, ya, x2, yb], i) => (
+                  <line
+                    x1={x1}
+                    y1={ya}
+                    x2={x2}
+                    y2={yb}
+                    stroke={tints[i]}
+                    stroke-width={1.8 - i * 0.16}
+                    vector-effect="non-scaling-stroke"
+                  />
+                ))}
+              </g>
+            </g>
+          </svg>
+        ))
+      }
+    </div>
+    <canvas class="hero__canvas" data-stage></canvas>
+    <div class="hero__shade"></div>
+  </div>
+
+  <div class="hero__tools wrap">
+    <p class="hero__hint" data-hint>
+      <span class="hero__hint-touch">Swipe across the strings</span>
+      <span class="hero__hint-mouse">Brush across the strings</span>
+    </p>
+    <button class="sound" type="button" aria-pressed="false" data-sound hidden>
+      <Icon name="sound-off" class="sound__off" />
+      <Icon name="sound-on" class="sound__on" />
+      <span class="sound__label">Sound <span data-sound-state>off</span></span>
+    </button>
+  </div>
+
+  <div class="hero__content wrap">
+    <p class="kicker hero__kicker">Composer <span aria-hidden="true">·</span> Songwriter <span aria-hidden="true">·</span> London</p>
+    <h1 class="hero__title" id="hero-title">
+      <span class="hero__l1">Shez</span>
+      <span class="hero__l2">Manzoor</span>
+    </h1>
+    <p class="hero__lede">
+      Award-winning composer for film and television, and the soul &amp; R&amp;B artist <strong>SHEZ</strong>.
+    </p>
+    <nav class="doors" aria-label="Choose a side">
+      <a class="door" href={href('/composition/')} data-light="green" data-mode="composer">
+        <span class="door__kicker">Composer</span>
+        <span class="door__title">Film &amp; TV</span>
+        <span class="door__arrow"><Icon name="arrow" /></span>
+      </a>
+      <a class="door" href={href('/music/')} data-light="purple" data-mode="artist">
+        <span class="door__kicker">Artist</span>
+        <span class="door__title">Music</span>
+        <span class="door__arrow"><Icon name="arrow" /></span>
+      </a>
+    </nav>
+  </div>
+
+  <a class="hero__scroll" href="#intro" aria-label="Scroll to introduction">
+    <span class="hero__scroll-line" aria-hidden="true"></span>
+  </a>
+</section>
+
+<script>
+  import type { Mode } from '../scripts/stage/scene';
+  import type { StageControl } from '../scripts/stage/client';
+  import type { Sound } from '../scripts/stage/sound';
+
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  if (hero) setup(hero);
+
+  function setup(hero: HTMLElement) {
+    const canvas = hero.querySelector<HTMLCanvasElement>('[data-stage]')!;
+    const soundBtn = hero.querySelector<HTMLButtonElement>('[data-sound]')!;
+    const hint = hero.querySelector<HTMLElement>('[data-hint]')!;
+    const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
+
+    const calm =
+      matchMedia('(prefers-reduced-motion: reduce)').matches || connection?.saveData === true || (memory ?? 8) < 2;
+    if (calm) {
+      hero.classList.add('is-static');
+      return;
+    }
+
+    let stage: StageControl | null = null;
+    let sound: Sound | null = null;
+    let makeSound: (() => Sound | null) | null = null;
+    let mode: Mode = 'mixed';
+    let autoplaying = true;
+
+    async function load() {
+      const [{ startStage }, soundModule] = await Promise.all([
+        import('../scripts/stage/client'),
+        import('../scripts/stage/sound'),
+      ]);
+      makeSound = soundModule.createSound;
+      stage = startStage({
+        canvas,
+        surface: hero,
+        force: new URLSearchParams(location.search).has('stage'),
+        onReady() {
+          hero.classList.add('is-live');
+          soundBtn.hidden = false;
+          window.setTimeout(() => {
+            stage?.strum(1, 0.17);
+            window.setTimeout(() => (autoplaying = false), 900);
+          }, 900);
+        },
+        onPluck(i, strength) {
+          sound?.play(i, strength, mode);
+          if (!autoplaying) hint.classList.add('is-hidden');
+        },
+        onLost() {
+          hero.classList.remove('is-live');
+        },
+        onStatic() {
+          hero.classList.add('is-static');
+        },
+      });
+
+      hero.querySelectorAll<HTMLElement>('[data-mode]').forEach((door) => {
+        const enter = () => {
+          mode = door.dataset.mode as Mode;
+          stage?.setMode(mode);
+        };
+        const leave = () => {
+          mode = 'mixed';
+          stage?.setMode(mode);
+        };
+        door.addEventListener('pointerenter', enter);
+        door.addEventListener('focus', enter);
+        door.addEventListener('pointerleave', leave);
+        door.addEventListener('blur', leave);
+      });
+    }
+
+    soundBtn.addEventListener('click', () => {
+      if (!sound && makeSound) sound = makeSound();
+      if (!sound) return;
+      const on = !sound.enabled;
+      sound.setEnabled(on);
+      soundBtn.setAttribute('aria-pressed', String(on));
+      soundBtn.querySelector('[data-sound-state]')!.textContent = on ? 'on' : 'off';
+      if (on) stage?.strum(1, 0.22);
+    });
+
+    const idle =
+      window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 120) as unknown as number);
+    const go = () => idle(() => void load(), { timeout: 1200 });
+    if (document.readyState === 'complete') go();
+    else window.addEventListener('load', go, { once: true });
+  }
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    min-height: max(100svh, 620px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-top: calc(var(--header-h) + 1rem);
+    padding-bottom: clamp(1.5rem, 4.5vh, 3.25rem);
+    overflow: hidden;
+    touch-action: pan-y;
+  }
+
+  /* ---------- stage ---------- */
+  .hero__stage { position: absolute; inset: 0; z-index: -1; background: var(--stage); }
+  .hero__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1.8s var(--ease-out);
+  }
+  .hero.is-live .hero__canvas { opacity: 1; }
+  .hero__fallback { position: absolute; inset: 0; transition: opacity 1.8s var(--ease-out); }
+  .hero.is-live .hero__fallback { opacity: 0; }
+
+  .beam { position: absolute; inset: 0; pointer-events: none; }
+  .beam--a {
+    background: conic-gradient(from 128deg at -6% -8%, transparent 0deg, rgb(var(--violet-rgb) / 0.42) 13deg, rgb(var(--violet-rgb) / 0.12) 24deg, transparent 34deg);
+    -webkit-mask-image: radial-gradient(130% 95% at 0% 0%, #000 25%, transparent 75%);
+    mask-image: radial-gradient(130% 95% at 0% 0%, #000 25%, transparent 75%);
+  }
+  .beam--b {
+    background: conic-gradient(from 200deg at 106% -8%, transparent 0deg, rgb(var(--mint-rgb) / 0.12) 10deg, rgb(var(--mint-rgb) / 0.3) 21deg, transparent 34deg);
+    -webkit-mask-image: radial-gradient(130% 95% at 100% 0%, #000 25%, transparent 75%);
+    mask-image: radial-gradient(130% 95% at 100% 0%, #000 25%, transparent 75%);
+  }
+
+  .strings { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .strings line { fill: none; }
+  .strings__halo { filter: blur(5px); opacity: 0.55; }
+  .strings__halo line { stroke-width: 7px; }
+  .strings--landscape { display: none; }
+  @media (min-aspect-ratio: 23/20) {
+    .strings--portrait { display: none; }
+    .strings--landscape { display: block; }
+  }
+  .hero.is-static .strings__core line { animation: shimmer 7s ease-in-out infinite alternate; }
+  @keyframes shimmer { from { opacity: 0.75; } to { opacity: 1; } }
+
+  .hero__shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to top, rgb(11 9 18 / 0.92) 0%, rgb(11 9 18 / 0.55) 30%, transparent 58%),
+      linear-gradient(to bottom, rgb(11 9 18 / 0.6), transparent 18%);
+    pointer-events: none;
+  }
+
+  /* ---------- tools ---------- */
+  .hero__tools {
+    position: absolute;
+    top: calc(var(--header-h) + 0.5rem);
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    pointer-events: none;
+  }
+  .hero__tools > * { pointer-events: auto; }
+  .hero__hint {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    opacity: 0;
+    transition: opacity 0.8s var(--ease-out);
+  }
+  .hero.is-live .hero__hint { opacity: 1; transition-delay: 2.2s; }
+  .hero.is-live .hero__hint.is-hidden { opacity: 0; transition-delay: 0s; }
+  .hero__hint-mouse { display: none; }
+  @media (hover: hover) and (pointer: fine) {
+    .hero__hint-touch { display: none; }
+    .hero__hint-mouse { display: inline; }
+  }
+
+  .sound {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 40px;
+    padding: 0 0.9rem 0 0.75rem;
+    margin-left: auto;
+    border: 1px solid var(--hair-2);
+    border-radius: 999px;
+    background: rgb(11 9 18 / 0.45);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    transition: border-color 0.3s, color 0.3s, box-shadow 0.3s;
+  }
+  .sound[hidden] { display: none; }
+  .sound :global(svg) { inline-size: 1.05rem; block-size: 1.05rem; }
+  .sound :global(.sound__on) { display: none; }
+  .sound[aria-pressed='true'] { color: var(--ink); border-color: rgb(var(--lavender-rgb) / 0.6); box-shadow: 0 0 22px rgb(var(--violet-rgb) / 0.35); }
+  .sound[aria-pressed='true'] :global(.sound__on) { display: block; }
+  .sound[aria-pressed='true'] :global(.sound__off) { display: none; }
+
+  /* ---------- content ---------- */
+  .hero__content { position: relative; display: grid; justify-items: start; }
+  .hero__kicker { margin-bottom: 0.9rem; }
+  .hero__title {
+    font-size: var(--fs-display);
+    line-height: 0.82;
+    letter-spacing: -0.03em;
+    margin-left: -0.04em;
+  }
+  .hero__l1, .hero__l2 { display: block; }
+  .hero__l2 {
+    font-style: italic;
+    padding-right: 0.08em;
+    background: linear-gradient(100deg, var(--ink) 30%, var(--lavender) 62%, var(--mint) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero__lede {
+    margin-top: 1.1rem;
+    max-width: 30ch;
+    font-size: var(--fs-lede);
+    line-height: 1.45;
+    color: var(--ink-2);
+  }
+  .hero__lede strong { color: var(--ink); font-weight: 600; letter-spacing: 0.04em; }
+
+  .doors {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    width: 100%;
+    margin-top: 1.5rem;
+  }
+  .door {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 0.15rem 0.5rem;
+    min-height: 88px;
+    padding: 0.85rem 0.9rem 0.8rem 1rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgb(var(--accent-rgb) / 0.32);
+    background: linear-gradient(160deg, rgb(var(--accent-rgb) / 0.12), rgb(var(--accent-rgb) / 0.02) 60%), rgb(11 9 18 / 0.35);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    text-decoration: none;
+    overflow: hidden;
+    transition: border-color 0.4s, box-shadow 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+  }
+  .door::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: radial-gradient(120% 90% at 0% 0%, rgb(var(--accent-rgb) / 0.28), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.5s var(--ease-out);
+  }
+  .door:hover, .door:focus-visible {
+    border-color: rgb(var(--accent-rgb) / 0.8);
+    box-shadow: 0 0 40px -6px rgb(var(--accent-rgb) / 0.45);
+  }
+  .door:hover::before, .door:focus-visible::before { opacity: 1; }
+  .door__kicker {
+    grid-column: 1 / -1;
+    align-self: start;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    position: relative;
+  }
+  .door__title { font-family: var(--serif); font-size: clamp(1.6rem, 6.4vw, 2.2rem); line-height: 1; position: relative; }
+  .door__arrow {
+    display: grid;
+    place-items: center;
+    inline-size: 34px;
+    block-size: 34px;
+    border-radius: 50%;
+    border: 1px solid rgb(var(--accent-rgb) / 0.4);
+    color: var(--accent);
+    position: relative;
+    transition: background-color 0.4s, color 0.4s, transform 0.5s var(--ease-out);
+  }
+  .door__arrow :global(svg) { inline-size: 16px; block-size: 16px; }
+  .door:hover .door__arrow { background: var(--accent); color: var(--stage); transform: translateX(2px); }
+
+  .hero__scroll { display: none; }
+
+  @media (min-width: 700px) {
+    .doors { max-width: 540px; }
+    .door { min-height: 104px; padding: 1.1rem 1.1rem 1rem 1.25rem; }
+  }
+
+  @media (min-width: 960px) and (min-aspect-ratio: 23/20) {
+    .hero { padding-bottom: clamp(2.5rem, 7vh, 5rem); }
+    .hero__title { font-size: clamp(6rem, 13vw, 14rem); }
+    .hero__lede { max-width: 34ch; }
+    .hero__shade {
+      background:
+        linear-gradient(to right, rgb(11 9 18 / 0.78) 0%, rgb(11 9 18 / 0.35) 38%, transparent 60%),
+        linear-gradient(to top, rgb(11 9 18 / 0.7) 0%, transparent 40%),
+        linear-gradient(to bottom, rgb(11 9 18 / 0.55), transparent 16%);
+    }
+    .hero__scroll {
+      display: block;
+      position: absolute;
+      right: max(var(--gutter), (100% - var(--max)) / 2);
+      bottom: 2.5rem;
+      inline-size: 24px;
+      block-size: 72px;
+    }
+    .hero__scroll-line {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: var(--hair-2);
+      overflow: hidden;
+    }
+    .hero__scroll-line::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      width: 1px;
+      height: 40%;
+      background: linear-gradient(var(--lavender), var(--mint));
+      animation: drop 2.4s var(--ease-in-out) infinite;
+    }
+    @keyframes drop {
+      from { transform: translateY(-100%); }
+      to { transform: translateY(260%); }
+    }
+  }
+
+  /* reveal the content once */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__kicker, .hero__l1, .hero__l2, .hero__lede, .doors { animation: rise 1.2s var(--ease-out) both; }
+    .hero__l1 { animation-delay: 0.08s; }
+    .hero__l2 { animation-delay: 0.16s; }
+    .hero__lede { animation-delay: 0.3s; }
+    .doors { animation-delay: 0.42s; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(28px); }
+      to { opacity: 1; transform: none; }
+    }
+  }
+</style>

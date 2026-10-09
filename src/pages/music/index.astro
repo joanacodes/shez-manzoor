@@ -1,0 +1,127 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/PageHead.astro';
+import Sleeve from '../../components/Sleeve.astro';
+import SpotifyEmbed from '../../components/SpotifyEmbed.astro';
+import StringsRule from '../../components/StringsRule.astro';
+import ContactCta from '../../components/ContactCta.astro';
+import Icon from '../../components/Icon.astro';
+import { releases } from '../../data/releases';
+import { links, person, pressQuote } from '../../data/site';
+import { absolute, href } from '../../lib/url';
+import { breadcrumbSchema, graph, ids, personSchema, releaseSchema } from '../../lib/schema';
+
+const site = Astro.site;
+const [latest] = releases;
+const jsonLd = graph([
+  personSchema(site),
+  {
+    '@type': 'CollectionPage',
+    name: 'Music by SHEZ',
+    url: absolute('/music/', site),
+    about: { '@id': ids(site).person },
+    hasPart: releases.map((r) => releaseSchema(r, site)),
+  },
+  breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Music', path: '/music/' }], site),
+]);
+---
+
+<Base
+  title="Music by SHEZ | Releases, EPs and singles by Shez Manzoor"
+  description="Soul, R&B and jazz-shaped songs by SHEZ, the artist name of London composer Shez Manzoor: Miscellany (Vol. 1), Freeze on Stereofox, the debut EP Our Time and more."
+  path="/music/"
+  light="purple"
+  jsonLd={jsonLd}
+>
+  <PageHead
+    kicker="Music"
+    title="Songs as"
+    titleEm="SHEZ"
+    intro="Using the guitar as a foundation, SHEZ weaves raw soul and R&B vocals with jazz and blues-inspired melody and harmony."
+    light="purple"
+    crumbs={[{ name: 'Music', path: '/music/' }]}
+  />
+
+  <section class="section latest" data-light="purple" data-section-light="purple" aria-labelledby="latest-title">
+    <div class="wrap latest__grid">
+      <div data-reveal><Sleeve release={latest} size="lg" caption={false} /></div>
+      <div class="latest__text" data-reveal style="--d:1">
+        <p class="label">Latest release · Instrumental EP</p>
+        <h2 id="latest-title" class="latest__title">{latest.title}</h2>
+        <div class="prose">{latest.body.map((t) => <p>{t}</p>)}</div>
+        <div class="latest__actions">
+          <a class="btn btn--solid" href={links.spotify} rel="noopener" target="_blank"><Icon name="spotify" /> Listen on Spotify</a>
+          <a class="text-link" href={href(`/music/${latest.slug}/`)}>About the EP <Icon name="arrow" /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section disco" data-light="purple" data-section-light="purple" aria-labelledby="disco-title">
+    <div class="wrap">
+      <div class="disco__head" data-reveal>
+        <h2 id="disco-title" class="disco__title">Discography</h2>
+        <StringsRule />
+      </div>
+      <div class="disco__grid" role="list">
+        {
+          releases.map((r, i) => (
+            <div role="listitem" data-reveal style={`--d:${i}`}>
+              <Sleeve release={r} />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section listen" data-light="purple" data-section-light="purple" aria-labelledby="listen-title">
+    <div class="wrap listen__grid">
+      <div class="listen__text" data-reveal>
+        <p class="kicker">Listen</p>
+        <h2 id="listen-title" class="listen__title">On air, on stage</h2>
+        <dl class="listen__facts">
+          <div><dt class="label">Played on</dt><dd>{person.radio.join(' · ')}</dd></div>
+          <div><dt class="label">Performed at</dt><dd>{person.venues.join(' · ')}</dd></div>
+          <div><dt class="label">Collaborations</dt><dd>{person.collaborators.join(' · ')}</dd></div>
+        </dl>
+        <figure class="quote">
+          <blockquote><p>“{pressQuote.text}”</p></blockquote>
+          <figcaption><a href={pressQuote.url} rel="noopener" target="_blank">{pressQuote.source}</a></figcaption>
+        </figure>
+      </div>
+      <div data-reveal style="--d:1"><SpotifyEmbed /></div>
+    </div>
+  </section>
+
+  <ContactCta heading="Booking SHEZ, or making a record together?" />
+</Base>
+
+<style>
+  .latest { padding-top: 0; }
+  .latest__grid { display: grid; gap: 2.25rem; align-items: center; }
+  .latest__title { font-size: var(--fs-h2); margin: 0.8rem 0 1.25rem; }
+  .latest__text .label { color: var(--lavender); }
+  .latest__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 1.75rem; }
+
+  .disco__head { display: grid; gap: 1.25rem; margin-bottom: 2.25rem; }
+  .disco__title { font-size: var(--fs-h3); }
+  .disco__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem 1rem; }
+
+  .listen__grid { display: grid; gap: 3rem; }
+  .listen__title { font-size: var(--fs-h2); margin-top: 1rem; }
+  .listen__facts { display: grid; gap: 1.1rem; margin-top: 2rem; }
+  .listen__facts dd { margin-top: 0.25rem; }
+  .quote { margin-top: 2.5rem; padding-left: 1.25rem; border-left: 2px solid var(--violet); }
+  .quote p { font-family: var(--serif); font-style: italic; font-size: clamp(1.6rem, 6vw, 2.4rem); line-height: 1.1; }
+  .quote figcaption { margin-top: 0.75rem; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--lavender); }
+  .quote figcaption a { color: inherit; }
+
+  @media (min-width: 760px) {
+    .latest__grid { grid-template-columns: 1fr 1fr; gap: 4rem; }
+    .disco__grid { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+  }
+  @media (min-width: 1100px) {
+    .listen__grid { grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+  }
+</style>

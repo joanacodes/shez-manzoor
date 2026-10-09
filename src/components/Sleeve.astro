@@ -1,0 +1,311 @@
+---
+/**
+ * A record sleeve that flips to show its back. The record slides out on hover.
+ * The artwork is drawn in CSS until the real covers are supplied.
+ */
+import type { Release } from '../data/releases';
+import { links } from '../data/site';
+import { href } from '../lib/url';
+import Icon from './Icon.astro';
+
+interface Props {
+  release: Release;
+  size?: 'lg' | 'md';
+  headingLevel?: 'h2' | 'h3';
+  caption?: boolean;
+}
+const { release: r, size = 'md', headingLevel = 'h3', caption = true } = Astro.props;
+const Heading = headingLevel;
+const page = href(`/music/${r.slug}/`);
+const id = `sleeve-${r.slug}`;
+---
+
+<div class={`sleeve sleeve--${size}`} data-sleeve data-art={r.art} data-light="purple">
+  <div class="sleeve__stage">
+    <div class="sleeve__record" aria-hidden="true">
+      <span class="sleeve__grooves"></span>
+      <span class="sleeve__label"></span>
+    </div>
+    <div class="sleeve__card">
+      <div class="sleeve__face sleeve__front" data-sleeve-front>
+        <div class="art" aria-hidden="true">
+          {
+            r.art === 'miscellany' && (
+              <svg class="art__svg" viewBox="0 0 100 100">
+                <g fill="none" stroke-width="1.5" stroke-linecap="round" transform="translate(10 4) scale(0.8)">
+                  <circle cx="20" cy="27" r="7" stroke="#cdbbff" />
+                  <path d="M43 34a7 7 0 0 1 14 0z" fill="#7cefc0" stroke="none" />
+                  <path d="M75 20v14M79 20v14M83 20v14" stroke="#cdbbff" />
+                  <path d="M20 43l7 7-7 7-7-7z" fill="#7a4dff" stroke="none" />
+                  <path d="M42 50q4-6 8 0t8 0" stroke="#7cefc0" />
+                  <circle cx="79" cy="50" r="2.6" fill="#cdbbff" stroke="none" />
+                  <path d="M13 79a7 7 0 0 1 14 0M16 79a4 4 0 0 1 8 0" stroke="#cdbbff" />
+                  <path d="M50 66l7 12H43z" stroke="#7cefc0" />
+                  <circle cx="79" cy="73" r="6.5" fill="url(#misc-orb)" stroke="none" />
+                </g>
+                <defs>
+                  <radialGradient id="misc-orb" cx="0.35" cy="0.35" r="0.8">
+                    <stop offset="0" stop-color="#f2ece2" />
+                    <stop offset="0.5" stop-color="#cdbbff" />
+                    <stop offset="1" stop-color="#7a4dff" />
+                  </radialGradient>
+                </defs>
+              </svg>
+            )
+          }
+          <span class="art__layer art__layer--1"></span>
+          <span class="art__layer art__layer--2"></span>
+          <span class="art__layer art__layer--3"></span>
+          <span class="art__artist">SHEZ</span>
+          <span class="art__title">{r.title}</span>
+          <span class="art__type">{r.type}</span>
+        </div>
+        <button class="sleeve__flip" type="button" data-sleeve-flip aria-expanded="false" aria-controls={id}>
+          <span class="sr-only">Show the back of {r.title}</span>
+          <span class="sleeve__flip-icon" aria-hidden="true"><Icon name="flip" /></span>
+        </button>
+      </div>
+      <div class="sleeve__face sleeve__back" id={id} data-sleeve-back>
+        <p class="sleeve__back-meta">{r.type} · {r.when}{r.label && r.label !== 'Self-released' ? ` · ${r.label}` : ''}</p>
+        <p class="sleeve__back-title">{r.title}</p>
+        {
+          r.tracks ? (
+            <ol class="sleeve__tracks">
+              {r.tracks.map((t) => (
+                <li>
+                  <span>{t.title}</span>
+                  {t.length && <span class="sleeve__len">{t.length}</span>}
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p class="sleeve__back-text">{r.summary}</p>
+          )
+        }
+        <div class="sleeve__back-links">
+          <a class="sleeve__pill" href={links.spotify} rel="noopener" target="_blank"><Icon name="spotify" /> Listen</a>
+          <a class="sleeve__pill" href={page}>Details <Icon name="arrow" /></a>
+        </div>
+        <button class="sleeve__close" type="button" data-sleeve-close>
+          <span class="sr-only">Show the front of {r.title}</span>
+          <Icon name="flip" />
+        </button>
+      </div>
+    </div>
+  </div>
+  {
+    caption && (
+      <div class="sleeve__caption">
+        <Heading class="sleeve__title">
+          <a href={page}>{r.title}</a>
+        </Heading>
+        <p class="sleeve__meta">{r.type} · {r.when}</p>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .sleeve { --size: 100%; position: relative; }
+  .sleeve__stage { position: relative; width: 84%; aspect-ratio: 1; perspective: 1400px; }
+
+  /* the record */
+  .sleeve__record {
+    position: absolute;
+    inset: 3%;
+    border-radius: 50%;
+    background: radial-gradient(circle, #222 0 1.5%, #0a0a0c 1.6% 100%);
+    box-shadow: 0 20px 40px -18px rgb(0 0 0 / 0.9);
+    transform: translateX(0) rotate(0deg);
+    transition: transform 1.1s var(--ease-out);
+  }
+  .sleeve__grooves {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background:
+      conic-gradient(from 30deg, transparent 0 20%, rgb(255 255 255 / 0.09) 25%, transparent 32% 70%, rgb(255 255 255 / 0.06) 75%, transparent 82%),
+      repeating-radial-gradient(circle, rgb(255 255 255 / 0.035) 0 1px, transparent 1px 3px);
+  }
+  .sleeve__label {
+    position: absolute;
+    inset: 34%;
+    border-radius: 50%;
+    background: radial-gradient(circle, #0b0912 0 7%, var(--label, var(--violet)) 8%);
+  }
+  .sleeve:hover .sleeve__record,
+  .sleeve.is-peeking .sleeve__record { transform: translateX(19%) rotate(70deg); }
+  .sleeve:hover .sleeve__record { animation: spin 9s linear infinite 1s; }
+  @keyframes spin {
+    from { transform: translateX(19%) rotate(70deg); }
+    to { transform: translateX(19%) rotate(430deg); }
+  }
+
+  /* the sleeve */
+  .sleeve__card {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transition: transform 0.9s var(--ease-out);
+  }
+  .sleeve.is-flipped .sleeve__card { transform: rotateY(180deg); }
+  .sleeve__face {
+    position: absolute;
+    inset: 0;
+    container: sleeve / inline-size;
+    border-radius: 6px;
+    overflow: hidden;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    box-shadow: 0 24px 50px -24px rgb(0 0 0 / 0.9), inset 0 0 0 1px rgb(255 255 255 / 0.06);
+  }
+  .sleeve__back {
+    transform: rotateY(180deg);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1rem;
+    background: linear-gradient(160deg, #1d1630, #120f1b);
+    color: var(--ink);
+  }
+  .sleeve__back-meta { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--lavender); }
+  .sleeve__back-title { font-family: var(--serif); font-size: 1.7rem; line-height: 1; }
+  .sleeve__back-text { font-size: 0.85rem; line-height: 1.45; color: var(--ink-2); overflow: hidden; }
+  .sleeve__tracks { display: grid; gap: 0.2rem; padding: 0; list-style: none; counter-reset: t; font-size: 0.82rem; }
+  .sleeve__tracks li { display: flex; justify-content: space-between; gap: 0.5rem; counter-increment: t; color: var(--ink-2); }
+  .sleeve__tracks li::before { content: counter(t); font-family: var(--mono); font-size: 0.65rem; color: var(--ink-3); min-width: 1rem; padding-top: 0.2em; }
+  .sleeve__tracks li span:first-child { flex: 1; }
+  .sleeve__len { font-family: var(--mono); font-size: 0.7rem; color: var(--ink-3); }
+  .sleeve__back-links { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: auto; }
+  .sleeve__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 34px;
+    padding: 0 0.75rem;
+    border-radius: 999px;
+    border: 1px solid rgb(var(--lavender-rgb) / 0.4);
+    font-size: 0.78rem;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  .sleeve__pill:hover { background: var(--lavender); color: var(--stage); }
+  .sleeve__pill :global(svg) { inline-size: 0.95rem; block-size: 0.95rem; }
+  .sleeve__close, .sleeve__flip-icon {
+    position: absolute;
+    top: clamp(0.4rem, 4cqi, 0.7rem);
+    right: clamp(0.4rem, 4cqi, 0.7rem);
+    display: grid;
+    place-items: center;
+    inline-size: clamp(26px, 13cqi, 36px);
+    block-size: clamp(26px, 13cqi, 36px);
+    border-radius: 50%;
+    background: rgb(11 9 18 / 0.55);
+    border: 1px solid rgb(255 255 255 / 0.18);
+    color: var(--ink);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    transition: transform 0.5s var(--ease-out), background-color 0.3s;
+  }
+  .sleeve__close :global(svg), .sleeve__flip-icon :global(svg) { inline-size: 55%; block-size: 55%; }
+  @container sleeve (max-width: 230px) {
+    .sleeve__tracks, .sleeve__back-text { display: none; }
+    .sleeve__back { padding: 0.75rem; gap: 0.4rem; }
+    .sleeve__back-title { font-size: 1.35rem; }
+    .sleeve__pill { min-height: 30px; padding: 0 0.6rem; font-size: 0.72rem; }
+  }
+  .sleeve__flip { position: absolute; inset: 0; z-index: 2; border-radius: 6px; }
+  .sleeve__flip:hover .sleeve__flip-icon, .sleeve__flip:focus-visible .sleeve__flip-icon { transform: rotate(180deg); background: var(--lavender); color: var(--stage); }
+  .sleeve__flip:focus-visible { outline-offset: 4px; }
+
+  /* captions */
+  .sleeve__caption { margin-top: 1rem; }
+  .sleeve__title { font-size: clamp(1.6rem, 6vw, 2rem); line-height: 1.05; }
+  .sleeve__title a { text-decoration: none; }
+  .sleeve__title a:hover { color: var(--lavender); }
+  .sleeve__meta { margin-top: 0.35rem; font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
+
+  .sleeve--lg .sleeve__stage { width: 82%; }
+  .sleeve--lg .sleeve__back { padding: clamp(1rem, 4vw, 1.75rem); gap: 0.9rem; }
+  .sleeve--lg .sleeve__back-title { font-size: clamp(2rem, 7vw, 3rem); }
+  .sleeve--lg .sleeve__back-text { font-size: clamp(0.9rem, 3.4vw, 1.05rem); }
+
+  /* ---------- artwork (placeholder covers drawn in CSS) ---------- */
+  .art { position: absolute; inset: 0; container-type: inline-size; color: var(--ink); }
+  .art__layer { position: absolute; inset: 0; }
+  .art__artist {
+    position: absolute;
+    left: 7cqi;
+    top: 6.5cqi;
+    font-family: var(--mono);
+    font-size: 4.2cqi;
+    letter-spacing: 0.3em;
+  }
+  .art__title {
+    position: absolute;
+    left: 7cqi;
+    right: 7cqi;
+    bottom: 12cqi;
+    font-family: var(--serif);
+    font-size: 13cqi;
+    line-height: 0.92;
+    letter-spacing: -0.01em;
+  }
+  .art__type {
+    position: absolute;
+    left: 7cqi;
+    bottom: 6cqi;
+    font-family: var(--mono);
+    font-size: 3.4cqi;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+
+  [data-art='miscellany'] { --label: #cdbbff; }
+  [data-art='miscellany'] .art { background: radial-gradient(120% 80% at 50% 0%, #34217a 0%, #1d1342 55%, #120c26 100%); }
+  .art__svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  [data-art='miscellany'] .art__layer--1 { background: linear-gradient(to top, #120c26 0%, rgb(18 12 38 / 0.9) 22%, transparent 42%); }
+  [data-art='miscellany'] .art__title { font-style: italic; font-size: 12cqi; }
+
+  [data-art='freeze'] { --label: #e9e4ff; }
+  [data-art='freeze'] .art { background: radial-gradient(120% 90% at 30% 20%, #f4f1ff 0%, #c9c2f2 38%, #6f5ab8 75%, #2b1d55 100%); color: #19123a; }
+  [data-art='freeze'] .art__layer--1 {
+    background: repeating-conic-gradient(from 0deg at 62% 40%, rgb(255 255 255 / 0.5) 0 1.2deg, transparent 1.2deg 15deg);
+    -webkit-mask-image: radial-gradient(circle at 62% 40%, #000 0, transparent 34cqi);
+    mask-image: radial-gradient(circle at 62% 40%, #000 0, transparent 34cqi);
+  }
+  [data-art='freeze'] .art__layer--2 { background: radial-gradient(circle at 62% 40%, #fff 0 3cqi, rgb(255 236 214 / 0.9) 3.2cqi, rgb(255 210 170 / 0) 14cqi); }
+  [data-art='freeze'] .art__title { font-size: 17cqi; }
+
+  [data-art='our-time'] { --label: #7a4dff; }
+  [data-art='our-time'] .art { background: linear-gradient(180deg, #0f0b1c 0%, #2c1a63 55%, #7a4dff 100%); }
+  [data-art='our-time'] .art__layer--1 { background: radial-gradient(circle at 50% 64%, #cdbbff 0 18cqi, transparent 18.4cqi); }
+  [data-art='our-time'] .art__layer--2 {
+    background: repeating-linear-gradient(180deg, transparent 0 4.4cqi, #0f0b1c 4.4cqi 5.6cqi);
+    -webkit-mask-image: linear-gradient(180deg, transparent 50%, #000 62%);
+    mask-image: linear-gradient(180deg, transparent 50%, #000 62%);
+  }
+  [data-art='our-time'] .art__title { top: 16cqi; bottom: auto; font-size: 15cqi; }
+
+  [data-art='rhythm'] { --label: #7cefc0; }
+  [data-art='rhythm'] .art { background: #120e20; }
+  [data-art='rhythm'] .art__layer--1 {
+    background:
+      linear-gradient(#7a4dff, #cdbbff) 12% 100% / 6% 38% no-repeat,
+      linear-gradient(#7a4dff, #cdbbff) 24% 100% / 6% 62% no-repeat,
+      linear-gradient(#7a4dff, #cdbbff) 36% 100% / 6% 30% no-repeat,
+      linear-gradient(#7a4dff, #cdbbff) 48% 100% / 6% 74% no-repeat,
+      linear-gradient(#7a4dff, #cdbbff) 60% 100% / 6% 46% no-repeat,
+      linear-gradient(#5fd3a7, #7cefc0) 72% 100% / 6% 84% no-repeat,
+      linear-gradient(#7a4dff, #cdbbff) 84% 100% / 6% 54% no-repeat;
+    opacity: 0.9;
+  }
+  [data-art='rhythm'] .art__layer--2 { background: linear-gradient(180deg, #120e20 0%, rgb(18 14 32 / 0.85) 40%, transparent 75%); }
+  [data-art='rhythm'] .art__title { top: 16cqi; bottom: auto; right: 18cqi; font-size: 13cqi; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sleeve__record, .sleeve__card { transition: none; }
+    .sleeve:hover .sleeve__record { animation: none; }
+  }
+</style>

@@ -1,0 +1,65 @@
+name: Deploy preview to GitHub Pages
+
+on:
+  push:
+    branches: [main, 'claude/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      pages: ${{ steps.pages.outcome }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Fails when Pages is off for this repository. The build still runs so every push is checked.
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v5
+        continue-on-error: true
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          SITE_URL: ${{ steps.pages.outputs.origin || format('https://{0}.github.io', github.repository_owner) }}
+          BASE_PATH: ${{ steps.pages.outputs.base_path || format('/{0}', github.event.repository.name) }}
+          # Preview builds stay hidden from search engines. Set INDEXABLE=true only for the launch build.
+          INDEXABLE: 'false'
+
+      - name: Explain why nothing was deployed
+        if: steps.pages.outcome != 'success'
+        run: echo "::notice title=GitHub Pages is off::The site built fine. To publish it, open Settings > Pages and set Source to GitHub Actions. Private repositories need a paid GitHub plan for Pages."
+
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.pages.outcome == 'success'
+        with:
+          path: ./dist
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.pages == 'success'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

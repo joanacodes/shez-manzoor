@@ -1,0 +1,72 @@
+---
+/** Slow ribbon of credits: green for screen work, purple for releases. Decorative; the same names are listed elsewhere. */
+const items = [
+  { t: 'We Are Lady Parts', light: 'green' },
+  { t: 'Freeze', light: 'purple' },
+  { t: 'Polite Society', light: 'green' },
+  { t: 'Our Time', light: 'purple' },
+  { t: 'Clarkson’s Farm', light: 'green' },
+  { t: 'Miscellany (Vol. 1)', light: 'purple' },
+  { t: 'Bride or Die', light: 'green' },
+  { t: 'Rhythm Section', light: 'purple' },
+];
+---
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__track">
+    {
+      [0, 1].map(() => (
+        <ul class="marquee__group" role="list">
+          {items.map((item) => (
+            <li data-light={item.light}>
+              <span class="marquee__dot" />
+              <span class="marquee__text">{item.t}</span>
+            </li>
+          ))}
+        </ul>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .marquee {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(1.25rem, 3.5vw, 2rem);
+    border-block: 1px solid var(--hair);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  }
+  .marquee__track { display: flex; width: max-content; animation: slide 60s linear infinite; }
+  .marquee:hover .marquee__track { animation-play-state: paused; }
+  .marquee__group { display: flex; margin: 0; padding: 0; }
+  .marquee__group li {
+    display: flex;
+    align-items: center;
+    gap: clamp(1.1rem, 3vw, 2rem);
+    padding-right: clamp(1.1rem, 3vw, 2rem);
+    white-space: nowrap;
+  }
+  .marquee__text {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(2rem, 8.5vw, 4.4rem);
+    line-height: 1.1;
+    color: var(--ink);
+  }
+  li:nth-child(even) .marquee__text { color: var(--ink-2); font-style: normal; }
+  .marquee__dot {
+    inline-size: 9px;
+    block-size: 9px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 16px var(--accent), 0 0 4px var(--accent);
+  }
+  @keyframes slide {
+    to { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee__track { animation: none; }
+  }
+</style>

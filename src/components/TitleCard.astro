@@ -1,0 +1,68 @@
+---
+/** Wide decorative "title card" for a project page, using the project's pattern. */
+import type { Project } from '../data/projects';
+
+interface Props {
+  project: Project;
+}
+const { project: p } = Astro.props;
+---
+
+<div class="tcard" data-pattern={p.pattern} aria-hidden="true">
+  <span class="tcard__pattern"></span>
+  <span class="tcard__title">{p.title}</span>
+  <span class="tcard__meta">{p.kind}{p.years ? ` · ${p.years}` : ''} · Music by Shez Manzoor</span>
+</div>
+
+<style>
+  .tcard {
+    position: relative;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 1rem;
+    aspect-ratio: 16 / 9;
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    overflow: hidden;
+    isolation: isolate;
+    border: 1px solid rgb(var(--mint-rgb) / 0.18);
+    background:
+      radial-gradient(60% 70% at 50% 0%, rgb(var(--mint-rgb) / 0.28), transparent 70%),
+      radial-gradient(50% 60% at 0% 100%, rgb(30 156 115 / 0.3), transparent 70%),
+      linear-gradient(180deg, #0f1f18, #0b0912);
+    text-align: center;
+  }
+  .tcard__pattern { position: absolute; inset: 0; z-index: -1; }
+  [data-pattern='strings'] .tcard__pattern {
+    background: repeating-linear-gradient(100deg, transparent 0 30px, rgb(var(--mint-rgb) / 0.16) 30px 31px);
+    -webkit-mask-image: radial-gradient(80% 80% at 50% 30%, #000, transparent);
+    mask-image: radial-gradient(80% 80% at 50% 30%, #000, transparent);
+  }
+  [data-pattern='rings'] .tcard__pattern {
+    background: repeating-radial-gradient(circle at 50% 50%, transparent 0 22px, rgb(var(--mint-rgb) / 0.16) 22px 23px);
+    -webkit-mask-image: radial-gradient(60% 70% at 50% 50%, #000, transparent);
+    mask-image: radial-gradient(60% 70% at 50% 50%, #000, transparent);
+  }
+  [data-pattern='furrows'] .tcard__pattern {
+    inset: 30% -40% 0;
+    background: repeating-linear-gradient(90deg, transparent 0 22px, rgb(var(--mint-rgb) / 0.24) 22px 23.5px);
+    transform: perspective(400px) rotateX(64deg);
+    transform-origin: 50% 100%;
+    -webkit-mask-image: linear-gradient(to top, #000, transparent 85%);
+    mask-image: linear-gradient(to top, #000, transparent 85%);
+  }
+  [data-pattern='film'] .tcard__pattern {
+    background:
+      repeating-linear-gradient(90deg, transparent 0 12px, rgb(var(--mint-rgb) / 0.2) 12px 26px) left 0 top 14px / 100% 10px no-repeat,
+      repeating-linear-gradient(90deg, transparent 0 12px, rgb(var(--mint-rgb) / 0.2) 12px 26px) left 0 bottom 14px / 100% 10px no-repeat;
+  }
+  .tcard__title {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(2.4rem, 10vw, 6rem);
+    line-height: 0.95;
+    text-shadow: 0 0 40px rgb(var(--mint-rgb) / 0.35);
+  }
+  .tcard__meta { font-family: var(--mono); font-size: clamp(0.6rem, 2.4vw, 0.75rem); letter-spacing: 0.16em; text-transform: uppercase; color: var(--mint); text-wrap: balance; max-width: 34ch; }
+</style>

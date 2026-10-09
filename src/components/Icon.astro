@@ -1,0 +1,55 @@
+---
+/** Small inline icon set. Decorative by default; pass `label` to make it meaningful. */
+interface Props {
+  name:
+    | 'arrow'
+    | 'arrow-up-right'
+    | 'play'
+    | 'spotify'
+    | 'instagram'
+    | 'sound-on'
+    | 'sound-off'
+    | 'copy'
+    | 'check'
+    | 'download'
+    | 'plus'
+    | 'flip';
+  label?: string;
+  class?: string;
+}
+const { name, label, class: className } = Astro.props;
+const paths: Record<Props['name'], string> = {
+  arrow: '<path d="M4 12h15M13 6l6 6-6 6" />',
+  'arrow-up-right': '<path d="M7 17 17 7M9 7h8v8" />',
+  play: '<path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none" />',
+  spotify:
+    '<circle cx="12" cy="12" r="9.5" /><path d="M7.2 9.4c3.4-1 7.1-.7 10 .9M7.8 12.4c2.8-.8 5.8-.5 8.2.8M8.5 15.2c2.2-.5 4.4-.3 6.3.7" />',
+  instagram:
+    '<rect x="3.5" y="3.5" width="17" height="17" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.2" cy="6.8" r=".6" fill="currentColor" />',
+  'sound-on':
+    '<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" /><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" />',
+  'sound-off': '<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" /><path d="m16 9.5 5 5M21 9.5l-5 5" />',
+  copy: '<rect x="8.5" y="8.5" width="11" height="11" rx="2.5" /><path d="M15.5 8.5V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7.5a2 2 0 0 0 2 2h2.5" />',
+  check: '<path d="m5 12.5 4.5 4.5L19 7.5" />',
+  download: '<path d="M12 4v11M7 10.5l5 5 5-5M5 19.5h14" />',
+  plus: '<path d="M12 5v14M5 12h14" />',
+  flip: '<path d="M4 9a8 8 0 0 1 14-3l2 2M20 4v4h-4M20 15a8 8 0 0 1-14 3l-2-2M4 20v-4h4" />',
+};
+---
+
+<svg
+  class={className}
+  viewBox="0 0 24 24"
+  width="24"
+  height="24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.6"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden={label ? undefined : 'true'}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  focusable="false"
+  set:html={paths[name]}
+/>

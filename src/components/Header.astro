@@ -1,0 +1,230 @@
+---
+import { nav, links } from '../data/site';
+import { href, isActive } from '../lib/url';
+import Icon from './Icon.astro';
+
+const current = Astro.url.pathname;
+---
+
+<header class="site-header" data-header>
+  <div class="bar wrap">
+    <a class="brand" href={href('/')}>
+      <span class="brand__dot" aria-hidden="true"></span>
+      <span class="brand__word"><span class="brand__a">SHEZ</span> <span class="brand__b">MANZOOR</span><span class="sr-only">, home</span></span>
+    </a>
+
+    <nav class="nav" aria-label="Main">
+      <ul role="list">
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={href(item.href)}
+                data-light={'light' in item ? item.light : undefined}
+                aria-current={isActive(current, item.href) ? 'page' : undefined}
+              >
+                {'light' in item && <span class="nav__dot" aria-hidden="true" />}
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-menu-toggle>
+      <span class="menu-btn__label">Menu</span>
+      <span class="menu-btn__lines" aria-hidden="true"><span></span><span></span></span>
+    </button>
+  </div>
+</header>
+
+<div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Site menu" data-menu hidden>
+  <div class="menu__lights" aria-hidden="true"></div>
+  <nav class="menu__nav wrap" aria-label="Menu">
+    <ol role="list">
+      {
+        nav.map((item, i) => (
+          <li style={`--i:${i}`}>
+            <a
+              href={href(item.href)}
+              data-light={'light' in item ? item.light : undefined}
+              aria-current={isActive(current, item.href) ? 'page' : undefined}
+            >
+              <span class="menu__num">0{i + 1}</span>
+              <span class="menu__label">{item.label}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </nav>
+  <div class="menu__foot wrap">
+    <a class="btn" href={links.spotify} rel="noopener" target="_blank">
+      <Icon name="spotify" /> Spotify
+    </a>
+    <a class="btn" href={links.instagram} rel="noopener" target="_blank">
+      <Icon name="instagram" /> Instagram
+    </a>
+  </div>
+</div>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    transition: transform 0.5s var(--ease-out), background-color 0.4s, border-color 0.4s;
+    border-bottom: 1px solid transparent;
+  }
+  :global(.is-scrolled) .site-header {
+    background: rgb(11 9 18 / 0.72);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    backdrop-filter: blur(14px) saturate(140%);
+    border-color: var(--hair);
+  }
+  :global(.is-header-hidden) .site-header { transform: translateY(-100%); }
+  .site-header:focus-within { transform: none !important; }
+
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    letter-spacing: 0.22em;
+    text-decoration: none;
+    padding-block: 0.6rem;
+  }
+  .brand__a { color: var(--ink); }
+  .brand__word { white-space: nowrap; }
+  .brand__b { color: var(--ink-3); margin-left: -0.3em; transition: color 0.4s; }
+  .brand:hover .brand__b { color: var(--ink); }
+  .brand__dot {
+    inline-size: 8px;
+    block-size: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent), 0 0 2px var(--accent);
+    transition: background-color 0.6s, box-shadow 0.6s;
+  }
+
+  .nav { display: none; }
+
+  .menu-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 44px;
+    padding-inline: 0.25rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .menu-btn__lines { display: grid; gap: 6px; inline-size: 28px; }
+  .menu-btn__lines span {
+    display: block;
+    height: 1.5px;
+    background: var(--ink);
+    border-radius: 2px;
+    transition: transform 0.45s var(--ease-out), opacity 0.3s;
+  }
+  .menu-btn[aria-expanded='true'] .menu-btn__lines span:first-child { transform: translateY(3.75px) rotate(45deg); }
+  .menu-btn[aria-expanded='true'] .menu-btn__lines span:last-child { transform: translateY(-3.75px) rotate(-45deg); }
+
+  @media (min-width: 960px) {
+    .menu-btn { display: none; }
+    .nav { display: block; }
+    .nav ul { display: flex; gap: clamp(1rem, 2.4vw, 2.25rem); margin: 0; }
+    .nav a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-height: 44px;
+      font-size: 0.9rem;
+      color: var(--ink-2);
+      text-decoration: none;
+      position: relative;
+      transition: color 0.3s;
+    }
+    .nav a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 8px;
+      height: 1px;
+      background: currentColor;
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.45s var(--ease-out);
+    }
+    .nav a:hover, .nav a[aria-current='page'] { color: var(--ink); }
+    .nav a:hover::after, .nav a[aria-current='page']::after { transform: scaleX(1); transform-origin: left; }
+    .nav__dot {
+      inline-size: 6px;
+      block-size: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+  }
+
+  /* ---------- full-screen menu ---------- */
+  .menu {
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-top: calc(var(--header-h) + 3vh);
+    padding-bottom: max(2rem, env(safe-area-inset-bottom));
+    background: var(--stage);
+    overflow-y: auto;
+  }
+  .menu[hidden] { display: none; }
+  .menu__lights {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      conic-gradient(from 150deg at -10% -5%, transparent 0deg, rgb(var(--violet-rgb) / 0.32) 14deg, transparent 32deg),
+      conic-gradient(from 178deg at 110% -5%, transparent 0deg, rgb(var(--mint-rgb) / 0.2) 14deg, transparent 30deg);
+    -webkit-mask-image: linear-gradient(to bottom, black, transparent 85%);
+    mask-image: linear-gradient(to bottom, black, transparent 85%);
+  }
+  .menu__nav ol { margin: 0; display: grid; gap: 0.15rem; }
+  .menu__nav a {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding-block: 0.35rem;
+    text-decoration: none;
+    font-family: var(--serif);
+    font-size: clamp(2.8rem, 13vw, 4.5rem);
+    line-height: 1.05;
+    color: var(--ink);
+  }
+  .menu__num { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.1em; color: var(--ink-3); transform: translateY(-1.4em); }
+  .menu__nav a[data-light] .menu__label { background: linear-gradient(90deg, var(--ink) 40%, var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .menu__nav a[aria-current='page'] .menu__label { font-style: italic; }
+  .menu__foot { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2.5rem; position: relative; }
+
+  .menu.is-open li { animation: menu-in 0.7s var(--ease-out) both; animation-delay: calc(var(--i) * 60ms + 80ms); }
+  .menu.is-open .menu__foot { animation: menu-in 0.7s var(--ease-out) both 0.45s; }
+  @keyframes menu-in {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .menu.is-open li, .menu.is-open .menu__foot { animation: none; }
+  }
+</style>

@@ -1,0 +1,147 @@
+---
+/** Header for inner pages: breadcrumb, title and intro over CSS stage lights. */
+import { href } from '../lib/url';
+
+interface Props {
+  kicker: string;
+  title: string;
+  /** Part of the title to set in italics, appended after `title`. */
+  titleEm?: string;
+  intro?: string;
+  light?: 'green' | 'purple' | 'mixed';
+  crumbs?: { name: string; path: string }[];
+}
+const { kicker, title, titleEm, intro, light = 'mixed', crumbs = [] } = Astro.props;
+---
+
+<header class="phead" data-light={light} data-section-light={light}>
+  <div class="phead__lights" aria-hidden="true"></div>
+  <svg class="phead__strings" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="phead-fade" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="100">
+        <stop offset="0.14" stop-color="#fff" stop-opacity="0" />
+        <stop offset="0.32" stop-color="#fff" stop-opacity="1" />
+        <stop offset="0.75" stop-color="#fff" stop-opacity="0.5" />
+        <stop offset="1" stop-color="#fff" stop-opacity="0" />
+      </linearGradient>
+      <mask id="phead-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+        <rect width="100" height="100" fill="url(#phead-fade)" />
+      </mask>
+    </defs>
+    <g mask="url(#phead-mask)">
+      {
+        [0, 1, 2, 3, 4, 5].map((i) => (
+          <line
+            x1={44 + i * 2.4}
+            y1="16"
+            x2={14 + i * 14.4}
+            y2="100"
+            class={`phead__s phead__s--${i}`}
+            vector-effect="non-scaling-stroke"
+            stroke-width={1.6 - i * 0.14}
+          />
+        ))
+      }
+    </g>
+  </svg>
+  <div class="wrap phead__inner">
+    {
+      crumbs.length > 0 && (
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <ol role="list">
+            <li><a href={href('/')}>Home</a></li>
+            {crumbs.map((c, i) => (
+              <li>
+                {i === crumbs.length - 1 ? (
+                  <span aria-current="page">{c.name}</span>
+                ) : (
+                  <a href={href(c.path)}>{c.name}</a>
+                )}
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+    <p class="kicker">{kicker}</p>
+    <h1 class="phead__title">
+      {title}
+      {titleEm && <em>{titleEm}</em>}
+    </h1>
+    {intro && <p class="phead__intro">{intro}</p>}
+    <slot />
+  </div>
+</header>
+
+<style>
+  .phead {
+    position: relative;
+    isolation: isolate;
+    padding-top: calc(var(--header-h) + clamp(3rem, 11vh, 7rem));
+    padding-bottom: clamp(3rem, 8vw, 5.5rem);
+    overflow: hidden;
+  }
+  .phead__lights {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      conic-gradient(from 132deg at -8% -12%, transparent 0deg, rgb(var(--violet-rgb) / 0.34) 12deg, transparent 30deg),
+      conic-gradient(from 196deg at 108% -12%, transparent 0deg, rgb(var(--mint-rgb) / 0.22) 14deg, transparent 30deg);
+    -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent);
+    mask-image: linear-gradient(to bottom, #000 30%, transparent);
+  }
+  .phead[data-light='green'] .phead__lights {
+    background:
+      conic-gradient(from 132deg at -8% -12%, transparent 0deg, rgb(var(--violet-rgb) / 0.16) 12deg, transparent 28deg),
+      conic-gradient(from 192deg at 108% -12%, transparent 0deg, rgb(var(--mint-rgb) / 0.34) 13deg, transparent 32deg);
+  }
+  .phead[data-light='purple'] .phead__lights {
+    background:
+      conic-gradient(from 130deg at -8% -12%, transparent 0deg, rgb(var(--violet-rgb) / 0.48) 13deg, transparent 32deg),
+      conic-gradient(from 196deg at 108% -12%, transparent 0deg, rgb(var(--mint-rgb) / 0.1) 12deg, transparent 26deg);
+  }
+  .phead__strings { display: none; }
+  @media (min-width: 760px) {
+    .phead__strings {
+      display: block;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: min(46vw, 640px);
+      height: 100%;
+      z-index: -1;
+      opacity: 0.75;
+    }
+    .phead__s { stroke: var(--c); }
+    .phead__s--0 { --c: #b9a2ff; }
+    .phead__s--1 { --c: #b6b4ff; }
+    .phead__s--2 { --c: #a9cbf2; }
+    .phead__s--3 { --c: #9fdcdc; }
+    .phead__s--4 { --c: #8fe8c9; }
+    .phead__s--5 { --c: #7cefc0; }
+    .phead[data-light='green'] .phead__s { --c: #7cefc0; }
+    .phead[data-light='purple'] .phead__s { --c: #cdbbff; }
+    .phead__strings { filter: drop-shadow(0 0 3px rgb(var(--accent-rgb) / 0.55)); }
+  }
+  .crumbs ol { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 2rem; padding: 0; font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
+  .crumbs li + li::before { content: '/'; margin-right: 0.4rem; opacity: 0.5; }
+  .crumbs a { text-decoration: none; }
+  .crumbs a:hover { color: var(--ink); }
+  .phead__title {
+    margin-top: 1.1rem;
+    font-size: var(--fs-h1);
+    line-height: 0.9;
+    letter-spacing: -0.025em;
+    max-width: 14ch;
+  }
+  .phead__title em { display: block; color: var(--accent); }
+  .phead__intro {
+    margin-top: clamp(1.25rem, 4vw, 2rem);
+    max-width: 40ch;
+    font-size: var(--fs-lede);
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+</style>

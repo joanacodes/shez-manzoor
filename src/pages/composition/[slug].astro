@@ -1,0 +1,159 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/PageHead.astro';
+import TitleCard from '../../components/TitleCard.astro';
+import Award from '../../components/Award.astro';
+import ContactCta from '../../components/ContactCta.astro';
+import Icon from '../../components/Icon.astro';
+import { projects, type Project } from '../../data/projects';
+import { href } from '../../lib/url';
+import { breadcrumbSchema, graph, personSchema, projectSchema } from '../../lib/schema';
+
+export function getStaticPaths() {
+  return projects.map((project, index) => ({ params: { slug: project.slug }, props: { project, index } }));
+}
+
+interface Props {
+  project: Project;
+  index: number;
+}
+const { project: p, index } = Astro.props;
+const site = Astro.site;
+const next = projects[(index + 1) % projects.length];
+const prev = projects[(index - 1 + projects.length) % projects.length];
+const path = `/composition/${p.slug}/`;
+const jsonLd = graph([
+  personSchema(site),
+  projectSchema(p, site),
+  breadcrumbSchema(
+    [
+      { name: 'Home', path: '/' },
+      { name: 'Composition', path: '/composition/' },
+      { name: p.title, path },
+    ],
+    site,
+  ),
+]);
+const ogType = p.schema.type === 'Movie' ? 'video.movie' : 'video.tv_show';
+---
+
+<Base
+  title={`${p.title}: music by Shez Manzoor | ${p.kind}`}
+  description={p.summary}
+  path={path}
+  light="green"
+  type={ogType}
+  jsonLd={jsonLd}
+>
+  <PageHead
+    kicker={`${p.kind}${p.years ? ` · ${p.years}` : ''}`}
+    title={p.title}
+    intro={p.summary}
+    light="green"
+    crumbs={[
+      { name: 'Composition', path: '/composition/' },
+      { name: p.title, path },
+    ]}
+  />
+
+  <section class="section project" data-light="green" data-section-light="green" aria-label="About the project">
+    <div class="wrap">
+      <div data-reveal><TitleCard project={p} /></div>
+
+      <div class="project__grid">
+        <div class="project__body">
+          <div class="prose project__prose" data-reveal>
+            {p.body.map((t) => <p>{t}</p>)}
+          </div>
+
+          {
+            p.music && (
+              <div class="cue" data-reveal>
+                <h2 class="label">{p.music.heading}</h2>
+                <ol class="cue__list" role="list">
+                  {p.music.items.map((t, i) => (
+                    <li>
+                      <span class="cue__n">1M{i + 1}</span>
+                      <span class="cue__t">{t}</span>
+                    </li>
+                  ))}
+                </ol>
+                {p.music.note && <p class="cue__note">{p.music.note}</p>}
+              </div>
+            )
+          }
+        </div>
+
+        <aside class="facts" aria-label="Key facts" data-reveal>
+          <h2 class="label">Key facts</h2>
+          <dl>
+            {
+              p.facts.map((f) => (
+                <div>
+                  <dt>{f.label}</dt>
+                  <dd>{f.value}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </aside>
+      </div>
+
+      {p.slug === 'we-are-lady-parts' && <Award />}
+
+      <nav class="pager" aria-label="More projects">
+        <a class="pager__link" href={href(`/composition/${prev.slug}/`)} rel="prev">
+          <span class="label">Previous</span>
+          <span class="pager__title"><Icon name="arrow" class="pager__back" /> {prev.title}</span>
+        </a>
+        <a class="pager__link pager__link--next" href={href(`/composition/${next.slug}/`)} rel="next">
+          <span class="label">Next</span>
+          <span class="pager__title">{next.title} <Icon name="arrow" /></span>
+        </a>
+      </nav>
+    </div>
+  </section>
+
+  <ContactCta heading="Scoring a film or a series?" />
+</Base>
+
+<style>
+  .project { padding-top: 0; }
+  .project__grid { display: grid; gap: 2.5rem; margin-top: clamp(2.5rem, 7vw, 4.5rem); }
+  .project__prose { font-size: 1.125rem; }
+  .project__prose p:first-child { font-size: var(--fs-lede); color: var(--ink); line-height: 1.5; }
+
+  .cue { margin-top: 2.5rem; padding: 1.4rem; border-radius: var(--radius); border: 1px solid rgb(var(--mint-rgb) / 0.2); background: rgb(var(--mint-rgb) / 0.03); }
+  .cue__list { margin: 1rem 0 0; padding: 0; display: grid; }
+  .cue__list li { display: grid; grid-template-columns: 3.2rem 1fr; gap: 0.75rem; align-items: baseline; padding: 0.7rem 0; border-top: 1px solid var(--hair); }
+  .cue__n { font-family: var(--mono); font-size: 0.72rem; color: var(--mint); letter-spacing: 0.08em; }
+  .cue__t { font-family: var(--serif); font-size: 1.5rem; line-height: 1.15; }
+  .cue__note { margin-top: 0.75rem; font-size: 0.88rem; color: var(--ink-3); }
+
+  .facts { align-self: start; padding: 1.4rem; border-radius: var(--radius); border: 1px solid var(--hair-2); background: rgb(255 255 255 / 0.02); }
+  .facts dl { display: grid; margin-top: 0.75rem; }
+  .facts dl div { padding: 0.75rem 0; border-top: 1px solid var(--hair); display: grid; gap: 0.15rem; }
+  .facts dt { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
+  .facts dd { color: var(--ink); }
+
+  .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: clamp(3rem, 8vw, 5rem); }
+  .pager__link {
+    display: grid;
+    gap: 0.4rem;
+    padding: 1.1rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--hair-2);
+    text-decoration: none;
+    transition: border-color 0.4s, background-color 0.4s;
+  }
+  .pager__link:hover { border-color: rgb(var(--mint-rgb) / 0.6); background: rgb(var(--mint-rgb) / 0.05); }
+  .pager__link--next { text-align: right; justify-items: end; }
+  .pager__title { display: inline-flex; align-items: center; gap: 0.5rem; font-family: var(--serif); font-size: clamp(1.3rem, 5vw, 1.9rem); line-height: 1.05; }
+  .pager__title :global(svg) { inline-size: 1.1rem; block-size: 1.1rem; flex: none; color: var(--mint); }
+  .pager__title :global(.pager__back) { transform: rotate(180deg); }
+
+  @media (min-width: 960px) {
+    .project__grid { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 5rem; }
+    .facts { position: sticky; top: calc(var(--header-h) + 1.5rem); }
+  }
+</style>

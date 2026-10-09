@@ -1,0 +1,81 @@
+---
+import { links } from '../data/site';
+import { href } from '../lib/url';
+import Icon from './Icon.astro';
+
+interface Props {
+  heading?: string;
+}
+const { heading = 'Working on a film, a series or a record?' } = Astro.props;
+---
+
+<section class="cta section" aria-labelledby="cta-title" data-section-light="mixed">
+  <div class="wrap cta__inner" data-reveal>
+    <p class="kicker">Get in touch</p>
+    <h2 class="cta__title" id="cta-title">{heading}</h2>
+    <div class="cta__grid">
+      <a class="cta__card" data-light="green" href={links.agent.url} rel="noopener" target="_blank">
+        <span class="cta__label">Film &amp; TV</span>
+        <span class="cta__text">Scoring and composition, through {links.agent.name}</span>
+        <Icon name="arrow-up-right" class="cta__icon" />
+      </a>
+      <a class="cta__card" data-light="purple" href={links.instagram} rel="noopener" target="_blank">
+        <span class="cta__label">Artist, live &amp; press</span>
+        <span class="cta__text">Bookings and collaborations: message SHEZ on Instagram</span>
+        <Icon name="arrow-up-right" class="cta__icon" />
+      </a>
+      <a class="cta__card" href={href('/epk/')}>
+        <span class="cta__label">Press kit</span>
+        <span class="cta__text">Biographies, photos and key facts, ready to copy</span>
+        <Icon name="arrow" class="cta__icon" />
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta { overflow: hidden; }
+  .cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(45% 60% at 0% 100%, rgb(var(--violet-rgb) / 0.2), transparent 70%),
+      radial-gradient(45% 60% at 100% 100%, rgb(var(--mint-rgb) / 0.12), transparent 70%);
+  }
+  .cta__title { margin-top: 1.2rem; font-size: var(--fs-h2); max-width: 16ch; }
+  .cta__grid { display: grid; gap: 0.75rem; margin-top: clamp(2rem, 6vw, 3.5rem); }
+  .cta__card {
+    position: relative;
+    display: grid;
+    gap: 0.4rem;
+    padding: 1.25rem 3.5rem 1.25rem 1.25rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--hair-2);
+    background: rgb(255 255 255 / 0.02);
+    text-decoration: none;
+    transition: border-color 0.4s, background-color 0.4s, box-shadow 0.5s var(--ease-out);
+  }
+  .cta__card:hover {
+    border-color: rgb(var(--accent-rgb) / 0.7);
+    background: rgb(var(--accent-rgb) / 0.06);
+    box-shadow: 0 0 50px -20px rgb(var(--accent-rgb) / 0.6);
+  }
+  .cta__label { font-family: var(--serif); font-size: clamp(1.6rem, 6vw, 2.1rem); line-height: 1.05; }
+  .cta__text { color: var(--ink-2); font-size: 0.95rem; }
+  .cta__card :global(.cta__icon) {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    inline-size: 1.4rem;
+    block-size: 1.4rem;
+    color: var(--accent);
+    transition: transform 0.4s var(--ease-out);
+  }
+  .cta__card:hover :global(.cta__icon) { transform: translate(3px, -3px); }
+  @media (min-width: 860px) {
+    .cta__grid { grid-template-columns: repeat(3, 1fr); }
+    .cta__card { min-height: 220px; align-content: end; padding: 1.5rem; }
+  }
+</style>

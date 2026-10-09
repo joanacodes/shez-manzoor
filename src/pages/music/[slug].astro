@@ -1,0 +1,164 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/PageHead.astro';
+import Sleeve from '../../components/Sleeve.astro';
+import StringsRule from '../../components/StringsRule.astro';
+import ContactCta from '../../components/ContactCta.astro';
+import Icon from '../../components/Icon.astro';
+import { releases, type Release } from '../../data/releases';
+import { links } from '../../data/site';
+import { breadcrumbSchema, graph, personSchema, releaseSchema } from '../../lib/schema';
+
+export function getStaticPaths() {
+  return releases.map((release) => ({ params: { slug: release.slug }, props: { release } }));
+}
+
+interface Props {
+  release: Release;
+}
+const { release: r } = Astro.props;
+const site = Astro.site;
+const path = `/music/${r.slug}/`;
+const others = releases.filter((x) => x.slug !== r.slug);
+const jsonLd = graph([
+  personSchema(site),
+  releaseSchema(r, site),
+  breadcrumbSchema(
+    [
+      { name: 'Home', path: '/' },
+      { name: 'Music', path: '/music/' },
+      { name: r.title, path },
+    ],
+    site,
+  ),
+]);
+const facts = [
+  { label: 'Artist', value: 'SHEZ (Shez Manzoor)' },
+  { label: 'Format', value: r.type === 'Release' ? 'Release' : r.type },
+  { label: 'Released', value: r.latest ? 'Latest release' : r.when },
+  ...(r.label ? [{ label: 'Label', value: r.label }] : []),
+];
+---
+
+<Base
+  title={`${r.title} by SHEZ | ${r.type === 'Release' ? 'Release' : r.type}${r.datePublished ? `, ${r.datePublished.slice(0, 4)}` : ''}`}
+  description={r.summary}
+  path={path}
+  light="purple"
+  type={r.type === 'Single' ? 'music.song' : 'music.album'}
+  jsonLd={jsonLd}
+>
+  <PageHead
+    kicker={`${r.type} · ${r.when}`}
+    title={r.title}
+    intro={r.summary}
+    light="purple"
+    crumbs={[
+      { name: 'Music', path: '/music/' },
+      { name: r.title, path },
+    ]}
+  />
+
+  <section class="section release" data-light="purple" data-section-light="purple" aria-label="About the release">
+    <div class="wrap release__grid">
+      <div data-reveal><Sleeve release={r} size="lg" caption={false} /></div>
+      <div class="release__text">
+        <div class="prose release__prose" data-reveal>{r.body.map((t) => <p>{t}</p>)}</div>
+
+        {
+          r.tracks && (
+            <div class="tracks" data-reveal>
+              <h2 class="label">{r.tracksNote ?? 'Tracklist'}</h2>
+              <ol role="list">
+                {r.tracks.map((t, i) => (
+                  <li>
+                    <span class="tracks__n">{String(i + 1).padStart(2, '0')}</span>
+                    <span class="tracks__t">{t.title}</span>
+                    {t.length && <span class="tracks__l">{t.length}</span>}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )
+        }
+
+        {
+          r.quote && (
+            <figure class="rquote" data-reveal>
+              <blockquote>
+                <p>{r.quote.text}</p>
+              </blockquote>
+              <figcaption>{r.quote.source}</figcaption>
+            </figure>
+          )
+        }
+
+        <dl class="rfacts" data-reveal>
+          {
+            facts.map((f) => (
+              <div>
+                <dt>{f.label}</dt>
+                <dd>{f.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+
+        <div class="release__actions" data-reveal>
+          <a class="btn btn--solid" href={links.spotify} rel="noopener" target="_blank"><Icon name="spotify" /> Listen on Spotify</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section more" data-light="purple" data-section-light="purple" aria-labelledby="more-title">
+    <div class="wrap">
+      <div class="more__head">
+        <h2 id="more-title" class="more__title">More from SHEZ</h2>
+        <StringsRule />
+      </div>
+      <div class="more__grid" role="list">
+        {
+          others.map((o, i) => (
+            <div role="listitem" data-reveal style={`--d:${i}`}>
+              <Sleeve release={o} />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <ContactCta heading="Booking SHEZ, or making a record together?" />
+</Base>
+
+<style>
+  .release { padding-top: 0; }
+  .release__grid { display: grid; gap: 2.5rem; align-items: start; }
+  .release__prose p:first-child { font-size: var(--fs-lede); color: var(--ink); line-height: 1.5; }
+
+  .tracks { margin-top: 2.25rem; }
+  .tracks ol { margin: 0.9rem 0 0; padding: 0; }
+  .tracks li { display: grid; grid-template-columns: 2.25rem 1fr auto; align-items: baseline; gap: 0.75rem; padding: 0.75rem 0; border-top: 1px solid var(--hair); }
+  .tracks li:last-child { border-bottom: 1px solid var(--hair); }
+  .tracks__n, .tracks__l { font-family: var(--mono); font-size: 0.75rem; color: var(--ink-3); }
+  .tracks__t { font-family: var(--serif); font-size: 1.45rem; line-height: 1.1; }
+
+  .rquote { margin-top: 2.25rem; padding-left: 1.25rem; border-left: 2px solid var(--violet); }
+  .rquote p { font-family: var(--serif); font-style: italic; font-size: clamp(1.4rem, 5vw, 1.9rem); line-height: 1.2; }
+  .rquote figcaption { margin-top: 0.75rem; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--lavender); }
+
+  .rfacts { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2.25rem; padding-top: 1.25rem; border-top: 1px solid var(--hair); }
+  .rfacts dt { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
+  .rfacts dd { margin-top: 0.2rem; }
+  .release__actions { margin-top: 2rem; }
+
+  .more__head { display: grid; gap: 1.25rem; margin-bottom: 2.25rem; }
+  .more__title { font-size: var(--fs-h3); }
+  .more__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem 1rem; }
+
+  @media (min-width: 760px) {
+    .release__grid { grid-template-columns: 1fr 1fr; gap: 4rem; }
+    .more__grid { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  }
+</style>

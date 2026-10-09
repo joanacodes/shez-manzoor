@@ -1,0 +1,172 @@
+---
+import type { Project } from '../data/projects';
+import { href } from '../lib/url';
+import Icon from './Icon.astro';
+
+interface Props {
+  project: Project;
+  index: number;
+  headingLevel?: 'h2' | 'h3';
+}
+const { project: p, index, headingLevel = 'h3' } = Astro.props;
+const Heading = headingLevel;
+---
+
+<article class="pcard" data-tilt data-light="green" data-pattern={p.pattern}>
+  <a class="pcard__inner" href={href(`/composition/${p.slug}/`)}>
+    <span class="pcard__art" aria-hidden="true">
+      <span class="pcard__pattern"></span>
+      <span class="pcard__glare"></span>
+    </span>
+    <span class="pcard__top">
+      <span class="pcard__num">{String(index + 1).padStart(2, '0')}</span>
+      <span class="pcard__kind">{p.kind}</span>
+    </span>
+    {p.badge && <span class="pcard__badge">{p.badge}</span>}
+    <Heading class="pcard__title">{p.title}</Heading>
+    <dl class="pcard__meta">
+      <div><dt>Role</dt><dd>{p.role}</dd></div>
+      <div><dt>For</dt><dd>{p.where}</dd></div>
+      {p.years && <div><dt>Year</dt><dd>{p.years}</dd></div>}
+    </dl>
+    <span class="pcard__cta">View project <Icon name="arrow" /></span>
+  </a>
+</article>
+
+<style>
+  .pcard {
+    --rx: 0deg;
+    --ry: 0deg;
+    --mx: 50%;
+    --my: 0%;
+    position: relative;
+    transform: perspective(1000px) rotateX(var(--rx)) rotateY(var(--ry));
+    transition: transform 0.6s var(--ease-out);
+    transform-style: preserve-3d;
+  }
+  .pcard__inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    aspect-ratio: 4 / 5;
+    padding: 1.15rem 1.15rem 1.1rem;
+    border-radius: var(--radius);
+    border: 1px solid rgb(var(--mint-rgb) / 0.16);
+    background: var(--stage-2);
+    text-decoration: none;
+    overflow: hidden;
+    isolation: isolate;
+    transition: border-color 0.5s, box-shadow 0.6s var(--ease-out);
+  }
+  .pcard__inner:hover, .pcard__inner:focus-visible {
+    border-color: rgb(var(--mint-rgb) / 0.55);
+    box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.8), 0 0 60px -20px rgb(var(--mint-rgb) / 0.35);
+  }
+
+  .pcard__art { position: absolute; inset: 0; z-index: -1; }
+  .pcard__art::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(90% 60% at 85% 0%, rgb(var(--mint-rgb) / 0.32), transparent 65%),
+      radial-gradient(70% 50% at 0% 100%, rgb(30 156 115 / 0.3), transparent 70%),
+      linear-gradient(180deg, #102019 0%, #0d1512 45%, #0b0912 100%);
+  }
+  .pcard__pattern { position: absolute; inset: 0; opacity: 0.9; transition: transform 1.2s var(--ease-out), opacity 0.6s; }
+  .pcard__inner:hover .pcard__pattern { transform: scale(1.06); }
+  .pcard__glare {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(60% 45% at var(--mx) var(--my), rgb(255 255 255 / 0.1), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  .pcard__inner:hover .pcard__glare { opacity: 1; }
+
+  /* patterns, one per project */
+  [data-pattern='strings'] .pcard__pattern {
+    background: repeating-linear-gradient(104deg, transparent 0 26px, rgb(var(--mint-rgb) / 0.2) 26px 27px);
+    -webkit-mask-image: linear-gradient(200deg, #000 10%, transparent 65%);
+    mask-image: linear-gradient(200deg, #000 10%, transparent 65%);
+  }
+  [data-pattern='rings'] .pcard__pattern {
+    background: repeating-radial-gradient(circle at 78% 22%, transparent 0 17px, rgb(var(--mint-rgb) / 0.2) 17px 18px);
+    -webkit-mask-image: radial-gradient(70% 60% at 78% 22%, #000 20%, transparent 75%);
+    mask-image: radial-gradient(70% 60% at 78% 22%, #000 20%, transparent 75%);
+  }
+  [data-pattern='furrows'] .pcard__pattern {
+    inset: 10% -30% 30%;
+    background: repeating-linear-gradient(90deg, transparent 0 18px, rgb(var(--mint-rgb) / 0.24) 18px 19.5px);
+    transform: perspective(300px) rotateX(62deg);
+    transform-origin: 50% 100%;
+    -webkit-mask-image: linear-gradient(to top, #000, transparent 80%);
+    mask-image: linear-gradient(to top, #000, transparent 80%);
+  }
+  [data-pattern='furrows'] .pcard__inner:hover .pcard__pattern { transform: perspective(300px) rotateX(62deg) scale(1.06); }
+  [data-pattern='film'] .pcard__pattern {
+    background:
+      repeating-linear-gradient(to bottom, transparent 0 9px, rgb(var(--mint-rgb) / 0.22) 9px 21px) right 14px top 0 / 10px 100% no-repeat,
+      repeating-linear-gradient(to bottom, transparent 0 9px, rgb(var(--mint-rgb) / 0.22) 9px 21px) right 32px top 0 / 1px 100% no-repeat;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 15%, #000 60%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 15%, #000 60%, transparent);
+  }
+
+  .pcard__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .pcard__num { color: var(--mint); }
+  .pcard__badge {
+    align-self: flex-start;
+    margin-top: 0.9rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid rgb(var(--mint-rgb) / 0.45);
+    background: rgb(var(--mint-rgb) / 0.1);
+    color: var(--mint);
+    font-family: var(--mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .pcard__title {
+    margin-top: auto;
+    font-size: clamp(2.3rem, 9.5vw, 3rem);
+    line-height: 0.95;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+  .pcard__meta {
+    display: grid;
+    gap: 0.3rem;
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid rgb(var(--mint-rgb) / 0.2);
+    font-size: 0.85rem;
+  }
+  .pcard__meta div { display: grid; grid-template-columns: 3.4rem 1fr; gap: 0.5rem; }
+  .pcard__meta dt { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); padding-top: 0.2em; }
+  .pcard__meta dd { color: var(--ink-2); }
+  .pcard__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.95rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--mint);
+  }
+  .pcard__cta :global(svg) { inline-size: 1rem; block-size: 1rem; transition: transform 0.4s var(--ease-out); }
+  .pcard__inner:hover .pcard__cta :global(svg) { transform: translateX(4px); }
+
+  @media (min-width: 1100px) {
+    .pcard__title { font-size: clamp(2.2rem, 2.9vw, 3.1rem); }
+  }
+</style>

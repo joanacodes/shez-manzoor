@@ -1,0 +1,112 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Icon from '../components/Icon.astro';
+import { links } from '../data/site';
+import { href } from '../lib/url';
+import { breadcrumbSchema, graph, ids, personSchema } from '../lib/schema';
+import { absolute } from '../lib/url';
+
+const site = Astro.site;
+const jsonLd = graph([
+  { '@type': 'ContactPage', url: absolute('/contact/', site), name: 'Contact Shez Manzoor', about: { '@id': ids(site).person } },
+  personSchema(site),
+  breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Contact', path: '/contact/' }], site),
+]);
+const routes = [
+  {
+    light: 'green',
+    label: 'Film & TV',
+    title: 'Scoring and composition',
+    text: `Scores, songs and music for film, television and advertising. Enquiries go through his representation, ${links.agent.name}.`,
+    cta: `Contact ${links.agent.name}`,
+    href: links.agent.url,
+    external: true,
+  },
+  {
+    light: 'purple',
+    label: 'Artist',
+    title: 'Live, collaborations and press',
+    text: 'Bookings, features, sessions and interviews with SHEZ. The quickest way in is a message on Instagram.',
+    cta: 'Message @shezmusic',
+    href: links.instagram,
+    external: true,
+  },
+  {
+    light: 'mixed',
+    label: 'Press',
+    title: 'Press kit',
+    text: 'Biographies in three lengths, a press photo and key facts, ready to copy.',
+    cta: 'Open the press kit',
+    href: href('/epk/'),
+    external: false,
+  },
+];
+---
+
+<Base
+  title="Contact Shez Manzoor | Film, TV and artist enquiries"
+  description="How to reach Shez Manzoor: scoring and composition enquiries through his representation, and live, collaboration and press enquiries for SHEZ."
+  path="/contact/"
+  jsonLd={jsonLd}
+>
+  <PageHead
+    kicker="Contact"
+    title="Let’s make"
+    titleEm="something"
+    intro="Whether it is a score, a song or a stage, here is the right door."
+    crumbs={[{ name: 'Contact', path: '/contact/' }]}
+  />
+
+  <section class="section routes" aria-label="Ways to get in touch" data-section-light="mixed">
+    <div class="wrap routes__grid">
+      {
+        routes.map((r, i) => (
+          <a
+            class="route"
+            data-light={r.light}
+            href={r.href}
+            rel={r.external ? 'noopener' : undefined}
+            target={r.external ? '_blank' : undefined}
+            data-reveal
+            style={`--d:${i}`}
+          >
+            <span class="route__label">{r.label}</span>
+            <span class="route__title">{r.title}</span>
+            <span class="route__text">{r.text}</span>
+            <span class="route__cta">
+              {r.cta} <Icon name={r.external ? 'arrow-up-right' : 'arrow'} />
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  .routes { padding-top: 0; }
+  .routes__grid { display: grid; gap: 0.9rem; }
+  .route {
+    position: relative;
+    display: grid;
+    gap: 0.6rem;
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    border: 1px solid rgb(var(--accent-rgb) / 0.3);
+    background: linear-gradient(160deg, rgb(var(--accent-rgb) / 0.1), transparent 60%), rgb(255 255 255 / 0.015);
+    text-decoration: none;
+    transition: border-color 0.4s, box-shadow 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+  }
+  .route:hover { border-color: rgb(var(--accent-rgb) / 0.8); box-shadow: 0 0 60px -20px rgb(var(--accent-rgb) / 0.6); }
+  .route__label { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+  .route__title { font-family: var(--serif); font-size: clamp(2rem, 8vw, 3rem); line-height: 1; }
+  .route__text { color: var(--ink-2); max-width: 46ch; }
+  .route__cta { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; font-weight: 500; color: var(--accent); }
+  .route__cta :global(svg) { inline-size: 1.1rem; block-size: 1.1rem; transition: transform 0.4s var(--ease-out); }
+  .route:hover .route__cta :global(svg) { transform: translate(3px, -3px); }
+  @media (min-width: 960px) {
+    .routes__grid { grid-template-columns: repeat(3, 1fr); }
+    .route { min-height: 360px; align-content: end; padding: 2rem; }
+  }
+</style>

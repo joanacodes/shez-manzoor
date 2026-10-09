@@ -1,0 +1,136 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/PageHead.astro';
+import Award from '../../components/Award.astro';
+import ContactCta from '../../components/ContactCta.astro';
+import Icon from '../../components/Icon.astro';
+import { projects } from '../../data/projects';
+import { href } from '../../lib/url';
+import { breadcrumbSchema, graph, ids, personSchema, projectSchema } from '../../lib/schema';
+
+const site = Astro.site;
+const jsonLd = graph([
+  personSchema(site),
+  {
+    '@type': 'CollectionPage',
+    name: 'Composition: film and television music by Shez Manzoor',
+    url: new URL(href('/composition/'), site).toString(),
+    about: { '@id': ids(site).person },
+    hasPart: projects.map((p) => projectSchema(p, site)),
+  },
+  breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Composition', path: '/composition/' }], site),
+]);
+const partners = ['Nida Manzoor', 'Tom Howe', 'Working Title', 'Focus Features', 'Channel 4', 'Peacock', 'Prime Video', 'Moxie Pictures'];
+---
+
+<Base
+  title="Film & TV Composer | Shez Manzoor: We Are Lady Parts, Polite Society"
+  description="Film and television music by Shez Manzoor: the RTS award-winning score and songs for We Are Lady Parts, the Polite Society score with Tom Howe, Clarkson’s Farm and more."
+  path="/composition/"
+  light="green"
+  jsonLd={jsonLd}
+>
+  <PageHead
+    kicker="Composition"
+    title="Music for film"
+    titleEm="and television"
+    intro="Scores and original songs that carry character and comedy, from a punk band sitcom to a Sundance action comedy."
+    light="green"
+    crumbs={[{ name: 'Composition', path: '/composition/' }]}
+  />
+
+  <section class="section credits" data-light="green" data-section-light="green" aria-label="Credits">
+    <div class="wrap">
+      <ol class="credits__list" role="list">
+        {
+          projects.map((p, i) => (
+            <li class="credit" data-reveal style={`--d:${i}`}>
+              <a class="credit__link" href={href(`/composition/${p.slug}/`)}>
+                <span class="credit__num">{String(i + 1).padStart(2, '0')}</span>
+                <span class="credit__main">
+                  <span class="credit__kind">{p.kind}{p.years ? ` · ${p.years}` : ''}</span>
+                  <h2 class="credit__title">{p.title}</h2>
+                  <span class="credit__summary">{p.summary}</span>
+                </span>
+                <span class="credit__meta">
+                  <span><span class="credit__k">Role</span>{p.role}</span>
+                  <span><span class="credit__k">For</span>{p.where}</span>
+                  {p.badge && <span class="credit__badge">{p.badge}</span>}
+                </span>
+                <span class="credit__arrow"><Icon name="arrow" /></span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+
+      <Award />
+
+      <div class="partners" data-reveal>
+        <h2 class="label">Worked with</h2>
+        <ul class="chips" role="list">
+          {partners.map((name) => <li>{name}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <ContactCta heading="Scoring a film or a series?" />
+</Base>
+
+<style>
+  .credits { padding-top: 0; }
+  .credits__list { margin: 0; padding: 0; border-top: 1px solid rgb(var(--mint-rgb) / 0.18); }
+  .credit { border-bottom: 1px solid rgb(var(--mint-rgb) / 0.18); }
+  .credit__link {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.4rem 1rem;
+    padding: 1.6rem 0;
+    text-decoration: none;
+    isolation: isolate;
+  }
+  .credit__link::before {
+    content: '';
+    position: absolute;
+    inset: 0 calc(-1 * var(--gutter));
+    z-index: -1;
+    background: linear-gradient(90deg, rgb(var(--mint-rgb) / 0.12), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.5s var(--ease-out);
+  }
+  .credit__link:hover::before, .credit__link:focus-visible::before { opacity: 1; }
+  .credit__num { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; color: var(--mint); padding-top: 0.35rem; }
+  .credit__main { display: grid; gap: 0.5rem; grid-column: 2 / 3; }
+  .credit__kind { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); }
+  .credit__title { font-size: clamp(2.3rem, 10vw, 5rem); line-height: 0.95; transition: transform 0.6s var(--ease-out), color 0.4s; }
+  .credit__link:hover .credit__title { transform: translateX(0.4rem); color: var(--mint); }
+  .credit__summary { color: var(--ink-2); max-width: 52ch; }
+  .credit__meta { grid-column: 2 / 3; display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; margin-top: 0.6rem; font-size: 0.9rem; color: var(--ink-2); }
+  .credit__k { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin-right: 0.5rem; }
+  .credit__badge { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mint); padding: 0.2rem 0.6rem; border: 1px solid rgb(var(--mint-rgb) / 0.45); border-radius: 999px; align-self: center; }
+  .credit__arrow {
+    grid-column: 3;
+    grid-row: 1;
+    display: grid;
+    place-items: center;
+    inline-size: 44px;
+    block-size: 44px;
+    border-radius: 50%;
+    border: 1px solid rgb(var(--mint-rgb) / 0.35);
+    color: var(--mint);
+    transition: background-color 0.4s, color 0.4s, transform 0.5s var(--ease-out);
+  }
+  .credit__arrow :global(svg) { inline-size: 18px; block-size: 18px; }
+  .credit__link:hover .credit__arrow { background: var(--mint); color: var(--stage); transform: rotate(-45deg); }
+
+  .partners { margin-top: clamp(3rem, 8vw, 5rem); display: grid; gap: 1rem; }
+
+  @media (min-width: 900px) {
+    .credit__link { grid-template-columns: 4rem minmax(0, 1.4fr) minmax(0, 1fr) auto; align-items: center; padding: 2.2rem 0; }
+    .credit__main { grid-column: 2; }
+    .credit__meta { grid-column: 3; flex-direction: column; margin-top: 0; }
+    .credit__arrow { grid-column: 4; grid-row: auto; }
+  }
+</style>

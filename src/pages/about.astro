@@ -1,0 +1,126 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Award from '../components/Award.astro';
+import Faq from '../components/Faq.astro';
+import ContactCta from '../components/ContactCta.astro';
+import photo from '../assets/shez-live.webp';
+import { faq } from '../data/faq';
+import { bios, links, person } from '../data/site';
+import { absolute } from '../lib/url';
+import { breadcrumbSchema, faqSchema, graph, ids, personSchema } from '../lib/schema';
+
+const site = Astro.site;
+const jsonLd = graph([
+  {
+    '@type': 'ProfilePage',
+    url: absolute('/about/', site),
+    name: 'About Shez Manzoor',
+    mainEntity: { '@id': ids(site).person },
+  },
+  personSchema(site, absolute('/og/default.jpg', site)),
+  faqSchema(faq),
+  breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'About', path: '/about/' }], site),
+]);
+---
+
+<Base
+  title="About Shez Manzoor (SHEZ) | Composer, songwriter, multi-instrumentalist"
+  description="Biography of Shez Manzoor, aka SHEZ: British-Pakistani composer, songwriter and multi-instrumentalist in London, RTS award winner for We Are Lady Parts."
+  path="/about/"
+  type="profile"
+  jsonLd={jsonLd}
+>
+  <PageHead
+    kicker="About"
+    title="Shez Manzoor,"
+    titleEm="also known as SHEZ"
+    intro="Composer, songwriter, singer and multi-instrumentalist, moving between scores for the screen and his own soul and R&B."
+    crumbs={[{ name: 'About', path: '/about/' }]}
+  />
+
+  <section class="section bio" aria-label="Biography" data-section-light="mixed">
+    <div class="wrap bio__grid">
+      <figure class="portrait" data-reveal>
+        <div class="portrait__frame">
+          <Picture
+            src={photo}
+            alt="Shez Manzoor singing and playing an electric guitar on stage under warm light"
+            widths={[360, 540, 720, 960]}
+            sizes="(min-width: 960px) 38vw, 88vw"
+            formats={['avif', 'webp']}
+            fallbackFormat="jpg"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        <figcaption class="label">Live in London</figcaption>
+      </figure>
+      <div class="bio__text prose" data-reveal>
+        {bios.long.map((t) => <p>{t}</p>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section facts-section" aria-labelledby="facts-title" data-section-light="mixed">
+    <div class="wrap">
+      <h2 id="facts-title" class="facts-title" data-reveal>At a glance</h2>
+      <dl class="glance" data-reveal>
+        <div><dt>Based in</dt><dd>{person.location}</dd></div>
+        <div><dt>Work</dt><dd>{person.roles.join(', ')}</dd></div>
+        <div><dt>Artist name</dt><dd>SHEZ</dd></div>
+        <div><dt>Representation</dt><dd><a href={links.agent.url} rel="noopener" target="_blank">{links.agent.name}</a></dd></div>
+        <div class="glance__wide">
+          <dt>Influences</dt>
+          <dd><ul class="chips" role="list">{person.influences.map((i) => <li>{i}</li>)}</ul></dd>
+        </div>
+        <div><dt>Collaborations</dt><dd>{person.collaborators.join(', ')}</dd></div>
+        <div><dt>Live</dt><dd>{person.venues.join(', ')}</dd></div>
+        <div><dt>Radio</dt><dd>{person.radio.join(', ')}</dd></div>
+      </dl>
+      <Award />
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="faq-title" data-section-light="mixed">
+    <div class="wrap faq-wrap">
+      <h2 id="faq-title" class="facts-title" data-reveal>Questions</h2>
+      <Faq items={faq} />
+    </div>
+  </section>
+
+  <ContactCta />
+</Base>
+
+<style>
+  .bio { padding-top: 0; }
+  .bio__grid { display: grid; gap: 2.5rem; }
+  .bio__text { font-size: 1.125rem; }
+  .bio__text p:first-child { font-family: var(--serif); font-size: clamp(1.6rem, 6vw, 2.2rem); line-height: 1.2; color: var(--ink); }
+
+  .portrait__frame { position: relative; aspect-ratio: 4 / 5; border-radius: var(--radius); overflow: hidden; background: #0b0912; }
+  .portrait__frame :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; filter: contrast(1.06) brightness(1.12); }
+  .portrait__frame::after { content: ''; position: absolute; inset: 0; background: linear-gradient(165deg, #d9ccff 0%, #8a63ff 50%, #4b2bb0 100%); mix-blend-mode: color; transition: opacity 1.4s var(--ease-out); }
+  .portrait:hover .portrait__frame::after { opacity: 0; }
+  .portrait figcaption { margin-top: 0.85rem; }
+
+  .facts-title { font-size: var(--fs-h3); margin-bottom: 1.75rem; }
+  .glance { display: grid; gap: 0; border-top: 1px solid var(--hair); }
+  .glance > div { display: grid; gap: 0.35rem; padding: 1.1rem 0; border-bottom: 1px solid var(--hair); }
+  .glance dt { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
+  .glance dd { font-size: 1.05rem; }
+  .glance dd a { color: var(--ink); }
+  .glance .chips { margin-top: 0.4rem; }
+
+  @media (min-width: 760px) {
+    .glance { grid-template-columns: 1fr 1fr; column-gap: 2.5rem; }
+    .glance__wide { grid-column: 1 / -1; }
+  }
+  @media (min-width: 1000px) {
+    .bio__grid { grid-template-columns: 0.8fr 1fr; gap: 5rem; align-items: start; }
+    .portrait { position: sticky; top: calc(var(--header-h) + 1.5rem); }
+    .glance { grid-template-columns: repeat(4, 1fr); }
+    .faq-wrap { display: grid; grid-template-columns: 0.6fr 1.4fr; gap: 4rem; align-items: start; }
+  }
+</style>

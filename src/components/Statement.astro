@@ -1,0 +1,63 @@
+---
+/**
+ * A large paragraph whose words light up as it scrolls into view (CSS scroll-driven
+ * animation where supported; plain text everywhere else).
+ */
+import { href } from '../lib/url';
+
+type Segment = { text: string; tone?: 'green' | 'purple'; link?: string };
+interface Props {
+  segments: Segment[];
+}
+const { segments } = Astro.props;
+---
+
+<p class="statement">
+  {
+    segments.map((seg) => {
+      const words = seg.text.split(/(\s+)/);
+      const inner = words.map((w) => (/^\s+$/.test(w) ? w : <span class="w">{w}</span>));
+      if (seg.link)
+        return (
+          <a class:list={['seg', seg.tone && `seg--${seg.tone}`]} href={href(seg.link)}>
+            {inner}
+          </a>
+        );
+      return seg.tone ? <span class={`seg seg--${seg.tone}`}>{inner}</span> : inner;
+    })
+  }
+</p>
+
+<style>
+  .statement {
+    font-family: var(--serif);
+    font-size: var(--fs-statement);
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    max-width: 24ch;
+    text-wrap: balance;
+  }
+  .seg { text-decoration: none; }
+  a.seg { background-image: linear-gradient(currentColor, currentColor); background-size: 0 1px; background-repeat: no-repeat; background-position: 0 92%; transition: background-size 0.5s var(--ease-out); }
+  a.seg:hover { background-size: 100% 1px; }
+  .seg--green { color: var(--mint); font-style: italic; }
+  .seg--purple { color: var(--lavender); font-style: italic; }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .w {
+        animation-name: lit;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-duration: auto;
+        animation-timeline: view();
+        animation-range-start: entry 10%;
+        animation-range-end: cover 42%;
+      }
+      @keyframes lit {
+        from { opacity: 0.4; }
+        to { opacity: 1; }
+      }
+    }
+  }
+</style>

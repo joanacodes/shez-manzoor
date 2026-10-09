@@ -1,0 +1,121 @@
+---
+import { INDEXABLE } from 'astro:env/server';
+import { links, nav, person } from '../data/site';
+import { href } from '../lib/url';
+import Icon from './Icon.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer" data-light="mixed">
+  <div class="wrap">
+    <p class="wordmark" aria-hidden="true">
+      <span class="wordmark__a">Shez</span> <em class="wordmark__b">Manzoor</em>
+    </p>
+
+    <div class="grid">
+      <div class="col">
+        <p class="label">Pages</p>
+        <ul role="list">
+          {nav.map((item) => <li><a href={href(item.href)}>{item.label}</a></li>)}
+        </ul>
+      </div>
+      <div class="col">
+        <p class="label">Listen &amp; follow</p>
+        <ul role="list">
+          <li><a href={links.spotify} rel="noopener" target="_blank">Spotify <Icon name="arrow-up-right" /></a></li>
+          <li><a href={links.instagram} rel="noopener" target="_blank">Instagram <Icon name="arrow-up-right" /></a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <p class="label">Film &amp; TV</p>
+        <ul role="list">
+          <li><a href={links.agent.url} rel="noopener" target="_blank">{links.agent.name} <Icon name="arrow-up-right" /></a></li>
+          <li><a href={href('/epk/')}>Press kit</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="base">
+      <p>© {year} {person.name} · {person.artistName} · London</p>
+      {!INDEXABLE && <p class="preview">Preview build, hidden from search engines</p>}
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    position: relative;
+    padding-top: clamp(4rem, 12vw, 8rem);
+    padding-bottom: max(2rem, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--hair);
+    overflow: hidden;
+  }
+  .site-footer::before {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 70%;
+    background:
+      radial-gradient(50% 80% at 15% 110%, rgb(var(--violet-rgb) / 0.22), transparent 70%),
+      radial-gradient(50% 80% at 85% 110%, rgb(var(--mint-rgb) / 0.12), transparent 70%);
+    pointer-events: none;
+  }
+  .wordmark {
+    font-family: var(--serif);
+    font-size: clamp(4rem, 25vw, 9rem);
+    line-height: 0.85;
+    letter-spacing: -0.02em;
+    margin-bottom: clamp(2.5rem, 7vw, 5rem);
+  }
+  .wordmark__a, .wordmark__b { display: block; }
+  .wordmark__a { color: var(--ink); }
+  @media (min-width: 700px) {
+    .wordmark { font-size: min(17.4vw, 17rem); white-space: nowrap; }
+    .wordmark__a, .wordmark__b { display: inline; }
+  }
+  .wordmark__b {
+    background: linear-gradient(95deg, var(--lavender) 10%, var(--mint) 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .grid { display: grid; gap: 2rem; grid-template-columns: 1fr 1fr; position: relative; }
+  .col:first-child { grid-column: 1 / -1; }
+  .col ul { display: grid; gap: 0.35rem; margin-top: 0.9rem; padding: 0; }
+  .col a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 32px;
+    color: var(--ink-2);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .col a:hover { color: var(--ink); }
+  .col a :global(svg) { inline-size: 0.9em; block-size: 0.9em; opacity: 0.6; }
+  .base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    margin-top: clamp(3rem, 8vw, 5rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--hair);
+    font-size: 0.85rem;
+    color: var(--ink-3);
+    position: relative;
+  }
+  .preview {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  @media (min-width: 760px) {
+    .grid { grid-template-columns: repeat(3, 1fr); }
+    .col:first-child { grid-column: auto; }
+    .col:first-child ul { grid-template-columns: 1fr; }
+  }
+</style>

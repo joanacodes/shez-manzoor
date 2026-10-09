@@ -1,0 +1,28 @@
+# Netlify picks this up automatically. The site URL comes from Netlify's own variables.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Old Squarespace addresses, kept alive with permanent redirects
+[[redirects]]
+  from = "/epk/releases"
+  to = "/music/"
+  status = 301
+
+[[redirects]]
+  from = "/releases"
+  to = "/music/"
+  status = 301
+
+[[redirects]]
+  from = "/bio"
+  to = "/about/"
+  status = 301
+
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
