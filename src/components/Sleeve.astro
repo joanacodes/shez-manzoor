@@ -149,6 +149,8 @@ const id = `sleeve-${r.slug}`;
     transition: transform 0.9s var(--ease-out);
   }
   .sleeve.is-flipped .sleeve__card { transform: rotateY(180deg); }
+  .sleeve.is-flipped .sleeve__front,
+  .sleeve:not(.is-flipped) .sleeve__back { pointer-events: none; }
   .sleeve__face {
     position: absolute;
     inset: 0;

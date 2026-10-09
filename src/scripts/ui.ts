@@ -158,20 +158,23 @@ document.querySelectorAll<HTMLElement>('[data-sleeve]').forEach((sleeve) => {
   const back = sleeve.querySelector<HTMLElement>('[data-sleeve-back]');
   const front = sleeve.querySelector<HTMLElement>('[data-sleeve-front]');
   if (!button || !back || !front) return;
+  const close = sleeve.querySelector<HTMLButtonElement>('[data-sleeve-close]');
   back.inert = true;
+  // Only the face that is showing can be tapped or focused.
   const set = (flipped: boolean) => {
     sleeve.classList.toggle('is-flipped', flipped);
     button.setAttribute('aria-expanded', String(flipped));
     back.inert = !flipped;
-    front.inert = false;
+    front.inert = flipped;
   };
-  button.addEventListener('click', () => set(!sleeve.classList.contains('is-flipped')));
-  sleeve.querySelectorAll<HTMLButtonElement>('[data-sleeve-close]').forEach((b) =>
-    b.addEventListener('click', () => {
-      set(false);
-      button.focus({ preventScroll: true });
-    }),
-  );
+  button.addEventListener('click', () => {
+    set(true);
+    close?.focus({ preventScroll: true });
+  });
+  close?.addEventListener('click', () => {
+    set(false);
+    button.focus({ preventScroll: true });
+  });
 });
 
 /* ---------- sleeves: the record slides out once when seen on touch screens ---------- */
