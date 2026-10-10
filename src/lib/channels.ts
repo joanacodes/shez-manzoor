@@ -21,8 +21,9 @@ export type ScreenChannel = {
 
 const clipsDir = path.join(process.cwd(), 'public', 'clips');
 const files = fs.existsSync(clipsDir) ? fs.readdirSync(clipsDir) : [];
-const clips = files.filter((f) => /\.(mp4|m4v|webm|mov)$/i.test(f)).sort((a, b) => a.localeCompare(b, 'en', { numeric: true }));
 const stem = (f: string) => f.replace(/\.[^.]+$/, '');
+// "title" before "title-2", "title-2" before "title-10"
+const clips = files.filter((f) => /\.(mp4|m4v|webm|mov)$/i.test(f)).sort((a, b) => stem(a).localeCompare(stem(b), 'en', { numeric: true }));
 const squash = (s: string) =>
   s
     .toLowerCase()
