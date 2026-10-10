@@ -329,6 +329,88 @@ for (const id of [...trackIds].slice(0, 40)) {
   }
 }
 
+/* ---------- Spotify embed data: names, artists and dates for each track ---------- */
+const nextData = (html) => {
+  const m = html.match(/<script[^>]*id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
+  if (!m) return null;
+  try {
+    return JSON.parse(m[1]);
+  } catch {
+    return null;
+  }
+};
+const findEntity = (obj) => {
+  // walk the JSON looking for the object that describes the page's entity
+  const stack = [obj];
+  while (stack.length) {
+    const cur = stack.pop();
+    if (cur && typeof cur === 'object') {
+      if (cur.entity && typeof cur.entity === 'object') return cur.entity;
+      for (const v of Object.values(cur)) stack.push(v);
+    }
+  }
+  return null;
+};
+try {
+  const { text } = await get(`https://open.spotify.com/embed/artist/${SPOTIFY_ARTIST}`, 'text');
+  const entity = findEntity(nextData(text));
+  const list = entity?.trackList ?? [];
+  catalog.spotify.topTracks = list.map((t) => ({ uri: t.uri, title: t.title, subtitle: t.subtitle, ms: t.duration }));
+  log(`\n== Spotify top tracks (${list.length}):`);
+  for (const t of list) log(`- ${t.uri} | ${t.title} | ${t.subtitle}`);
+  if (!list.length) log(`  entity keys: ${entity ? Object.keys(entity).join(', ') : 'none'}`);
+} catch (err) {
+  catalog.errors.push(`spotify embed artist: ${err.message}`);
+}
+catalog.spotify.trackInfo = {};
+for (const id of [...trackIds].slice(0, 40)) {
+  try {
+    const { text } = await get(`https://open.spotify.com/embed/track/${id}`, 'text');
+    const e = findEntity(nextData(text));
+    if (!e) {
+      log(`  embed track ${id}: no entity`);
+      continue;
+    }
+    const info = {
+      name: e.name ?? e.title,
+      artists: (e.artists ?? []).map((a) => a.name),
+      releaseDate: e.releaseDate?.isoString?.slice(0, 10) ?? null,
+      album: e.albumUri ?? e.album?.uri ?? null,
+      cover: (e.coverArt?.sources ?? e.visualIdentity?.image ?? []).map((x) => x.url).slice(-1)[0] ?? null,
+      keys: Object.keys(e).join(','),
+    };
+    catalog.spotify.trackInfo[id] = info;
+    if (info.album) {
+      const albumId = String(info.album).split(':').pop();
+      if (/^[A-Za-z0-9]{22}$/.test(albumId)) albumIds.add(albumId);
+    }
+    log(`  embed track ${id}: ${info.name} | ${info.artists.join(', ')} | ${info.releaseDate} | album ${info.album} | keys ${info.keys}`);
+  } catch (err) {
+    catalog.errors.push(`spotify embed track ${id}: ${err.message}`);
+  }
+}
+// The version of the artist page served to search engines may list the discography
+try {
+  const res = await fetch(spotifyUrl, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' } });
+  const html = await res.text();
+  const before = albumIds.size;
+  for (const m of html.matchAll(/(?:open\.spotify\.com\/|spotify:)album[/:]([A-Za-z0-9]{22})/g)) albumIds.add(m[1]);
+  const metas = [...html.matchAll(/<meta[^>]+>/g)].map((m) => m[0]).filter((t) => /music:|og:/.test(t)).slice(0, 25);
+  log(`\n== Spotify artist page for crawlers: ${html.length} chars, new albums ${albumIds.size - before}`);
+  for (const t of metas) log(`  ${t}`);
+} catch (err) {
+  catalog.errors.push(`spotify crawler page: ${err.message}`);
+}
+for (const id of [...albumIds].filter((x) => !catalog.spotify.albums.some((a) => a.id === x)).slice(0, 40)) {
+  try {
+    const o = await get(`https://open.spotify.com/oembed?url=${encodeURIComponent(`https://open.spotify.com/album/${id}`)}`);
+    catalog.spotify.albums.push({ id, url: `https://open.spotify.com/album/${id}`, title: o.title, thumbnail: o.thumbnail_url ?? null });
+    log(`- album ${id} | ${o.title}`);
+  } catch (err) {
+    catalog.errors.push(`spotify album ${id}: ${err.message}`);
+  }
+}
+
 /* ---------- SoundCloud: resolve the short link he shared ---------- */
 try {
   const { url } = await get(SOUNDCLOUD_SHORT, 'text');
@@ -338,6 +420,7 @@ try {
   catalog.errors.push(`soundcloud: ${err.message}`);
 }
 
+catalog.releases = catalog.releases.filter((r, i, all) => all.findIndex((x) => x.slug === r.slug) === i);
 catalog.releases.sort((a, b) => (b.releaseDate ?? '').localeCompare(a.releaseDate ?? ''));
 await fs.writeFile(OUT, `${JSON.stringify(catalog, null, 2)}\n`);
 log(`\nSaved ${catalog.releases.length} releases, ${catalog.soundtracks.length} soundtracks, ${catalog.screen.length} screen posters, ${catalog.spotify.albums.length} Spotify albums.`);
