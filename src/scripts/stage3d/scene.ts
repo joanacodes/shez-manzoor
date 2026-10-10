@@ -258,7 +258,8 @@ export async function createStage(opts: StageOptions) {
   let raf = 0;
   let last = 0;
   let time = 0;
-  let intro = -1; // seconds since the intro began; -1 before start
+  let started = false;
+  let intro = 0; // seconds since the intro began
   let lit = false;
   let settled = false;
   const pointer = new THREE.Vector2();
@@ -271,8 +272,8 @@ export async function createStage(opts: StageOptions) {
 
   function update(dt: number) {
     time += dt;
-    const t = intro < 0 ? 0 : intro;
-    if (intro >= 0) intro += dt;
+    if (started) intro += dt;
+    const t = intro;
 
     // lights up
     gel = Math.max(0, gel - dt * 2.2);
@@ -365,7 +366,8 @@ export async function createStage(opts: StageOptions) {
 
   function frame(now: number) {
     raf = requestAnimationFrame(frame);
-    const dt = Math.min(0.05, (now - last) / 1000 || 0.016);
+    // the first frame after a start or a pause has no previous timestamp to measure from
+    const dt = last ? Math.min(0.05, Math.max(0, (now - last) / 1000)) : 1 / 60;
     last = now;
     update(dt);
     render();
@@ -419,6 +421,7 @@ export async function createStage(opts: StageOptions) {
     /** Plays the intro from the top, or jumps straight to the end of it. */
     start(skip = false) {
       intro = skip ? T.settled + 0.01 : 0;
+      started = true;
       this.resume();
     },
     /** Jumps to the end of the intro. */
@@ -428,7 +431,7 @@ export async function createStage(opts: StageOptions) {
     resume() {
       if (running) return;
       running = true;
-      last = performance.now();
+      last = 0;
       raf = requestAnimationFrame(frame);
     },
     pause() {

@@ -81,9 +81,9 @@ function setup(root: HTMLElement, dialog: HTMLDialogElement) {
 
   function animate() {
     if (raf) return;
-    let last = performance.now();
+    let last = 0;
     const tick = (now: number) => {
-      const dt = Math.min(0.05, (now - last) / 1000);
+      const dt = last ? Math.min(0.05, Math.max(0, (now - last) / 1000)) : 1 / 60;
       last = now;
       if (!dragging) {
         pos += (target - pos) * (1 - Math.exp(-dt * 8.5));
