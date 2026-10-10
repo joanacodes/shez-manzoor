@@ -1,6 +1,6 @@
 /**
- * The cinema screen: shows his film and TV work one after another (clips play muted),
- * tints the room and the audience with the colour on screen, and rests when out of view.
+ * The cinema screen: plays his clips one after another (muted), lights the room and the
+ * audience with the colours of the film, and rests when it is out of view.
  */
 const root = document.querySelector<HTMLElement>('[data-cinema]');
 if (root) setup(root);
@@ -12,82 +12,103 @@ function setup(root: HTMLElement) {
   const kind = root.querySelector('[data-cinema-kind]');
   const details = root.querySelector<HTMLElement>('[data-cinema-details]');
   if (!slides.length) return;
+  const videoOf = (i: number) => slides[i].querySelector('video')!;
   let index = 0;
   let timer = 0;
   let visible = false;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // the average colour of each poster lights the room
-  const tint = (slide: HTMLElement) => {
-    const img = slide.querySelector<HTMLImageElement>('.cinema__poster');
-    const apply = () => {
-      try {
-        const c = document.createElement('canvas');
-        c.width = c.height = 1;
-        const ctx = c.getContext('2d')!;
-        ctx.drawImage(img!, 0, 0, 1, 1);
-        const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
-        // lift dark posters so the glow still reads
-        const lift = (v: number) => Math.round(90 + (v / 255) * 165);
-        root.style.setProperty('--glow', `${lift(r)} ${lift(g)} ${lift(b)}`);
-      } catch {
-        /* keep the last colour */
-      }
-    };
-    if (!img) root.style.setProperty('--glow', '240 170 140');
-    else if (img.complete && img.naturalWidth) apply();
-    else img.addEventListener('load', apply, { once: true });
+  // the colour of the picture lights the room, a few times a second
+  const tiny = document.createElement('canvas').getContext('2d', { willReadFrequently: true })!;
+  tiny.canvas.width = tiny.canvas.height = 1;
+  const tint = (source: CanvasImageSource) => {
+    try {
+      tiny.drawImage(source, 0, 0, 1, 1);
+      const [r, g, b] = tiny.getImageData(0, 0, 1, 1).data;
+      // lift dark scenes so the glow still reads
+      const lift = (v: number) => Math.round(90 + (v / 255) * 165);
+      root.style.setProperty('--glow', `${lift(r)} ${lift(g)} ${lift(b)}`);
+    } catch {
+      /* keep the last colour */
+    }
+  };
+  window.setInterval(() => {
+    const v = videoOf(index);
+    if (visible && !v.paused && v.readyState >= 2) tint(v);
+  }, 700);
+  const tintFromStill = (i: number) => {
+    const still = videoOf(i).dataset.poster;
+    if (!still) return;
+    const img = new Image();
+    img.onload = () => i === index && tint(img);
+    img.src = still;
+  };
+
+  const ready = (i: number) => {
+    const v = videoOf(i);
+    if (v.dataset.poster && !v.poster) v.poster = v.dataset.poster;
   };
 
   function show(next: number) {
-    const old = slides[index];
-    old.classList.remove('is-on');
-    const oldVideo = old.querySelector<HTMLVideoElement>('video');
-    oldVideo?.pause();
-    oldVideo?.classList.remove('is-playing');
+    const old = videoOf(index);
+    old.pause();
+    slides[index].classList.remove('is-on');
     index = (next + slides.length) % slides.length;
+    slides[index].classList.add('is-on');
     const slide = slides[index];
-    slide.classList.add('is-on');
-    if (title) title.textContent = slide.dataset.title ?? '';
-    if (kind) kind.textContent = slide.dataset.kind ?? '';
-    if (details) details.dataset.openWork = slide.dataset.id;
-    tint(slide);
-    // eager-load the poster of the one after
-    slides[(index + 1) % slides.length].querySelector('img')?.setAttribute('loading', 'eager');
-    play(slide);
-  }
-
-  function play(slide: HTMLElement) {
-    window.clearTimeout(timer);
-    if (!visible) return;
-    const video = slide.querySelector<HTMLVideoElement>('video');
-    if (video && !reduced) {
-      if (!video.src) video.src = video.dataset.src!;
-      video.muted = true;
-      video.play().then(
-        () => video.classList.add('is-playing'),
-        () => undefined,
-      );
-      timer = window.setTimeout(() => show(index + 1), 16000);
-    } else {
-      timer = window.setTimeout(() => show(index + 1), 6500);
+    if (title) title.textContent = slide.dataset.title || 'Music by Shez Manzoor';
+    if (kind) kind.textContent = slide.dataset.kind || 'Film and television';
+    if (details) {
+      details.hidden = !slide.dataset.id;
+      if (slide.dataset.id) details.dataset.openWork = slide.dataset.id;
     }
+    ready(index);
+    ready((index + 1) % slides.length);
+    // the old clip starts from the beginning next time round
+    window.setTimeout(() => (old.currentTime = 0), 1200);
+    tintFromStill(index);
+    play();
   }
 
-  screen.addEventListener('click', () => show(index + 1));
-  root.querySelector('[data-cinema-next]')?.addEventListener('click', () => show(index + 1));
+  function play() {
+    window.clearTimeout(timer);
+    if (!visible || reduced) return;
+    const v = videoOf(index);
+    if (!v.src) v.src = v.dataset.src!;
+    v.muted = true;
+    // one clip only: it loops; otherwise the next one starts when it ends
+    v.loop = slides.length === 1;
+    // a clip that stalls does not hold the screen for ever
+    if (slides.length > 1) timer = window.setTimeout(() => show(index + 1), 30000);
+    v.play().catch(() => {
+      // cannot play here (format, data saver): show the next one after a moment
+      window.clearTimeout(timer);
+      if (slides.length > 1 && visible) timer = window.setTimeout(() => show(index + 1), 2500);
+    });
+  }
+
+  slides.forEach((s, i) =>
+    s.querySelector('video')!.addEventListener('ended', () => {
+      if (i === index && slides.length > 1) show(index + 1);
+    }),
+  );
+  if (slides.length > 1) {
+    screen.addEventListener('click', () => show(index + 1));
+    root.querySelector('[data-cinema-next]')?.addEventListener('click', () => show(index + 1));
+  }
   new IntersectionObserver(
     ([entry]) => {
       visible = entry.isIntersecting;
-      if (visible) play(slides[index]);
+      if (visible) play();
       else {
         window.clearTimeout(timer);
-        slides[index].querySelector('video')?.pause();
+        videoOf(index).pause();
       }
     },
     { threshold: 0.25 },
   ).observe(root);
-  tint(slides[0]);
+  ready(1 % slides.length);
+  tintFromStill(0);
 }
 
 export {};

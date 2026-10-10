@@ -274,6 +274,8 @@ export async function createStage(opts: StageOptions) {
   const pointerSmooth = new THREE.Vector2();
   let scroll = 0;
   let nextChannelAt = Infinity;
+  let zapping = false;
+  const CLIP_MAX = 30;
   let staticLevel = 0;
   let ring = 0;
   const glow = new THREE.Color(0.6, 0.7, 1);
@@ -300,16 +302,13 @@ export async function createStage(opts: StageOptions) {
     hemi.intensity = 0.5 * smooth(0.6, 2.4, t);
     scene.environmentIntensity = 0.55 * smooth(0.5, 2.2, t);
 
-    // the TV warms up, then flicks through channels
+    // the TV warms up, then plays his clips one after another
     const power = smooth(T.tvOn, T.tvFull, t);
     tv.uniforms.uPower.value = power;
     tv.uniforms.uTime.value = time;
-    if (time >= nextChannelAt) {
-      nextChannelAt = time + 5.5;
-      zap();
-    }
+    if (!zapping && (tv.ended || time >= nextChannelAt)) zap();
     staticLevel = Math.max(0, staticLevel - dt * 2.6);
-    tv.uniforms.uStatic.value = Math.min(1, staticLevel * 1.6);
+    tv.uniforms.uStatic.value = Math.min(1, Math.max(staticLevel * 1.6, tv.noSignal ? 0.6 : 0));
     glow.lerp(tv.glow, Math.min(1, dt * 3));
     tvGlow.color.copy(glow);
     tvGlow.intensity = 1.3 * power * (0.88 + 0.12 * Math.sin(time * 17.0) * Math.sin(time * 5.3)) * (1 + staticLevel);
@@ -342,7 +341,7 @@ export async function createStage(opts: StageOptions) {
     }
     if (!settled && t >= T.settled) {
       settled = true;
-      nextChannelAt = time + 4;
+      nextChannelAt = time + CLIP_MAX;
       opts.onEvent?.('settled');
     }
   }
@@ -382,9 +381,15 @@ export async function createStage(opts: StageOptions) {
     adapt(dt);
   }
 
+  /** a burst of static, then the next clip; a clip that never ends moves on after CLIP_MAX seconds */
   function zap() {
+    if (zapping) return;
+    zapping = true;
     staticLevel = 1;
-    window.setTimeout(() => void tv.next(), 140);
+    nextChannelAt = time + CLIP_MAX;
+    window.setTimeout(() => {
+      void tv.next().finally(() => (zapping = false));
+    }, 140);
   }
 
   /* ---------- picking ---------- */
@@ -463,7 +468,6 @@ export async function createStage(opts: StageOptions) {
     pick,
     project,
     zap() {
-      nextChannelAt = time + 6;
       zap();
     },
     ringStrings() {
@@ -488,6 +492,7 @@ export async function createStage(opts: StageOptions) {
         washes: washes.map((w) => +w.intensity.toFixed(1)),
         rims: [rimPurple.intensity, rimGreen.intensity].map((v) => +v.toFixed(1)),
         scroll,
+        tv: tv.onAir ?? (tv.noSignal ? 'static' : '-'),
         pixelRatio,
         bloom: bloom.enabled,
       };

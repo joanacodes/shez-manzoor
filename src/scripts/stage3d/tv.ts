@@ -1,19 +1,15 @@
 /**
  * An old wood-cabinet CRT television on a mid-century side table. The screen is a
- * shader that curves, scans and flickers like a tube, and cycles through "channels":
- * extracts from his film and TV work (posters until video clips are supplied).
+ * shader that curves, scans and flickers like a tube, and plays clips of his film and
+ * TV work one after another (static when there are none).
  */
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { decal, speakerCloth, walnut } from './textures';
 
 export type Channel = {
-  title: string;
-  kind: string;
-  /** Poster or cover shown on screen */
-  image?: string;
-  /** Short muted MP4 extract; takes priority over the image */
-  video?: string;
+  /** short muted clip of his film and TV work */
+  video: string;
 };
 
 const screenVert = /* glsl */ `
@@ -178,129 +174,117 @@ export function createTV(fonts: { serif: string; mono: string }) {
     ears.add(tip);
   }
 
-  /* ---------- channels ---------- */
-  const W = 640, H = 480;
-  const canvas = document.createElement('canvas');
-  canvas.width = W;
-  canvas.height = H;
-  const ctx = canvas.getContext('2d')!;
-  const pictureTex = new THREE.CanvasTexture(canvas);
-  pictureTex.colorSpace = THREE.SRGBColorSpace;
+  /* ---------- channels: his clips, one after another ---------- */
   let channels: Channel[] = [];
-  const images = new Map<string, HTMLImageElement>();
-  const videos = new Map<string, HTMLVideoElement>();
   let current = -1;
-  let glowColor = new THREE.Color(0.6, 0.7, 1.0);
+  let showing = 0; // which show() call is the latest
+  let video: HTMLVideoElement | null = null;
+  let texture: THREE.VideoTexture | null = null;
+  let upcoming: HTMLVideoElement | null = null; // the next clip, loading while this one plays
+  let ended = false;
+  let noSignal = true;
+  const glowColor = new THREE.Color(0.6, 0.7, 1.0);
+  const tint = document.createElement('canvas');
+  tint.width = tint.height = 1;
+  const tintCtx = tint.getContext('2d', { willReadFrequently: true })!;
+  let tintedAt = 0;
 
-  const loadImage = (src: string) =>
-    new Promise<HTMLImageElement>((resolve, reject) => {
-      if (images.has(src)) return resolve(images.get(src)!);
-      const img = new Image();
-      img.decoding = 'async';
-      img.onload = () => {
-        images.set(src, img);
-        resolve(img);
-      };
-      img.onerror = reject;
-      img.src = src;
+  function off() {
+    uniforms.uTex.value = placeholder;
+    uniforms.uScale.value.set(1, 1);
+    video?.pause();
+    video?.removeAttribute('src');
+    video?.load();
+    texture?.dispose();
+    video = null;
+    texture = null;
+  }
+
+  function load(src: string) {
+    const v = document.createElement('video');
+    v.muted = true;
+    v.playsInline = true;
+    v.preload = 'auto';
+    v.src = src;
+    v.addEventListener('ended', () => {
+      if (v === video) ended = true;
     });
-
-  function drawCard(ch: Channel, index: number, img?: HTMLImageElement) {
-    ctx.fillStyle = '#050407';
-    ctx.fillRect(0, 0, W, H);
-    if (img) {
-      // fill the 4:3 screen, keeping the poster's centre
-      const s = Math.max(W / img.width, H / img.height);
-      const dw = img.width * s, dh = img.height * s;
-      ctx.drawImage(img, (W - dw) / 2, (H - dh) / 2.4, dw, dh);
-    } else {
-      const grad = ctx.createLinearGradient(0, 0, W, H);
-      grad.addColorStop(0, '#1d1238');
-      grad.addColorStop(1, '#0d2a22');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, W, H);
-      ctx.fillStyle = '#f2ece2';
-      ctx.textAlign = 'center';
-      ctx.font = `italic 72px ${fonts.serif}`;
-      ctx.fillText(ch.title, W / 2, H / 2);
-      ctx.textAlign = 'left';
-    }
-    // lower third, like a broadcast caption
-    const lg = ctx.createLinearGradient(0, H * 0.58, 0, H);
-    lg.addColorStop(0, 'rgba(0,0,0,0)');
-    lg.addColorStop(1, 'rgba(0,0,0,0.85)');
-    ctx.fillStyle = lg;
-    ctx.fillRect(0, H * 0.58, W, H * 0.42);
-    ctx.fillStyle = '#f2ece2';
-    ctx.font = `italic 46px ${fonts.serif}`;
-    ctx.fillText(ch.title, 34, H - 74);
-    ctx.font = `500 18px ${fonts.mono}`;
-    ctx.fillStyle = '#7cefc0';
-    ctx.fillText(`${ch.kind.toUpperCase()}  ·  MUSIC BY SHEZ MANZOOR`, 36, H - 40);
-    // on-screen display, top right
-    ctx.font = `600 30px ${fonts.mono}`;
-    ctx.fillStyle = '#7cefc0';
-    ctx.textAlign = 'right';
-    ctx.fillText(`CH ${String(index + 1).padStart(2, '0')}`, W - 30, 50);
-    ctx.textAlign = 'left';
-    pictureTex.needsUpdate = true;
-    // average colour for the light the screen throws on the stage
-    const tiny = document.createElement('canvas');
-    tiny.width = tiny.height = 1;
-    const t = tiny.getContext('2d')!;
-    t.drawImage(canvas, 0, 0, 1, 1);
-    const [r, gg, b] = t.getImageData(0, 0, 1, 1).data;
-    glowColor = new THREE.Color(r / 255, gg / 255, b / 255).lerp(new THREE.Color(0.75, 0.8, 1), 0.35);
+    return v;
   }
 
   async function show(index: number) {
     const ch = channels[index];
     if (!ch) return;
+    const call = ++showing;
     current = index;
-    if (ch.video) {
-      let v = videos.get(ch.video);
-      if (!v) {
-        v = document.createElement('video');
-        v.src = ch.video;
-        v.muted = true;
-        v.loop = true;
-        v.playsInline = true;
-        v.preload = 'auto';
-        videos.set(ch.video, v);
-      }
-      videos.forEach((other) => other !== v && other.pause());
-      try {
-        await v.play();
-        const vt = new THREE.VideoTexture(v);
-        vt.colorSpace = THREE.SRGBColorSpace;
-        uniforms.uTex.value = vt;
-        // a widescreen film on an old set: trimmed to 16:9 at most, with bars top and bottom
-        const film = Math.min(v.videoWidth / v.videoHeight || 16 / 9, 16 / 9);
-        uniforms.uScale.value.set(film / (v.videoWidth / v.videoHeight || film), film / (sw / sh));
-        return;
-      } catch {
-        /* fall back to the poster */
-      }
+    ended = false;
+    // static while the set changes channel
+    noSignal = true;
+    const v = upcoming?.getAttribute('src') === ch.video ? upcoming : load(ch.video);
+    upcoming = null;
+    try {
+      // static while it loads; a clip that cannot start within 20 seconds counts as not playing
+      await Promise.race([v.play(), new Promise((_, fail) => window.setTimeout(() => fail(new Error('timeout')), 20000))]);
+    } catch {
+      v.pause();
+      v.removeAttribute('src');
+      v.load();
+      // cannot play here: a moment of static, then the next clip
+      if (call !== showing) return;
+      off();
+      noSignal = true;
+      window.setTimeout(() => {
+        if (call === showing) ended = true;
+      }, 2000);
+      return;
     }
-    let img: HTMLImageElement | undefined;
-    if (ch.image) {
-      try {
-        img = await loadImage(ch.image);
-      } catch {
-        img = undefined;
-      }
+    if (call !== showing) {
+      v.pause();
+      return;
     }
-    drawCard(ch, index, img);
-    uniforms.uTex.value = pictureTex;
-    uniforms.uScale.value.set(1, 1);
+    off();
+    video = v;
+    texture = new THREE.VideoTexture(v);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    uniforms.uTex.value = texture;
+    // a widescreen film on an old set: trimmed to 16:9 at most, with bars top and bottom
+    const aspect = v.videoWidth / v.videoHeight || 16 / 9;
+    const film = Math.min(aspect, 16 / 9);
+    uniforms.uScale.value.set(film / aspect, film / (sw / sh));
+    noSignal = false;
+    if (channels.length > 1) upcoming = load(channels[(index + 1) % channels.length].video);
   }
 
   return {
     group: g,
     screenWorld: screen,
     uniforms,
+    /** the colour the picture throws on the stage, read from the film a few times a second */
     get glow() {
+      const now = performance.now();
+      if (video && now - tintedAt > 400) {
+        tintedAt = now;
+        try {
+          tintCtx.drawImage(video, 0, 0, 1, 1);
+          const [r, gg, b] = tintCtx.getImageData(0, 0, 1, 1).data;
+          glowColor.setRGB(r / 255, gg / 255, b / 255).lerp(new THREE.Color(0.75, 0.8, 1), 0.35);
+        } catch {
+          /* keep the last colour */
+        }
+      }
       return glowColor;
+    },
+    /** the clip has finished (or would not play): time for the next one */
+    get ended() {
+      return ended;
+    },
+    /** no clip on screen: the tube shows static */
+    get noSignal() {
+      return noSignal;
+    },
+    /** what is on, for debugging */
+    get onAir() {
+      return video ? `${decodeURIComponent(video.currentSrc.split('/').pop() ?? '')}@${video.currentTime.toFixed(1)}` : null;
     },
     setChannels(list: Channel[]) {
       channels = list;

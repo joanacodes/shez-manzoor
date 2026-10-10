@@ -15,7 +15,8 @@ import stillFourThree from '../../assets/stage/stage-fourthree.jpg';
 import stillWide from '../../assets/stage/stage-wide.jpg';
 import stillPhoneLand from '../../assets/stage/stage-phoneland.jpg';
 
-const channels = (await screenChannels(640)).map(({ title, kind, image, video }) => ({ title, kind, image, video }));
+// the TV only plays clips: films and series without one are in the credits
+const channels = screenChannels().map(({ video }) => ({ video }));
 const data = JSON.stringify({ channels, setlist: setlistTitles });
 
 // stills of the same stage, one per screen shape, for devices without the 3D scene (rendered from it, see README)

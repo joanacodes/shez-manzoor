@@ -6,7 +6,7 @@
 import type { Stage, Pickable } from './scene';
 
 type Phase = 'loading' | 'intro' | 'ready';
-type Data = { channels: { title: string; kind: string; image?: string; video?: string }[]; setlist: string[] };
+type Data = { channels: { video: string }[]; setlist: string[] };
 
 const stageEl = document.querySelector<HTMLElement>('[data-stage]');
 if (stageEl) void init(stageEl);

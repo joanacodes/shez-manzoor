@@ -1,0 +1,49 @@
+name: Prepare clips
+
+# Videos uploaded to public/clips (screen recordings, .mov, .mp4…) become small silent MP4s
+# with the black bars cropped off, plus a still for each, for the TV and the cinema.
+# The result is committed to this branch, then the preview is republished.
+
+on:
+  push:
+    branches: ['claude/shez-manzoor-stage-design']
+    paths: ['public/clips/**', 'scripts/prepare-clips.mjs', '.github/workflows/prepare-clips.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: prepare-clips-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install ffmpeg
+        run: command -v ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends ffmpeg)
+      - name: Prepare
+        run: node scripts/prepare-clips.mjs
+      - name: Save to the branch
+        id: save
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A public/clips
+          if git diff --cached --quiet; then echo "Nothing new"; exit 0; fi
+          git commit -m "Prepare clips for the TV and the cinema"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+      # commits made by this job do not start other workflows, so ask main to republish the previews
+      - name: Republish the preview
+        if: steps.save.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main --repo "$GITHUB_REPOSITORY"

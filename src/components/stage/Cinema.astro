@@ -1,12 +1,14 @@
 ---
 /**
- * A cinema: a big screen playing his film and TV work (the same clips or posters as the TV
- * on the stage), a projector beam, and rows of people in silhouette, lit by the screen.
+ * A cinema: a big screen playing clips of his film and TV work one after another (the same
+ * clips as the TV on the stage, always muted), a projector beam, and a full house in
+ * silhouette, lit by the film. Without clips there is no cinema.
  */
 import Icon from '../Icon.astro';
 import { screenChannels } from '../../lib/channels';
 
-const channels = await screenChannels(1200);
+const channels = screenChannels();
+const first = channels[0];
 
 /* ---------- the audience, drawn from behind ---------- */
 type Who = 'plain' | 'bun' | 'afro' | 'cap' | 'hijab' | 'lean' | 'long';
@@ -35,81 +37,74 @@ const person = (x: number, y: number, s: number, who: Who) => {
   if (who === 'cap') p.push(`<ellipse cx="${f(x)}" cy="${f(y - 137 * s)}" rx="${f(28 * s)}" ry="${f(18 * s)}"/>`);
   return p.join('');
 };
-// seat backs touch each other and merge with the people into one dark mass
+// seat backs side by side, the same colour as the people, so each row reads as one dark mass
 const seat = (x: number, y: number, s: number, w: number) =>
-  `<path d="M${f(x - w / 2)} ${f(y + 60)} L${f(x - w / 2)} ${f(y - 30 * s)} Q${f(x - w / 2)} ${f(y - 46 * s)} ${f(x - w / 2 + 16 * s)} ${f(y - 46 * s)} L${f(x + w / 2 - 16 * s)} ${f(y - 46 * s)} Q${f(x + w / 2)} ${f(y - 46 * s)} ${f(x + w / 2)} ${f(y - 30 * s)} L${f(x + w / 2)} ${f(y + 60)} Z"/>`;
-const row = (seats: [number, Who | null][], y: number, s: number, gap: number) =>
-  seats.map(([x, who]) => (who ? person(x, y, s, who) : '') + seat(x, y, s, gap - 6 * s)).join('');
-const front = row(
-  [
-    [80, 'plain'],
-    [240, 'long'],
-    [400, null],
-    [560, 'hijab'],
-    [720, 'cap'],
-    [880, 'plain'],
-    [1040, 'afro'],
-    [1200, 'bun'],
-  ],
-  250,
-  0.6,
-  160,
-);
-const back = row(
-  [
-    [130, 'afro'],
-    [370, 'long'],
-    [610, 'lean'],
-    [850, 'bun'],
-    [1090, 'hijab'],
-  ],
-  380,
-  1,
-  240,
-);
+  `<path d="M${f(x - w / 2)} ${f(y + 60)} L${f(x - w / 2)} ${f(y - 30 * s)} Q${f(x - w / 2)} ${f(y - 46 * s)} ${f(x - w / 2 + 14 * s)} ${f(y - 46 * s)} L${f(x + w / 2 - 14 * s)} ${f(y - 46 * s)} Q${f(x + w / 2)} ${f(y - 46 * s)} ${f(x + w / 2)} ${f(y - 30 * s)} L${f(x + w / 2)} ${f(y + 60)} Z"/>`;
+// a full house: shoulder to shoulder, a little uneven, never the same silhouette twice in a row
+const crowd: Who[] = ['plain', 'long', 'bun', 'plain', 'afro', 'hijab', 'cap', 'long', 'plain', 'lean', 'bun', 'afro'];
+let seed = 11;
+const jitter = () => ((seed = (seed * 16807) % 2147483647) / 2147483647 - 0.5) * 2;
+const row = (from: number, to: number, pitch: number, y: number, s: number, start: number) => {
+  let out = '';
+  for (let x = from, i = start; x <= to; x += pitch, i += 5) {
+    const size = s * (1 + jitter() * 0.05);
+    out += person(x + jitter() * pitch * 0.06, y, size, crowd[i % crowd.length]) + seat(x, y, s, pitch - 4 * s);
+  }
+  return out;
+};
+// the far row sits between the heads of the near row
+const front = row(-40, 1250, 92, 252, 0.62, 3);
+const back = row(-86, 1300, 148, 380, 1, 0);
 ---
 
-<div class="cinema" data-cinema>
-  <div class="cinema__room">
-    <div class="cinema__beam" aria-hidden="true"></div>
-    <div class="cinema__screen" data-cinema-screen role="group" aria-roledescription="slideshow" aria-label="Now showing: his film and television work">
-      {
-        channels.map((c, i) => (
-          <figure class:list={['cinema__slide', i === 0 && 'is-on']} data-cinema-slide data-id={c.id} data-title={c.title} data-kind={c.kind}>
-            {c.image ? (
-              <>
-                <span class="cinema__fill" style={`background-image:url('${c.image}')`} />
-                <img class="cinema__poster" src={c.image} alt={`${c.title}, ${c.kind}`} loading="lazy" decoding="async" />
-              </>
-            ) : (
-              <span class={`cinema__card cinema__card--${c.id}`}>
-                <span>{c.title}</span>
-              </span>
-            )}
-            {c.video && <video class="cinema__video" muted playsinline loop preload="none" data-src={c.video} aria-hidden="true" />}
-          </figure>
-        ))
-      }
-      <span class="cinema__sheen" aria-hidden="true"></span>
-    </div>
-    <svg class="cinema__audience" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
-      <g class="cinema__row cinema__row--front" set:html={front} />
-      <g class="cinema__row cinema__row--back" set:html={back} />
-    </svg>
-  </div>
+{
+  first && (
+    <div class="cinema" data-cinema>
+      <div class="cinema__room">
+        <div class="cinema__beam" aria-hidden="true" />
+        <div class="cinema__screen" data-cinema-screen role="group" aria-roledescription="slideshow" aria-label="Now showing: clips of his film and television work">
+          {channels.map((c, i) => (
+            <figure class:list={['cinema__slide', i === 0 && 'is-on']} data-cinema-slide data-id={c.id} data-title={c.title} data-kind={c.kind}>
+              <video
+                class="cinema__video"
+                muted
+                playsinline
+                preload="none"
+                data-src={c.video}
+                poster={i === 0 ? c.still : undefined}
+                data-poster={c.still}
+                aria-hidden="true"
+              />
+            </figure>
+          ))}
+          <span class="cinema__sheen" aria-hidden="true" />
+        </div>
+        <svg class="cinema__audience" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+          <g class="cinema__row cinema__row--front" set:html={front} />
+          <g class="cinema__row cinema__row--back" set:html={back} />
+        </svg>
+      </div>
 
-  <div class="cinema__caption wrap">
-    <p class="label cinema__now">Now showing</p>
-    <p class="cinema__title" aria-live="polite">
-      <span data-cinema-title>{channels[0]?.title}</span>
-      <span class="cinema__kind" data-cinema-kind>{channels[0]?.kind}</span>
-    </p>
-    <div class="cinema__actions">
-      <button class="cinema__btn" type="button" data-open-work={channels[0]?.id} data-cinema-details>Music and credits <Icon name="arrow" /></button>
-      <button class="cinema__btn cinema__btn--round" type="button" data-cinema-next aria-label="Next film or series"><Icon name="chevron-right" /></button>
+      <div class="cinema__caption wrap">
+        <p class="label cinema__now">Now showing</p>
+        <p class="cinema__title" aria-live="polite">
+          <span data-cinema-title>{first.title ?? 'Music by Shez Manzoor'}</span>
+          <span class="cinema__kind" data-cinema-kind>{first.kind ?? 'Film and television'}</span>
+        </p>
+        <div class="cinema__actions">
+          <button class="cinema__btn" type="button" data-open-work={first.id} data-cinema-details hidden={!first.id}>
+            Music and credits <Icon name="arrow" />
+          </button>
+          {channels.length > 1 && (
+            <button class="cinema__btn cinema__btn--round" type="button" data-cinema-next aria-label="Next clip">
+              <Icon name="chevron-right" />
+            </button>
+          )}
+        </div>
+      </div>
     </div>
-  </div>
-</div>
+  )
+}
 
 <script>
   import '../../scripts/cinema';
@@ -167,25 +162,6 @@ const back = row(
     transition: opacity 1.1s ease;
   }
   .cinema__slide.is-on { opacity: 1; }
-  .cinema__fill {
-    position: absolute;
-    inset: -12%;
-    background-size: cover;
-    background-position: center;
-    filter: blur(28px) saturate(1.2) brightness(0.55);
-  }
-  .cinema__poster {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-  .cinema__slide.is-on .cinema__poster { animation: drift 9s ease-out both; }
-  @keyframes drift {
-    from { transform: scale(1.06); }
-    to { transform: scale(1); }
-  }
   /* films are wider than the screen: shown whole, with dark bars like a projection */
   .cinema__video {
     position: absolute;
@@ -194,31 +170,6 @@ const back = row(
     height: 100%;
     object-fit: contain;
     background: #050409;
-    opacity: 0;
-    transition: opacity 0.8s ease;
-  }
-  .cinema__video.is-playing { opacity: 1; }
-  .cinema__card {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    font-family: var(--serif);
-    font-style: italic;
-    font-size: clamp(2rem, 8vw, 4.5rem);
-    color: #f4efe6;
-    text-shadow: 0 2px 30px rgb(0 0 0 / 0.6);
-  }
-  .cinema__card--clarksons-farm {
-    background:
-      radial-gradient(circle at 78% 22%, rgb(255 214 120 / 0.85) 0 7%, rgb(255 190 90 / 0.25) 8% 20%, transparent 21%),
-      repeating-linear-gradient(-14deg, transparent 0 22px, rgb(10 30 14 / 0.5) 22px 28px),
-      linear-gradient(180deg, #e8b765 0%, #c7883e 34%, #4f7a36 35%, #2f5d2a 70%, #183a1b 100%);
-  }
-  .cinema__card--bride-or-die {
-    background:
-      linear-gradient(90deg, #0c0a08 0 8%, transparent 8% 92%, #0c0a08 92%),
-      radial-gradient(circle at 50% 45%, #e6563a, #8e1f2b 55%, #2a0b14);
   }
   .cinema__sheen {
     position: absolute;
@@ -302,12 +253,12 @@ const back = row(
     font: 500 0.9rem/1 var(--sans);
     cursor: pointer;
   }
+  .cinema__btn[hidden] { display: none; }
   .cinema__btn :global(svg) { width: 1em; height: 1em; }
   .cinema__btn--round { width: 44px; padding: 0; justify-content: center; }
   .cinema__btn:hover { border-color: var(--mint); }
 
   @media (prefers-reduced-motion: reduce) {
-    .cinema__slide.is-on .cinema__poster,
     .cinema__sheen,
     .cinema__beam { animation: none; }
   }
