@@ -61,7 +61,7 @@ All facts live in `src/data/`. Pages, structured data and `llms.txt` are generat
 
 **TV and cinema clips.** The TV on the stage and the cinema screen above Film & Television show posters until clips arrive. Upload short videos (10–30 seconds, MP4 is safest, under 25 MB each, which is GitHub's limit for uploads in the browser) to `public/clips/` on this branch: [upload page](https://github.com/joanacodes/shez-manzoor/upload/claude/shez-manzoor-stage-design/public/clips). Any file name that contains the title works (`We Are Lady Parts trailer.mp4`, `WALP s2.mp4`, `polite-society.mp4`, `Clarksons Farm.mov`, `Bride or Die.mp4`). Clips always play muted, and both screens fall back to the poster if a clip can't play. They appear at the next build.
 
-**Posters added by hand.** A poster saved as `src/assets/artwork/screen-<slug>.jpg` (or `.png`, `.webp`), for example `screen-clarksons-farm.jpg`, is used for that credit on the cards, in its panel and on the TV.
+**Posters added by hand.** A poster saved as `src/assets/artwork/screen-<slug>.jpg` (or `.png`, `.webp`), for example `screen-clarksons-farm.jpg`, is used for that credit on the cards, in its panel, on the TV and in the cinema. [Upload page](https://github.com/joanacodes/shez-manzoor/upload/claude/shez-manzoor-stage-design/src/assets/artwork) for that folder.
 
 ## Environment variables
 
