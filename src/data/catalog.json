@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-10T05:06:32.991Z",
+  "fetchedAt": "2026-10-10T05:11:05.343Z",
   "sources": [
     "iTunes Search API",
     "Spotify oEmbed",
@@ -74,6 +74,46 @@
         }
       ],
       "artwork": "release-miscellany-vol-1.jpg"
+    },
+    {
+      "slug": "freeze",
+      "title": "Freeze - Single",
+      "artist": "SHEZ",
+      "appleId": 6766996863,
+      "appleUrl": "https://music.apple.com/gb/album/freeze/6766996863",
+      "releaseDate": "2024-11-14",
+      "trackCount": 1,
+      "genre": "R&B/Soul",
+      "tracks": [
+        {
+          "title": "Freeze",
+          "number": 1,
+          "ms": 213465,
+          "appleUrl": "https://music.apple.com/gb/album/freeze/6766996863?i=6766996864&uo=4",
+          "artist": "SHEZ"
+        }
+      ],
+      "artwork": "release-freeze.jpg"
+    },
+    {
+      "slug": "freeze",
+      "title": "Freeze - Single",
+      "artist": "SHEZ",
+      "appleId": 1879961119,
+      "appleUrl": "https://music.apple.com/us/album/freeze/1879961119",
+      "releaseDate": "2024-11-14",
+      "trackCount": 1,
+      "genre": "R&B/Soul",
+      "tracks": [
+        {
+          "title": "Freeze",
+          "number": 1,
+          "ms": 213465,
+          "appleUrl": "https://music.apple.com/us/album/freeze/1879961119?i=1879961120&uo=4",
+          "artist": "SHEZ"
+        }
+      ],
+      "artwork": "release-freeze.jpg"
     },
     {
       "slug": "no-magic-in-the-city-feat-kamy-drums-and-shez",
@@ -488,6 +528,18 @@
           "title": "We Are Lady Parts, Season 1",
           "date": "2021-08-21"
         }
+      ],
+      "seasonArtwork": [
+        {
+          "season": 2,
+          "file": "screen-we-are-lady-parts-s2.jpg",
+          "date": "2024-07-07"
+        },
+        {
+          "season": 1,
+          "file": "screen-we-are-lady-parts-s1.jpg",
+          "date": "2021-08-21"
+        }
       ]
     }
   ],
@@ -503,13 +555,13 @@
         "id": "5Ci2OKV00uh9qzpVWrtWSj",
         "url": "https://open.spotify.com/track/5Ci2OKV00uh9qzpVWrtWSj",
         "title": "Jama Narenji, The Undeniable & Nbeed",
-        "thumbnail": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e028188d4c88985d83d7e82e063"
+        "thumbnail": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e028188d4c88985d83d7e82e063"
       },
       {
         "id": "7jtmIUnE94Jan1LQ5WreFw",
         "url": "https://open.spotify.com/track/7jtmIUnE94Jan1LQ5WreFw",
         "title": "A BRIDGE BETWEEN WORLDS",
-        "thumbnail": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02fa8b39532e2c2a9a76a1d178"
+        "thumbnail": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02fa8b39532e2c2a9a76a1d178"
       },
       {
         "id": "6Byop91LYjc7rhpeGXan0q",
@@ -557,9 +609,61 @@
         "id": "6I0oytpkXMtoaoJ9AGjro5",
         "url": "https://open.spotify.com/track/6I0oytpkXMtoaoJ9AGjro5",
         "title": "Freeze",
-        "thumbnail": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e025300fbbe44223edac445deee"
+        "thumbnail": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e025300fbbe44223edac445deee"
       }
-    ]
+    ],
+    "trackMeta": {
+      "5Ci2OKV00uh9qzpVWrtWSj": {
+        "album": null,
+        "date": null,
+        "description": null
+      },
+      "7jtmIUnE94Jan1LQ5WreFw": {
+        "album": null,
+        "date": null,
+        "description": null
+      },
+      "6Byop91LYjc7rhpeGXan0q": {
+        "album": null,
+        "date": null,
+        "description": null
+      },
+      "5HZbbLwrv3mWteZ4l0SCLb": {
+        "album": null,
+        "date": null,
+        "description": null
+      },
+      "104gRXiV2gMhEqnUGmXNs9": {
+        "album": null,
+        "date": null,
+        "description": null
+      },
+      "3Y4fXYMfviV8V0nqQjOAyy": {
+        "album": null,
+        "date": null,
+        "description": null
+      },
+      "5Ql3sZbxAAWj8p5Gg0itpZ": {
+        "album": null,
+        "date": null,
+        "description": null
+      },
+      "6NbaBn9oxJzwnlijBg5jCW": {
+        "album": null,
+        "date": null,
+        "description": null
+      },
+      "4J5YNEoA4nobpQyGMr8jUX": {
+        "album": null,
+        "date": null,
+        "description": null
+      },
+      "6I0oytpkXMtoaoJ9AGjro5": {
+        "album": null,
+        "date": null,
+        "description": null
+      }
+    }
   },
   "soundcloud": {
     "short": "https://on.soundcloud.com/xJEiUCaJ997a3IyLT1",
