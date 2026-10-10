@@ -124,7 +124,8 @@ const { items } = Astro.props;
                 )}
                 {w.listen.spotify && (
                   <a href={w.listen.spotify.url} target="_blank" rel="noopener">
-                    {w.listen.spotify.exact ? 'Open in Spotify' : 'Search Spotify'} <Icon name="arrow-up-right" />
+                    {w.listen.spotify.exact ? 'Open in Spotify' : w.listen.spotify.label ? `Open “${w.listen.spotify.label}” in Spotify` : 'Search Spotify'}{' '}
+                    <Icon name="arrow-up-right" />
                   </a>
                 )}
                 {w.listen.soundcloud && (
