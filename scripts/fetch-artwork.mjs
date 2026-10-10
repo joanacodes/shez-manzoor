@@ -110,7 +110,7 @@ for (const artist of APPLE_ARTISTS) {
       const tracks = songs
         .filter((s) => s.wrapperType === 'track' && s.collectionId === a.collectionId)
         .sort((x, y) => (x.discNumber - y.discNumber) || (x.trackNumber - y.trackNumber))
-        .map((s) => ({ title: s.trackName, number: s.trackNumber, ms: s.trackTimeMillis, appleUrl: s.trackViewUrl, artist: s.artistName }));
+        .map((s) => ({ title: s.trackName, number: s.trackNumber, ms: s.trackTimeMillis, appleUrl: s.trackViewUrl, artist: s.artistName, preview: s.previewUrl ?? null }));
       const slug = slugify(a.collectionName.replace(/\s*-\s*(single|ep)$/i, ''));
       const entry = {
         slug,
@@ -161,7 +161,7 @@ for (const country of ['gb', 'us']) {
         releaseDate: t.releaseDate?.slice(0, 10) ?? null,
         trackCount: t.trackCount,
         genre: t.primaryGenreName,
-        tracks: [{ title: t.trackName, number: t.trackNumber, ms: t.trackTimeMillis, appleUrl: t.trackViewUrl, artist: t.artistName }],
+        tracks: [{ title: t.trackName, number: t.trackNumber, ms: t.trackTimeMillis, appleUrl: t.trackViewUrl, artist: t.artistName, preview: t.previewUrl ?? null }],
         artwork: null,
       };
       try {
@@ -260,7 +260,9 @@ try {
   catalog.errors.push(`spotify artist: ${err.message}`);
 }
 
-const albumIds = new Set();
+// albums linked by hand: their covers and tracks come from Spotify's public player
+const SPOTIFY_ALBUMS = ['0f5viaGiax7fV9JHS5NO2f', '0b3OOvrBz0WAphEUq5dteb'];
+const albumIds = new Set(SPOTIFY_ALBUMS);
 const trackIds = new Set();
 const scan = (text) => {
   for (const m of text.matchAll(/(?:open\.spotify\.com\/|spotify:)album[/:]([A-Za-z0-9]{22})/g)) albumIds.add(m[1]);
@@ -446,6 +448,7 @@ for (const [id, info] of Object.entries(catalog.spotify.trackInfo)) {
         releaseDate: hit.releaseDate?.slice(0, 10) ?? null,
         ms: hit.trackTimeMillis ?? null,
         genre: hit.primaryGenreName ?? null,
+        preview: hit.previewUrl ?? null,
         artwork: art,
       };
     }
@@ -482,7 +485,15 @@ for (const e of catalog.extra) {
       artwork: art,
       tracks: results
         .filter((r) => r.wrapperType === 'track')
-        .map((t) => ({ title: t.trackName, number: t.trackNumber, disc: t.discNumber, ms: t.trackTimeMillis ?? null, artist: t.artistName, appleUrl: t.trackViewUrl?.split('&uo')[0] ?? null })),
+        .map((t) => ({
+          title: t.trackName,
+          number: t.trackNumber,
+          disc: t.discNumber,
+          ms: t.trackTimeMillis ?? null,
+          artist: t.artistName,
+          appleUrl: t.trackViewUrl?.split('&uo')[0] ?? null,
+          preview: t.previewUrl ?? null,
+        })),
     });
     log(`- soundtrack ${album.collectionName}: ${album.trackCount} tracks`);
   } catch (err) {
@@ -501,138 +512,64 @@ try {
 } catch (err) {
   catalog.errors.push(`spotify crawler page: ${err.message}`);
 }
-for (const id of [...albumIds].filter((x) => !catalog.spotify.albums.some((a) => a.id === x)).slice(0, 40)) {
-  try {
-    const o = await get(`https://open.spotify.com/oembed?url=${encodeURIComponent(`https://open.spotify.com/album/${id}`)}`);
-    const album = { id, url: `https://open.spotify.com/album/${id}`, title: o.title, thumbnail: o.thumbnail_url ?? null, tracks: [] };
-    try {
-      const { text } = await get(`https://open.spotify.com/embed/album/${id}`, 'text');
-      const e = findEntity(nextData(text));
-      album.tracks = (e?.trackList ?? []).map((t) => ({ uri: t.uri, title: t.title, ms: t.duration }));
-      album.releaseDate = e?.releaseDate?.isoString?.slice(0, 10) ?? null;
-    } catch (err) {
-      catalog.errors.push(`spotify album embed ${id}: ${err.message}`);
-    }
-    catalog.spotify.albums.push(album);
-    log(`- album ${id} | ${o.title} | ${album.tracks.length} tracks`);
-  } catch (err) {
-    catalog.errors.push(`spotify album ${id}: ${err.message}`);
-  }
-}
-
-/* ---------- Spotify Web API: exact albums and tracks ----------
- * Needs SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET (a free app at developer.spotify.com),
- * saved as GitHub Actions secrets. Without them this part is skipped.
- */
 const sameTitle = (a, b) => {
   const n = (s) =>
     String(s)
       .toLowerCase()
       .normalize('NFKD')
-      .replace(/[̀-ͯ]/g, '')
+      .replace(/[\u0300-\u036f]/g, '')
       .replace(/\s+-\s+(single|ep)$/, '')
       .replace(/\((feat\.|with)[^)]*\)/g, '')
       .replace(/&/g, ' and ')
       .replace(/[^a-z0-9]+/g, '');
   return n(a) === n(b);
 };
-const spotifyKeys = [process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET];
-if (spotifyKeys.every(Boolean)) {
+const appleAlbums = [...catalog.releases, ...catalog.soundtracks];
+for (const id of [...albumIds].filter((x) => !catalog.spotify.albums.some((a) => a.id === x)).slice(0, 40)) {
   try {
-    const tokenRes = await fetch('https://accounts.spotify.com/api/token', {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${Buffer.from(spotifyKeys.join(':')).toString('base64')}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: 'grant_type=client_credentials',
-    });
-    if (!tokenRes.ok) throw new Error(`token: HTTP ${tokenRes.status} ${(await tokenRes.text()).slice(0, 200)}`);
-    const { access_token: token } = await tokenRes.json();
-    const api = async (where) => {
-      const url = where.startsWith('http') ? where : `https://api.spotify.com/v1${where}`;
-      for (let attempt = 1; attempt <= 4; attempt++) {
-        const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-        if (res.status === 429) {
-          await new Promise((r) => setTimeout(r, (Number(res.headers.get('retry-after')) || 2) * 1000));
-          continue;
-        }
-        if (!res.ok) throw new Error(`${url.replace('https://api.spotify.com/v1', '')}: HTTP ${res.status} ${(await res.text()).slice(0, 200)}`);
-        return res.json();
-      }
-      throw new Error(`${url}: rate limited`);
-    };
-    // follow `next` links, so the page size Spotify allows does not matter
-    const pages = async (first) => {
-      const items = [];
-      for (let next = first; next; ) {
-        const page = await api(next);
-        items.push(...(page.items ?? []));
-        next = page.next;
-      }
-      return items;
-    };
-    const toAlbum = async (a, group) => {
-      const tracks = await pages(`/albums/${a.id}/tracks?market=GB&limit=10`);
-      return {
-        id: a.id,
-        url: a.external_urls?.spotify ?? `https://open.spotify.com/album/${a.id}`,
-        title: a.name,
-        type: a.album_type,
-        group: group ?? a.album_group ?? null,
-        releaseDate: a.release_date ?? null,
-        totalTracks: a.total_tracks ?? tracks.length,
-        artists: (a.artists ?? []).map((x) => ({ id: x.id, name: x.name })),
-        image: a.images?.[0]?.url ?? null,
-        tracks: tracks.map((t) => ({
-          uri: t.uri,
-          title: t.name,
-          ms: t.duration_ms,
-          number: t.track_number,
-          disc: t.disc_number,
-          artists: (t.artists ?? []).map((x) => x.name),
-        })),
-      };
-    };
-    const albums = [];
-    for (const a of await pages(`/artists/${SPOTIFY_ARTIST}/albums?include_groups=album,single,appears_on,compilation&market=GB&limit=10`)) {
-      albums.push(await toAlbum(a));
+    const o = await get(`https://open.spotify.com/oembed?url=${encodeURIComponent(`https://open.spotify.com/album/${id}`)}`);
+    const album = { id, url: `https://open.spotify.com/album/${id}`, title: o.title, thumbnail: o.thumbnail_url ?? null, tracks: [] };
+    let cover = o.thumbnail_url ? o.thumbnail_url.replace('ab67616d00001e02', 'ab67616d0000b273') : null;
+    try {
+      const { text } = await get(`https://open.spotify.com/embed/album/${id}`, 'text');
+      const e = findEntity(nextData(text));
+      album.title = e?.name ?? e?.title ?? album.title;
+      album.artists = String(e?.subtitle ?? '')
+        .split(/,\s*/)
+        .map((x) => x.trim())
+        .filter(Boolean);
+      album.tracks = (e?.trackList ?? []).map((t, i) => ({
+        uri: t.uri,
+        title: t.title,
+        ms: t.duration,
+        number: i + 1,
+        artists: t.subtitle ?? null,
+        preview: t.audioPreview?.url ?? null,
+      }));
+      album.releaseDate = e?.releaseDate?.isoString?.slice(0, 10) ?? null;
+      const sources = e?.coverArt?.sources ?? e?.visualIdentity?.image ?? [];
+      const largest = [...sources].sort((x, y) => (y.width ?? 0) - (x.width ?? 0))[0];
+      if (largest?.url) cover = largest.url;
+    } catch (err) {
+      catalog.errors.push(`spotify album embed ${id}: ${err.message}`);
     }
-    // soundtracks and features that live on other artist pages: look them up by title
-    const apple = [...catalog.releases, ...catalog.soundtracks];
-    for (const r of apple.filter((r) => !albums.some((a) => sameTitle(a.title, r.title)))) {
-      const title = r.title.replace(/\s+-\s+(Single|EP)$/i, '').replace(/\s*\(feat\.[^)]*\)/i, '').trim();
+    album.totalTracks = album.tracks.length || null;
+    album.type = album.tracks.length === 1 ? 'single' : 'album';
+    album.group = SPOTIFY_ALBUMS.includes(id) ? 'linked' : 'found';
+    album.onApple = appleAlbums.some((r) => sameTitle(r.title, album.title));
+    if (cover) {
       try {
-        const found = await api(`/search?type=album&market=GB&limit=10&q=${encodeURIComponent(title)}`);
-        const hit = (found.albums?.items ?? []).find((a) => sameTitle(a.name, r.title) && (!r.trackCount || a.total_tracks === r.trackCount));
-        if (hit && !albums.some((a) => a.id === hit.id)) albums.push(await toAlbum(hit, 'search'));
-        log(`- spotify search ${title}: ${hit ? hit.id : 'not found'}`);
+        await save(cover, `spotify-album-${id}.jpg`);
+        album.coverFile = `spotify-album-${id}.jpg`;
       } catch (err) {
-        catalog.errors.push(`spotify search ${title}: ${err.message}`);
+        catalog.errors.push(`spotify album cover ${id}: ${err.message}`);
       }
     }
-    // covers for anything that is on Spotify but not on Apple Music
-    for (const a of albums) {
-      a.onApple = apple.some((r) => sameTitle(a.title, r.title) && (!r.trackCount || r.trackCount === a.totalTracks));
-      if (!a.onApple && a.image && a.type !== 'compilation') {
-        try {
-          await save(a.image, `spotify-album-${a.id}.jpg`);
-          a.coverFile = `spotify-album-${a.id}.jpg`;
-        } catch (err) {
-          catalog.errors.push(`spotify cover ${a.title}: ${err.message}`);
-        }
-      }
-    }
-    catalog.spotify.albums = albums;
-    catalog.spotify.api = true;
-    catalog.sources.push('Spotify Web API');
-    log(`\n== Spotify Web API: ${albums.length} albums and singles`);
-    for (const a of albums) log(`- ${a.id} | ${a.title} | ${a.type}/${a.group} | ${a.releaseDate} | ${a.totalTracks} tracks | on Apple: ${a.onApple}`);
+    catalog.spotify.albums.push(album);
+    log(`- album ${id} | ${album.title} | ${album.artists?.join(', ')} | ${album.tracks.length} tracks | ${album.releaseDate} | on Apple: ${album.onApple}`);
   } catch (err) {
-    catalog.errors.push(`spotify api: ${err.message}`);
+    catalog.errors.push(`spotify album ${id}: ${err.message}`);
   }
-} else {
-  log('\n== Spotify Web API: skipped (add SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET to use it)');
 }
 
 /* ---------- SoundCloud: resolve the short link he shared ---------- */

@@ -1,9 +1,8 @@
 name: Fetch artwork and release info
 
-# Downloads covers, posters, release dates, tracklists and streaming links
-# (iTunes Search API, Spotify public pages, and the Spotify Web API when its
-# keys are saved as the SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET secrets)
-# and commits them to this branch, then republishes the preview.
+# Downloads covers, posters, release dates, tracklists, 30-second previews and
+# streaming links (iTunes Search API and Spotify public pages), commits them to
+# this branch, then republishes the preview.
 
 on:
   push:
@@ -29,9 +28,6 @@ jobs:
           node-version: 22
       - name: Fetch
         run: node scripts/fetch-artwork.mjs
-        env:
-          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
-          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
       - name: Save to the branch
         id: save
         run: |

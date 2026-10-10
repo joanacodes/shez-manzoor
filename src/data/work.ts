@@ -8,7 +8,7 @@ import { projects, type Project } from './projects';
 import { releases } from './releases';
 import { links } from './site';
 
-export type Track = { n: number; title: string; length: string; artist?: string; spotify?: string };
+export type Track = { n: number; title: string; length: string; artist?: string; spotify?: string; preview?: string };
 export type WorkItem = {
   id: string;
   kind: 'screen' | 'record';
@@ -34,6 +34,8 @@ export type WorkItem = {
   page?: string;
   /** For film and TV: the soundtrack album, when there is one */
   soundtrack?: { title: string; artist: string; date?: string };
+  /** A 30-second preview to play on the page: the first track that has one */
+  preview?: { url: string; title: string };
   listen: {
     apple?: { url: string; embed: string; height: number };
     spotify?: { url: string; embed?: string; height?: number; exact: boolean; label?: string };
@@ -82,7 +84,7 @@ for (const t of catalog.spotify.topTracks ?? []) {
   const id = String(t.uri).split(':').pop()!;
   if (!spotifyByTitle.has(plain(t.title))) spotifyByTitle.set(plain(t.title), id);
 }
-type SpotifyTrack = { uri: string; title: string; ms?: number; number?: number; disc?: number; artists?: string[] };
+type SpotifyTrack = { uri: string; title: string; ms?: number; number?: number; disc?: number; preview?: string | null };
 type SpotifyAlbum = {
   id: string;
   url: string;
@@ -91,7 +93,7 @@ type SpotifyAlbum = {
   group?: string | null;
   releaseDate?: string | null;
   totalTracks?: number;
-  artists?: { id: string; name: string }[];
+  artists?: (string | { name: string })[];
   onApple?: boolean;
   coverFile?: string;
   tracks?: SpotifyTrack[];
@@ -172,6 +174,10 @@ function recordFrom(r: CatalogRelease): WorkItem {
     spotify:
       trackId(album?.tracks?.find((x) => x.number === t.number && (x.disc ?? 1) === ((t as { disc?: number }).disc ?? 1))) ??
       spotifyByTitle.get(plain(t.title)),
+    preview:
+      (t as { preview?: string | null }).preview ??
+      album?.tracks?.find((x) => x.number === t.number)?.preview ??
+      undefined,
   }));
   const notes = curatedFor(r.slug);
   const own = category === 'Single' || category === 'EP';
@@ -224,7 +230,16 @@ type Extra = {
   artists: string[];
   releaseDate: string | null;
   spotifyCover: string | null;
-  apple: null | { url: string; collection: string; artist: string; releaseDate: string | null; ms: number | null; genre: string | null; artwork: string };
+  apple: null | {
+    url: string;
+    collection: string;
+    artist: string;
+    releaseDate: string | null;
+    ms: number | null;
+    genre: string | null;
+    artwork: string;
+    preview?: string | null;
+  };
 };
 function extraFrom(e: Extra): WorkItem {
   const artist = e.artists.length > 1 ? `${e.artists.slice(0, -1).join(', ')} & ${e.artists.at(-1)}` : (e.artists[0] ?? '');
@@ -249,7 +264,7 @@ function extraFrom(e: Extra): WorkItem {
       { label: 'Artists', value: e.artists.join(', ') },
       ...(e.apple?.genre ? [{ label: 'Genre', value: e.apple.genre }] : []),
     ],
-    tracks: [{ n: 1, title: e.title, length: length(e.apple?.ms), spotify: e.spotifyId }],
+    tracks: [{ n: 1, title: e.title, length: length(e.apple?.ms), spotify: e.spotifyId, preview: e.apple?.preview ?? undefined }],
     listen: {
       apple: e.apple ? { url: tidy(e.apple.url), embed: appleEmbed(e.apple.url), height: 175 } : undefined,
       spotify: { url: spotifyTrack(e.spotifyId), embed: spotifyEmbed('track', e.spotifyId), exact: true },
@@ -259,6 +274,9 @@ function extraFrom(e: Extra): WorkItem {
 }
 
 /* ---------- film and television ---------- */
+const artistNames = (a: SpotifyAlbum) => (a.artists ?? []).map((x) => (typeof x === 'string' ? x : x.name));
+/** A soundtrack album linked on Spotify whose title names the project */
+const spotifySoundtrack = (p: Project) => spotifyAlbums.find((a) => a.coverFile && squash(a.title).includes(squash(p.title)));
 const screenArt = catalog.screen as { slug: string; artwork: string | null; seasonArtwork?: { season: number; file: string }[] }[];
 const soundtrackSlug = 'polite-society-original-motion-picture-soundtrack';
 
@@ -272,6 +290,14 @@ function screenFrom(p: Project): WorkItem {
       ? catalog.releases.find((r) => r.slug === soundtrackSlug)
       : (catalog.soundtracks.find((t) => plain(t.title).startsWith(plain(p.title))) as unknown as CatalogRelease | undefined);
   const ostItem = ost ? recordFrom(ost) : undefined;
+  const onSpotify = ostItem ? undefined : spotifySoundtrack(p);
+  const spotifyTracks: Track[] = (onSpotify?.tracks ?? []).map((t, i) => ({
+    n: t.number ?? i + 1,
+    title: t.title,
+    length: length(t.ms),
+    spotify: trackId(t),
+    preview: t.preview ?? undefined,
+  }));
   return {
     id: p.slug,
     kind: 'screen',
@@ -281,28 +307,45 @@ function screenFrom(p: Project): WorkItem {
     role: p.role,
     date: ost?.releaseDate ?? undefined,
     year: p.years ?? '',
-    image: poster(p.slug) ?? image(latestSeason) ?? ostItem?.image,
+    image: poster(p.slug) ?? image(latestSeason) ?? ostItem?.image ?? image(onSpotify?.coverFile),
     image2: image(firstSeason),
     imageAlt: ost ? `Poster artwork for ${p.title}` : `Artwork for ${p.title}`,
     summary: p.summary,
     body: p.body,
     facts: p.facts,
-    tracks: ostItem?.tracks ?? [],
+    tracks: ostItem?.tracks ?? spotifyTracks,
     badge: p.badge,
     page: `/composition/${p.slug}/`,
-    soundtrack: ost ? { title: ost.title, artist: ost.artist, date: ost.releaseDate ?? undefined } : undefined,
-    listen: ostItem ? ostItem.listen : {},
+    soundtrack: ost
+      ? { title: ost.title, artist: ost.artist, date: ost.releaseDate ?? undefined }
+      : onSpotify
+        ? { title: onSpotify.title, artist: artistNames(onSpotify).join(', '), date: onSpotify.releaseDate ?? undefined }
+        : undefined,
+    listen: ostItem
+      ? ostItem.listen
+      : onSpotify
+        ? {
+            spotify: { url: onSpotify.url, embed: spotifyEmbed('album', onSpotify.id), height: spotifyTracks.length > 1 ? 352 : 152, exact: true },
+            soundcloud: links.soundcloud,
+          }
+        : {},
   };
 }
 
 /* ---------- releases that are on Spotify but not on Apple Music ---------- */
 function spotifyOnlyFrom(a: SpotifyAlbum): WorkItem {
-  const featured = a.group === 'appears_on';
+  const names = artistNames(a);
+  const featured = !names.some((n) => /^shez( manzoor)?$/i.test(n));
   const count = a.totalTracks ?? a.tracks?.length ?? 0;
   const title = a.title.replace(/\s*\((feat\.|with)[^)]*\)/i, '');
-  const names = (a.artists ?? []).map((x) => x.name);
   const category = featured ? 'Featuring SHEZ' : a.type === 'album' && count > 6 ? 'Album' : count >= 4 ? 'EP' : 'Single';
-  const tracks: Track[] = (a.tracks ?? []).map((t, i) => ({ n: t.number ?? i + 1, title: t.title, length: length(t.ms), spotify: trackId(t) }));
+  const tracks: Track[] = (a.tracks ?? []).map((t, i) => ({
+    n: t.number ?? i + 1,
+    title: t.title,
+    length: length(t.ms),
+    spotify: trackId(t),
+    preview: t.preview ?? undefined,
+  }));
   return {
     id: `spotify-${a.id}`,
     kind: 'record',
@@ -333,10 +376,15 @@ function spotifyOnlyFrom(a: SpotifyAlbum): WorkItem {
 const records = catalog.releases.filter((r) => r.slug !== soundtrackSlug).map(recordFrom);
 const extras = ((catalog as { extra?: Extra[] }).extra ?? []).filter((e) => !records.some((r) => plain(r.title) === plain(e.title))).map(extraFrom);
 const screen = projects.map(screenFrom);
+const usedByScreen = new Set(projects.map((p) => spotifySoundtrack(p)?.id).filter(Boolean));
 const onlyOnSpotify = spotifyAlbums
-  .filter((a) => a.onApple === false && a.coverFile && a.type !== 'compilation')
+  .filter((a) => a.onApple === false && a.coverFile && a.type !== 'compilation' && !usedByScreen.has(a.id))
   .filter((a) => ![...records, ...extras].some((w) => squash(w.title) === squash(a.title)))
   .map(spotifyOnlyFrom);
+for (const w of [...records, ...extras, ...onlyOnSpotify, ...screen]) {
+  const t = w.tracks.find((x) => x.preview);
+  if (t?.preview) w.preview = { url: t.preview, title: t.title };
+}
 
 // lead with the highlights, then everything else, newest first
 const lead = ['miscellany-vol-1', 'we-are-lady-parts', 'freeze', 'polite-society'];

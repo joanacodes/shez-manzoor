@@ -41,7 +41,7 @@ export const award = {
 export const links = {
   spotify: 'https://open.spotify.com/artist/3q8Gg6UErCDwopoXFWQwb4',
   spotifyEmbed: 'https://open.spotify.com/embed/artist/3q8Gg6UErCDwopoXFWQwb4?utm_source=generator&theme=0',
-  instagram: 'https://www.instagram.com/shezmusic/',
+  instagram: 'https://www.instagram.com/shezrmusic/',
   appleMusic: 'https://music.apple.com/gb/artist/shez/1484492113',
   /** His composer page on Apple Music (soundtracks are credited to Shez Manzoor) */
   appleMusicComposer: 'https://music.apple.com/gb/artist/shez-manzoor/1477261034',
