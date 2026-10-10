@@ -55,6 +55,8 @@ Release covers and project cards are drawn in CSS until real artwork is supplied
 2. In Settings, open Pages and set Source to GitHub Actions.
 3. To publish from a branch other than `main`, open Settings, then Environments, then `github-pages`, and allow that branch.
 
+**Design previews.** Branches listed in `PREVIEWS` in the deploy workflow are built into their own folder next to the live site. For example, `claude/shez-manzoor-stage-design` appears at `/design-2/`. A push to such a branch checks the build, then asks `main` to republish.
+
 **Netlify or Vercel.** Import the repository and keep the detected settings. Both work with private repositories on free plans and give each branch its own preview URL. Netlify reads `netlify.toml`, which also turns the old Squarespace URLs into permanent redirects.
 
 ## SEO and AI search

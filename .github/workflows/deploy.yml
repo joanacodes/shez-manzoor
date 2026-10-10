@@ -1,4 +1,7 @@
-name: Deploy preview to GitHub Pages
+name: Deploy to GitHub Pages
+
+# main is the live site. Design branches listed in PREVIEWS are built into their own
+# folder next to it (for example /design-2/), so designs can be compared side by side.
 
 on:
   push:
@@ -9,14 +12,37 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  actions: write
 
-concurrency:
-  group: pages
-  cancel-in-progress: false
+env:
+  # folder:branch pairs, separated by spaces
+  PREVIEWS: design-2:claude/shez-manzoor-stage-design
 
 jobs:
-  build:
+  # Other branches: check the build, then ask main to republish so previews stay current.
+  check:
+    if: github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Republish the previews
+        if: contains(env.PREVIEWS, github.ref_name)
+        run: gh workflow run deploy.yml --ref main --repo "$GITHUB_REPOSITORY"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     outputs:
       pages: ${{ steps.pages.outcome }}
     steps:
@@ -36,7 +62,7 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Build
+      - name: Build the live site
         run: npm run build
         env:
           SITE_URL: ${{ steps.pages.outputs.origin || format('https://{0}.github.io', github.repository_owner) }}
@@ -44,9 +70,29 @@ jobs:
           # Preview builds stay hidden from search engines. Set INDEXABLE=true only for the launch build.
           INDEXABLE: 'false'
 
+      - name: Build the design previews
+        env:
+          SITE_URL: ${{ steps.pages.outputs.origin || format('https://{0}.github.io', github.repository_owner) }}
+          BASE_PATH: ${{ steps.pages.outputs.base_path || format('/{0}', github.event.repository.name) }}
+          INDEXABLE: 'false'
+        run: |
+          for pair in $PREVIEWS; do
+            folder="${pair%%:*}"
+            branch="${pair#*:}"
+            if ! git ls-remote --exit-code --heads origin "$branch" > /dev/null; then
+              echo "No branch $branch yet, skipping /$folder/"
+              continue
+            fi
+            git fetch --depth=1 origin "$branch"
+            git worktree add --detach "$RUNNER_TEMP/$folder" FETCH_HEAD
+            (cd "$RUNNER_TEMP/$folder" && npm ci && BASE_PATH="$BASE_PATH/$folder" npm run build)
+            cp -r "$RUNNER_TEMP/$folder/dist" "dist/$folder"
+            echo "::notice title=Preview published::$branch is at /$folder/"
+          done
+
       - name: Explain why nothing was deployed
         if: steps.pages.outcome != 'success'
-        run: echo "::notice title=GitHub Pages is off::The site built fine. To publish it, open Settings > Pages and set Source to GitHub Actions. Private repositories need a paid GitHub plan for Pages."
+        run: echo "::notice title=GitHub Pages is off::The site built fine. To publish it, open Settings > Pages and set Source to GitHub Actions."
 
       - uses: actions/upload-pages-artifact@v3
         if: steps.pages.outcome == 'success'
@@ -60,6 +106,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    concurrency:
+      group: pages-deploy
+      cancel-in-progress: false
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
