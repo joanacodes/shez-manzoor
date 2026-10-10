@@ -2,6 +2,7 @@
  * Site-wide behaviour, kept small: header, menu, reveals, section lighting,
  * card tilt, record sleeves, click-to-load embeds, copy buttons and the cursor light.
  */
+import { mayEmbed } from './consent';
 
 const root = document.documentElement;
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -197,6 +198,7 @@ if (!finePointer && !reduceMotion && 'IntersectionObserver' in window) {
 document.querySelectorAll<HTMLElement>('[data-embed]').forEach((box) => {
   const button = box.querySelector<HTMLButtonElement>('[data-embed-load]');
   button?.addEventListener('click', () => {
+    if (!mayEmbed(box.dataset.embed!)) return;
     const iframe = document.createElement('iframe');
     iframe.src = box.dataset.embed!;
     iframe.title = box.dataset.embedTitle || 'Embedded player';

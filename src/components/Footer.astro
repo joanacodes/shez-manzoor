@@ -40,6 +40,10 @@ const year = new Date().getFullYear();
 
     <div class="base">
       <p>© {year} {person.name} · {person.artistName} · London</p>
+      <p class="legal">
+        <a href={href('/legal/#terms')}>Terms</a>
+        <a href={href('/legal/#privacy')}>Privacy</a>
+      </p>
       {!INDEXABLE && <p class="preview">Preview build, hidden from search engines</p>}
     </div>
   </div>
@@ -108,6 +112,9 @@ const year = new Date().getFullYear();
     color: var(--ink-3);
     position: relative;
   }
+  .legal { display: flex; gap: 1.25rem; }
+  .legal a { color: var(--ink-3); text-decoration: none; transition: color 0.3s; }
+  .legal a:hover { color: var(--ink); }
   .preview {
     font-family: var(--mono);
     font-size: 0.7rem;

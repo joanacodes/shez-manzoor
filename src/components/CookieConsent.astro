@@ -1,0 +1,112 @@
+---
+/**
+ * A small question in the bottom corner once the visitor has scrolled past the carousel (or a
+ * little way down any other page): "Do you accept cookies? Yes / No". The answer is kept in
+ * this browser and the question goes away. See scripts/consent.ts and the legal page.
+ */
+import { href } from '../lib/url';
+---
+
+<div class="consent" data-consent hidden role="region" aria-label="Cookies">
+  <p>Do you accept <a href={href('/legal/#cookies')}>cookies</a>?</p>
+  <button type="button" data-consent-answer="yes">Yes</button>
+  <button type="button" data-consent-answer="no">No</button>
+</div>
+
+<script>
+  import { consent, setConsent, type Consent } from '../scripts/consent';
+
+  const box = document.querySelector<HTMLElement>('[data-consent]');
+  if (box && !consent()) {
+    const show = () => {
+      if (consent()) return;
+      box.hidden = false;
+      requestAnimationFrame(() => box.classList.add('is-on'));
+    };
+    const hide = () => {
+      box.classList.remove('is-on');
+      window.setTimeout(() => (box.hidden = true), 400);
+    };
+    // on the home page, once the carousel of his work has scrolled away; elsewhere, after a first scroll
+    const carousel = document.querySelector<HTMLElement>('[data-work-carousel]');
+    if (carousel) {
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting || e.boundingClientRect.top > 0) return;
+        io.disconnect();
+        show();
+      });
+      io.observe(carousel);
+    } else {
+      const onScroll = () => {
+        if (window.scrollY < 80) return;
+        removeEventListener('scroll', onScroll);
+        show();
+      };
+      addEventListener('scroll', onScroll, { passive: true });
+    }
+    box.addEventListener('click', (e) => {
+      const answer = (e.target as Element).closest<HTMLElement>('[data-consent-answer]')?.dataset.consentAnswer;
+      if (answer) setConsent(answer as Consent);
+    });
+    // answered here or on the legal page
+    document.addEventListener('consent', hide);
+  }
+</script>
+
+<style>
+  .consent {
+    position: fixed;
+    z-index: 39;
+    left: max(1rem, env(safe-area-inset-left));
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    /* clear of the contact bubble in the other corner */
+    max-width: calc(100vw - 2rem - 56px - 0.75rem);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.5rem;
+    padding: 0.35rem 0.4rem 0.35rem 0.85rem;
+    border-radius: 20px;
+    border: 1px solid var(--hair-2);
+    background: rgb(12 10 18 / 0.88);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 12px 30px -14px rgb(0 0 0 / 0.9);
+    font-size: 0.78rem;
+    line-height: 1.3;
+    color: var(--ink-2);
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity 0.4s ease,
+      transform 0.45s var(--ease-out),
+      bottom 0.45s var(--ease-out);
+  }
+  .consent.is-on { opacity: 1; transform: none; }
+  .consent[hidden] { display: none; }
+  .consent p { margin: 0; }
+  .consent a { color: var(--ink); text-decoration-color: var(--hair-2); }
+  .consent a:hover { text-decoration-color: var(--mint); }
+  .consent button {
+    position: relative;
+    min-height: 28px;
+    padding: 0 0.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--hair-2);
+    background: none;
+    color: var(--ink);
+    font: inherit;
+    cursor: pointer;
+    transition: border-color 0.25s, background-color 0.25s;
+  }
+  .consent button:hover { border-color: var(--mint); background: rgb(var(--mint-rgb) / 0.08); }
+  .consent button:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+  /* a finger-sized target around the small buttons */
+  .consent button::after { content: ''; position: absolute; inset: -8px -3px; }
+  /* above the song bar when it is open */
+  :global(html:has(.player.is-open)) .consent { bottom: calc(max(0.75rem, env(safe-area-inset-bottom)) + 74px); }
+  :global(html.still) .consent { display: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .consent { transform: none; }
+  }
+</style>

@@ -1,0 +1,180 @@
+---
+/**
+ * Legal notice, terms (CGV), data privacy and cookies, on one page with an anchor for each:
+ * /legal/#legal-notice, #terms (also #cgv), #privacy (also #data-privacy) and #cookies.
+ * The footer links here, and so does the cookie question.
+ * Details still to come from Shez are marked "To be completed" (class "todo").
+ */
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import { email, person } from '../data/site';
+import { absolute } from '../lib/url';
+import { breadcrumbSchema, graph, ids } from '../lib/schema';
+
+const site = Astro.site;
+const jsonLd = graph([
+  { '@type': 'WebPage', url: absolute('/legal/', site), name: 'Legal notice, terms and privacy', about: { '@id': ids(site).person } },
+  breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Legal', path: '/legal/' }], site),
+]);
+const sections = [
+  { id: 'legal-notice', label: 'Legal notice' },
+  { id: 'terms', label: 'Terms (CGV)' },
+  { id: 'privacy', label: 'Data privacy' },
+  { id: 'cookies', label: 'Cookies' },
+];
+---
+
+<Base
+  title="Legal Notice, Terms and Privacy | Shez Manzoor"
+  description="Legal notice, terms and conditions, data privacy and cookies for the website of Shez Manzoor, music producer, singer-songwriter and film and TV composer in London."
+  path="/legal/"
+  jsonLd={jsonLd}
+>
+  <PageHead kicker="Legal" title="The small" titleEm="print" intro="Who publishes this site, the terms for working with Shez, and what happens to your data." crumbs={[{ name: 'Legal', path: '/legal/' }]} />
+
+  <section class="section legal" aria-label="Legal information">
+    <div class="wrap legal__grid">
+      <nav class="legal__toc" aria-label="On this page">
+        <ul role="list">
+          {sections.map((s) => <li><a href={`#${s.id}`}>{s.label}</a></li>)}
+        </ul>
+      </nav>
+
+      <div class="legal__body">
+        <article class="prose" aria-labelledby="legal-notice">
+          <h2 id="legal-notice">Legal notice</h2>
+          <p><strong>Publisher.</strong> {person.name} ({person.artistName}), music producer, singer-songwriter and film and TV composer, London, United Kingdom.</p>
+          <p><strong>Contact.</strong> <a href={`mailto:${email}`}>{email}</a></p>
+          <p><strong>Postal address.</strong> <span class="todo">To be completed</span></p>
+          <p><strong>Legal status and registration number.</strong> <span class="todo">To be completed</span></p>
+          <p><strong>Hosting.</strong> GitHub Pages, GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, United States.</p>
+          <p>
+            <strong>Rights.</strong> The music, recordings, photographs and texts on this site belong to {person.name} or to their owners. Film
+            and television posters and stills belong to their studios and broadcasters. Please ask before reusing them.
+          </p>
+        </article>
+
+        <article class="prose" aria-labelledby="terms">
+          <span id="cgv" class="legal__alias" aria-hidden="true"></span>
+          <h2 id="terms">Terms and conditions <span class="legal__aka">(CGV)</span></h2>
+          <p>
+            This website does not sell anything directly. Scores, licensing, production, sessions and live bookings are agreed case by case,
+            by email or through his agents.
+          </p>
+          <p>The terms that apply to those agreements:</p>
+          <ul>
+            <li><strong>Services and prices.</strong> <span class="todo">To be completed</span></li>
+            <li><strong>Orders, quotes and payment.</strong> <span class="todo">To be completed</span></li>
+            <li><strong>Delivery and rights granted.</strong> <span class="todo">To be completed</span></li>
+            <li><strong>Cancellation and refunds.</strong> <span class="todo">To be completed</span></li>
+            <li><strong>Liability.</strong> <span class="todo">To be completed</span></li>
+            <li><strong>Applicable law and disputes.</strong> <span class="todo">To be completed</span></li>
+          </ul>
+        </article>
+
+        <article class="prose" aria-labelledby="privacy">
+          <span id="data-privacy" class="legal__alias" aria-hidden="true"></span>
+          <h2 id="privacy">Data privacy</h2>
+          <p><strong>Who is responsible.</strong> {person.name}, <a href={`mailto:${email}`}>{email}</a>. Postal address: <span class="todo">To be completed</span></p>
+          <p>
+            <strong>What is collected.</strong> Only what you send. The contact form sends your name, email address, the topic you pick and
+            your message to his inbox through <a href="https://formsubmit.co" rel="noopener" target="_blank">FormSubmit</a>, the service that
+            delivers it. Emails you write to him directly go through your email provider and his.
+          </p>
+          <p><strong>Why.</strong> To reply to you. Your details are not used for marketing, not sold and not shared with anyone else.</p>
+          <p><strong>How long.</strong> As long as it takes to deal with your message and any work that follows. <span class="todo">Retention period to be confirmed</span></p>
+          <p>
+            <strong>Your rights.</strong> Under UK data protection law you can ask to see, correct or delete your data, or object to its use,
+            by writing to <a href={`mailto:${email}`}>{email}</a>. You can also complain to the Information Commissioner's Office at
+            <a href="https://ico.org.uk" rel="noopener" target="_blank">ico.org.uk</a>.
+          </p>
+          <p><strong>No tracking.</strong> This site uses no analytics, advertising or tracking tools.</p>
+        </article>
+
+        <article class="prose" aria-labelledby="cookies">
+          <h2 id="cookies">Cookies</h2>
+          <p>This site sets no cookies of its own.</p>
+          <p>Your answer to “Do you accept cookies?” is kept in your browser's local storage, so the question is not asked again.</p>
+          <p>
+            The Spotify and Apple Music players load only when you press play on them, and they may set their own cookies. If you decline,
+            pressing play opens the song on Spotify or Apple Music in a new tab instead.
+          </p>
+          <p>The 30-second previews are short audio files streamed from Apple's and Spotify's servers.</p>
+          <div class="legal__choice" data-consent-choice>
+            <p>Your choice in this browser: <strong data-consent-state>not made yet</strong></p>
+            <div class="legal__buttons">
+              <button class="btn" type="button" data-consent-set="yes">Accept cookies</button>
+              <button class="btn" type="button" data-consent-set="no">Decline cookies</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { consent, setConsent, type Consent } from '../scripts/consent';
+
+  const state = document.querySelector<HTMLElement>('[data-consent-state]');
+  const show = () => {
+    const v = consent();
+    if (state) state.textContent = v === 'yes' ? 'accepted' : v === 'no' ? 'declined' : 'not made yet';
+  };
+  show();
+  document.querySelectorAll<HTMLElement>('[data-consent-set]').forEach((b) => b.addEventListener('click', () => setConsent(b.dataset.consentSet as Consent)));
+  document.addEventListener('consent', show);
+</script>
+
+<style>
+  .legal { padding-top: 0; }
+  .legal__grid { display: grid; gap: 2.5rem; }
+  .legal__toc ul { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+  .legal__toc a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--hair-2);
+    color: var(--ink-2);
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: border-color 0.3s, color 0.3s;
+  }
+  .legal__toc a:hover { border-color: var(--accent); color: var(--ink); }
+  .legal__body { display: grid; gap: clamp(3rem, 8vw, 4.5rem); }
+  .legal__body h2 { font-size: var(--fs-h3); color: var(--ink); }
+  .legal__body ul { display: grid; gap: 0.5rem; padding-left: 1.1rem; }
+  .legal__aka { font-size: 0.6em; color: var(--ink-3); }
+  /* #cgv and #data-privacy land on their section like #terms and #privacy */
+  .legal__alias { display: block; scroll-margin-top: calc(var(--header-h) + 1.5rem); }
+  .legal__alias + h2 { margin-top: 0; }
+  .todo {
+    display: inline-block;
+    padding: 0.05rem 0.55rem;
+    border-radius: 6px;
+    border: 1px dashed rgb(var(--accent-rgb) / 0.55);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .legal__choice {
+    display: grid;
+    gap: 0.9rem;
+    padding: 1.2rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--hair-2);
+    background: rgb(255 255 255 / 0.02);
+  }
+  .legal__choice p { margin: 0; }
+  .legal__buttons { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  :global(html:not(.js)) .legal__choice { display: none; }
+  @media (min-width: 960px) {
+    .legal__grid { grid-template-columns: 220px minmax(0, 1fr); gap: 4rem; align-items: start; }
+    .legal__toc { position: sticky; top: calc(var(--header-h) + 2rem); }
+    .legal__toc ul { flex-direction: column; align-items: flex-start; }
+  }
+</style>

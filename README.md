@@ -63,6 +63,8 @@ All facts live in `src/data/`. Pages, structured data and `llms.txt` are generat
 
 **Contact window.** The letter bubble in the bottom corner of every page opens it (on phones it waits until the carousel's arrows have scrolled away). At the top: his email address, which opens the visitor's own email app, then his agents, then a short form. The address and the agents are `email` and `agents` in `src/data/site.ts`. The form is sent by [FormSubmit](https://formsubmit.co) to that address, with no account and no key. The first message sent from the site makes FormSubmit email shez.r.music@gmail.com an "Activate Form" link: click it once, and messages arrive from then on. FormSubmit may ask again when the site moves to its own domain. Until then, visitors who send a message are asked to write to his address instead. A link to `#contact` on any page also opens the window.
 
+**Cookies and legal page.** A small question, "Do you accept cookies?", appears bottom left once the visitor has scrolled past the carousel (on other pages, after a first scroll). The answer is kept in the browser's local storage and the question is not asked again. The site sets no cookies of its own. A "No" keeps the Spotify and Apple Music players from loading on the page: pressing play opens the song on their site instead (`src/scripts/consent.ts`). The legal page (`src/pages/legal.astro`, at `/legal/`) holds the legal notice, the terms (CGV), data privacy and cookies, with anchors `#legal-notice`, `#terms` (also `#cgv`), `#privacy` (also `#data-privacy`) and `#cookies`, and buttons to change the cookie answer. The footer links Terms and Privacy to it. Details still to come from Shez are marked "To be completed".
+
 **Posters added by hand.** A poster saved as `src/assets/artwork/screen-<slug>.jpg` (or `.png`, `.webp`), for example `screen-clarksons-farm.jpg`, is used for that credit on the cards, in its panel, on the TV and in the cinema. [Upload page](https://github.com/joanacodes/shez-manzoor/upload/claude/shez-manzoor-stage-design/src/assets/artwork) for that folder.
 
 ## Environment variables
@@ -103,10 +105,11 @@ The awards are plain text above his photo on the home and About pages (and on th
 1. Confirm the facts listed below with Shez.
 2. Replace the drawn covers with real artwork, and add photo credits.
 3. Send a test message from the contact window and activate FormSubmit from shez.r.music@gmail.com (again on the real domain if it asks).
-4. Build with `INDEXABLE=true` on the real domain, then check `robots.txt` and the `noindex` tag are gone.
-5. Point `www.shezmanzoormusic.co.uk` at the new host, and keep the old URLs redirecting.
-6. Submit the sitemap in Google Search Console and Bing Webmaster Tools.
-7. Update the website link on Spotify, Instagram and the agency profile.
+4. Fill in the legal page (`src/pages/legal.astro`): postal address, legal status, terms and retention period. Update the host there if the site moves off GitHub Pages.
+5. Build with `INDEXABLE=true` on the real domain, then check `robots.txt` and the `noindex` tag are gone.
+6. Point `www.shezmanzoormusic.co.uk` at the new host, and keep the old URLs redirecting.
+7. Submit the sitemap in Google Search Console and Bing Webmaster Tools.
+8. Update the website link on Spotify, Instagram and the agency profile.
 
 ## To confirm with Shez
 

@@ -1,8 +1,11 @@
 /**
  * The ring of work cards: turns with a drag or swipe (with a little inertia), the arrows,
  * the keyboard or a trackpad, and opens the detail panel for the card in front.
- * The panel loads Apple Music and Spotify players only when a play button is pressed.
+ * The panel loads Apple Music and Spotify players only when a play button is pressed
+ * (and, for visitors who declined cookies, opens the song on their site instead).
  */
+import { mayEmbed } from './consent';
+
 const root = document.querySelector<HTMLElement>('[data-work-carousel]');
 const dialog = document.querySelector<HTMLDialogElement>('[data-work-dialog]');
 if (root && dialog) setup(root, dialog);
@@ -305,6 +308,7 @@ function setup(root: HTMLElement, dialog: HTMLDialogElement) {
     const player = card?.querySelector<HTMLElement>('[data-player]');
     if (!player) return;
     const src = btn.dataset.embed!;
+    if (!mayEmbed(src)) return;
     card!.querySelectorAll('[data-embed].is-on').forEach((b) => b.classList.remove('is-on'));
     btn.classList.add('is-on');
     if (player.dataset.src !== src) {
