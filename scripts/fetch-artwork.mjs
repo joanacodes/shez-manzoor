@@ -32,6 +32,7 @@ const SCREEN = [
 // Soundtrack albums he worked on, credited to other artists
 const SOUNDTRACK_SEARCHES = [
   { term: 'We Are Lady Parts', match: /lady parts/i },
+  { term: 'Lady Parts soundtrack', match: /lady parts/i },
   { term: 'Polite Society Original Motion Picture Soundtrack', match: /polite society/i },
 ];
 
@@ -135,11 +136,50 @@ for (const artist of APPLE_ARTISTS) {
   }
 }
 
+/* ---------- Releases that are missing from his main Apple profile ---------- */
+for (const country of ['gb', 'us']) {
+  try {
+    const artists = await itunes({ term: 'SHEZ', entity: 'musicArtist', country, limit: '25' });
+    log(`\n== Apple artists named SHEZ (${country}): ${artists.map((a) => `${a.artistName} ${a.artistId}`).join(' | ')}`);
+    const songs = await itunes({ term: 'SHEZ Freeze', entity: 'song', country, limit: '25' });
+    log(`== Apple search "SHEZ Freeze" (${country}):`);
+    for (const t of songs) log(`- ${t.releaseDate?.slice(0, 10)} | ${t.trackName} | ${t.artistName} | ${t.collectionName} | ${t.collectionViewUrl?.split('?')[0]}`);
+    for (const t of songs.filter((x) => /^freeze/i.test(x.trackName) && /shez/i.test(x.artistName))) {
+      if (catalog.releases.some((r) => r.appleId === t.collectionId)) continue;
+      const slug = slugify(t.collectionName.replace(/\s*-\s*(single|ep)$/i, ''));
+      const entry = {
+        slug,
+        title: t.collectionName,
+        artist: t.artistName,
+        appleId: t.collectionId,
+        appleUrl: t.collectionViewUrl?.split('?')[0] ?? null,
+        releaseDate: t.releaseDate?.slice(0, 10) ?? null,
+        trackCount: t.trackCount,
+        genre: t.primaryGenreName,
+        tracks: [{ title: t.trackName, number: t.trackNumber, ms: t.trackTimeMillis, appleUrl: t.trackViewUrl, artist: t.artistName }],
+        artwork: null,
+      };
+      try {
+        entry.artwork = (await save(big(t.artworkUrl100, 1200, 1200), `release-${slug}.jpg`)).file;
+      } catch (err) {
+        catalog.errors.push(`artwork ${t.collectionName}: ${err.message}`);
+      }
+      catalog.releases.push(entry);
+      log(`  + added ${entry.title} (${entry.releaseDate})`);
+    }
+  } catch (err) {
+    catalog.errors.push(`apple extra ${country}: ${err.message}`);
+  }
+}
+
 /* ---------- Soundtracks credited to other artists ---------- */
 for (const s of SOUNDTRACK_SEARCHES) {
   try {
-    const results = await itunes({ term: s.term, entity: 'album', limit: '25' });
-    log(`\n== Soundtrack search: ${s.term}`);
+    const results = [
+      ...(await itunes({ term: s.term, entity: 'album', limit: '25', country: 'gb' })),
+      ...(await itunes({ term: s.term, entity: 'album', limit: '25', country: 'us' })),
+    ];
+    log(`\n== Soundtrack search: ${s.term} -> ${results.map((r) => `${r.collectionName} [${r.artistName}]`).slice(0, 12).join(' | ') || 'nothing'}`);
     for (const a of results.filter((r) => s.match.test(r.collectionName))) {
       log(`- ${a.releaseDate?.slice(0, 10)} | ${a.collectionName} | ${a.artistName} | ${a.collectionViewUrl?.split('?')[0]}`);
       if (catalog.releases.some((r) => r.appleId === a.collectionId) || catalog.soundtracks.some((r) => r.appleId === a.collectionId)) continue;
@@ -187,6 +227,13 @@ for (const s of SCREEN) {
     };
     try {
       entry.artwork = (await save(url, `screen-${s.slug}.jpg`)).file;
+      entry.seasonArtwork = [];
+      for (const h of hits) {
+        const n = (h.collectionName ?? '').match(/season (\d+)/i)?.[1];
+        if (!n) continue;
+        const file = (await save(big(h.artworkUrl100, 1200, 1200), `screen-${s.slug}-s${n}.jpg`)).file;
+        entry.seasonArtwork.push({ season: Number(n), file, date: h.releaseDate?.slice(0, 10) });
+      }
     } catch (err) {
       catalog.errors.push(`poster ${s.term}: ${err.message}`);
     }
@@ -210,21 +257,64 @@ try {
 
 const albumIds = new Set();
 const trackIds = new Set();
+const scan = (text) => {
+  for (const m of text.matchAll(/(?:open\.spotify\.com\/|spotify:)album[/:]([A-Za-z0-9]{22})/g)) albumIds.add(m[1]);
+  for (const m of text.matchAll(/(?:open\.spotify\.com\/|spotify:)track[/:]([A-Za-z0-9]{22})/g)) trackIds.add(m[1]);
+};
+const decodeState = (html) => {
+  // Spotify pages carry their data as base64 JSON in script tags
+  let out = '';
+  for (const m of html.matchAll(/<script[^>]*id="(?:initialState|initial-state|appServerConfig)"[^>]*>([^<]+)<\/script>/g)) {
+    try {
+      out += Buffer.from(m[1].trim(), 'base64').toString('utf8');
+    } catch {}
+  }
+  for (const m of html.matchAll(/<script[^>]*type="application\/(?:ld\+)?json"[^>]*>([^<]+)<\/script>/g)) out += m[1];
+  return out;
+};
 for (const page of [spotifyUrl, `${spotifyUrl}/discography/all`, `https://open.spotify.com/embed/artist/${SPOTIFY_ARTIST}`]) {
   try {
     const { text } = await get(page, 'text');
-    for (const m of text.matchAll(/(?:open\.spotify\.com\/|spotify:)album[/:]([A-Za-z0-9]{22})/g)) albumIds.add(m[1]);
-    for (const m of text.matchAll(/(?:open\.spotify\.com\/|spotify:)track[/:]([A-Za-z0-9]{22})/g)) trackIds.add(m[1]);
-    log(`== Spotify page ${page}: ${text.length} chars, albums so far ${albumIds.size}, tracks so far ${trackIds.size}`);
+    scan(text);
+    const state = decodeState(text);
+    scan(state);
+    const scripts = [...text.matchAll(/<script[^>]*id="([^"]+)"/g)].map((m) => m[1]);
+    log(`== Spotify page ${page}: ${text.length} chars, decoded ${state.length} chars, script ids [${scripts.join(', ')}], albums so far ${albumIds.size}, tracks so far ${trackIds.size}`);
   } catch (err) {
     catalog.errors.push(`spotify page ${page}: ${err.message}`);
+  }
+}
+// Each track page names its album and release date
+const meta = (html, prop) => html.match(new RegExp(`<meta[^>]+(?:property|name)="${prop}"[^>]+content="([^"]*)"`, 'i'))?.[1] ?? null;
+for (const id of [...trackIds].slice(0, 40)) {
+  try {
+    const { text } = await get(`https://open.spotify.com/track/${id}`, 'text');
+    const album = meta(text, 'music:album');
+    const date = meta(text, 'music:release_date');
+    const desc = meta(text, 'og:description');
+    if (album) {
+      const albumId = album.match(/album\/([A-Za-z0-9]{22})/)?.[1];
+      if (albumId) albumIds.add(albumId);
+    }
+    catalog.spotify.trackMeta = catalog.spotify.trackMeta ?? {};
+    catalog.spotify.trackMeta[id] = { album, date, description: desc };
+    log(`  track ${id}: album ${album} | ${date} | ${desc}`);
+  } catch (err) {
+    catalog.errors.push(`spotify track page ${id}: ${err.message}`);
   }
 }
 for (const id of [...albumIds].slice(0, 40)) {
   try {
     const o = await get(`https://open.spotify.com/oembed?url=${encodeURIComponent(`https://open.spotify.com/album/${id}`)}`);
-    catalog.spotify.albums.push({ id, url: `https://open.spotify.com/album/${id}`, title: o.title, thumbnail: o.thumbnail_url ?? null });
-    log(`- album ${id} | ${o.title}`);
+    let date = null;
+    let songs = [];
+    try {
+      const { text } = await get(`https://open.spotify.com/album/${id}`, 'text');
+      date = meta(text, 'music:release_date');
+      songs = [...text.matchAll(/<meta[^>]+property="music:song"[^>]+content="https:\/\/open\.spotify\.com\/track\/([A-Za-z0-9]{22})"/g)].map((m) => m[1]);
+    } catch {}
+    catalog.spotify.albums.push({ id, url: `https://open.spotify.com/album/${id}`, title: o.title, date, songs, thumbnail: o.thumbnail_url ?? null });
+    log(`- album ${id} | ${o.title} | ${date} | ${songs.length} songs`);
   } catch (err) {
     catalog.errors.push(`spotify album ${id}: ${err.message}`);
   }
