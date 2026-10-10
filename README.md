@@ -59,7 +59,7 @@ All facts live in `src/data/`. Pages, structured data and `llms.txt` are generat
 
 **Spotify albums.** Spotify's public player only lists his top tracks. To link an album exactly, add its ID (the part after `/album/` in a Spotify link) to `SPOTIFY_ALBUMS` in the script: its cover, tracks and player are picked up on the next run.
 
-**TV clips.** The TV shows posters until clips arrive. Save short MP4s (10–20 seconds, no sound needed, about 640×480) as `public/clips/<slug>.mp4`: `we-are-lady-parts.mp4`, `polite-society.mp4`, `clarksons-farm.mp4`, `bride-or-die.mp4`. The TV plays each one in place of that poster at the next build.
+**TV and cinema clips.** The TV on the stage and the cinema screen above Film & Television show posters until clips arrive. Upload short videos (10–30 seconds, MP4 is safest, under 25 MB each, which is GitHub's limit for uploads in the browser) to `public/clips/` on this branch: [upload page](https://github.com/joanacodes/shez-manzoor/upload/claude/shez-manzoor-stage-design/public/clips). Any file name that contains the title works (`We Are Lady Parts trailer.mp4`, `WALP s2.mp4`, `polite-society.mp4`, `Clarksons Farm.mov`, `Bride or Die.mp4`). Clips always play muted, and both screens fall back to the poster if a clip can't play. They appear at the next build.
 
 **Posters added by hand.** A poster saved as `src/assets/artwork/screen-<slug>.jpg` (or `.png`, `.webp`), for example `screen-clarksons-farm.jpg`, is used for that credit on the cards, in its panel and on the TV.
 
