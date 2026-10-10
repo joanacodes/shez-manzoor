@@ -10,8 +10,12 @@ import { getImage } from 'astro:assets';
 import Icon from '../Icon.astro';
 import { setlistTitles, tvChannels } from '../../data/work';
 import { href } from '../../lib/url';
-import stillWide from '../../assets/stage/stage-landscape.jpg';
-import stillTall from '../../assets/stage/stage-portrait.jpg';
+import stillTall from '../../assets/stage/stage-tall.jpg';
+import stillShort from '../../assets/stage/stage-short.jpg';
+import stillTablet from '../../assets/stage/stage-tablet.jpg';
+import stillFourThree from '../../assets/stage/stage-fourthree.jpg';
+import stillWide from '../../assets/stage/stage-wide.jpg';
+import stillPhoneLand from '../../assets/stage/stage-phoneland.jpg';
 
 const shrink = async (src?: ImageMetadata) => (src ? (await getImage({ src, width: 640, format: 'webp', quality: 74 })).src : undefined);
 // a clip at public/clips/<slug>.mp4 plays on the TV instead of the poster
@@ -23,11 +27,21 @@ for (const c of tvChannels) {
 }
 const data = JSON.stringify({ channels, setlist: setlistTitles });
 
-// stills of the same stage, for devices without the 3D scene (rendered from it, see README)
+// stills of the same stage, one per screen shape, for devices without the 3D scene (rendered from it, see README)
 const srcset = async (src: ImageMetadata, widths: number[], format: 'avif' | 'webp') =>
   (await Promise.all(widths.map(async (w) => `${(await getImage({ src, width: w, format, quality: format === 'avif' ? 55 : 72 })).src} ${w}w`))).join(', ');
-const tall = { avif: await srcset(stillTall, [414, 828], 'avif'), webp: await srcset(stillTall, [414, 828], 'webp') };
-const wide = { avif: await srcset(stillWide, [1280, 1920, 2400], 'avif'), webp: await srcset(stillWide, [1280, 1920, 2400], 'webp') };
+const shapes: { media?: string; src: ImageMetadata; widths: number[] }[] = [
+  { media: '(orientation: landscape) and (max-height: 520px)', src: stillPhoneLand, widths: [844, 1688] },
+  { media: '(max-aspect-ratio: 1/2)', src: stillTall, widths: [414, 828] },
+  { media: '(max-aspect-ratio: 13/20)', src: stillShort, widths: [375, 750] },
+  { media: '(max-aspect-ratio: 17/20)', src: stillTablet, widths: [768, 1152] },
+  { media: '(max-aspect-ratio: 3/2)', src: stillFourThree, widths: [1024, 1536] },
+  { src: stillWide, widths: [1280, 1920, 2400] },
+];
+const sources = [];
+for (const shape of shapes) {
+  for (const format of ['avif', 'webp'] as const) sources.push({ media: shape.media, type: `image/${format}`, srcset: await srcset(shape.src, shape.widths, format) });
+}
 const fallbackSrc = (await getImage({ src: stillWide, width: 1280, format: 'jpg', quality: 72 })).src;
 ---
 
@@ -35,10 +49,7 @@ const fallbackSrc = (await getImage({ src: stillWide, width: 1280, format: 'jpg'
   <div class="stage__scene" aria-hidden="true">
     <div class="stage__fallback">
       <picture>
-        <source media="(max-aspect-ratio: 17/20)" type="image/avif" srcset={tall.avif} sizes="100vw" />
-        <source media="(max-aspect-ratio: 17/20)" type="image/webp" srcset={tall.webp} sizes="100vw" />
-        <source type="image/avif" srcset={wide.avif} sizes="100vw" />
-        <source type="image/webp" srcset={wide.webp} sizes="100vw" />
+        {sources.map((source) => <source media={source.media} type={source.type} srcset={source.srcset} sizes="100vw" />)}
         <img src={fallbackSrc} alt="" width="2400" height="1350" loading="lazy" decoding="async" />
       </picture>
     </div>
@@ -315,6 +326,25 @@ const fallbackSrc = (await getImage({ src: stillWide, width: 1280, format: 'jpg'
   :global(html.still .site-header),
   :global(html.still astro-dev-toolbar),
   :global(html.still .stage > :not(.stage__scene)) { visibility: hidden !important; }
+
+  /* phones on their side: one screen, the name and roles on one line */
+  @media (orientation: landscape) and (max-height: 520px) {
+    .stage { min-height: 100svh; }
+    .stage__inner { padding-top: calc(var(--header-h) - 0.5rem); }
+    .stage__first {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .stage__title { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; column-gap: 0.9rem; }
+    .stage__name { font-size: clamp(2.4rem, 12svh, 3.4rem); }
+    .stage__roles { font-size: clamp(0.95rem, 4.6svh, 1.25rem); }
+    .stage__loader { margin-top: 0.9rem; }
+    .stage__tip { display: none; }
+  }
 
   @media (prefers-reduced-motion: reduce) {
     :global(html.no-3d) .stage .stage__fallback { animation: none; opacity: 1; }

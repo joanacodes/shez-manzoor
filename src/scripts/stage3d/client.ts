@@ -163,6 +163,20 @@ async function init(el: HTMLElement) {
     return;
   }
   if (force) (window as unknown as { __stage: Stage }).__stage = stage;
+  // frame the set in the space the page leaves between the name and the covers
+  const title = el.querySelector<HTMLElement>('.stage__title');
+  const covers = el.querySelector<HTMLElement>('[data-work-viewport]');
+  const fitBand = () => {
+    if (!stage || !title || !covers) return;
+    const h = canvas.clientHeight || innerHeight;
+    // offsets ignore the intro's transform, so this is where the name will settle
+    let top = title.offsetHeight;
+    for (let n: HTMLElement | null = title; n && n !== el; n = n.offsetParent as HTMLElement | null) top += n.offsetTop;
+    let bottom = 0;
+    for (let n: HTMLElement | null = covers; n && n !== el; n = n.offsetParent as HTMLElement | null) bottom += n.offsetTop;
+    stage.setBand((top + h * 0.02) / h, (bottom - h * 0.015) / h);
+  };
+  fitBand();
   html.classList.add('has-3d');
   // if the still was showing (the intro was skipped early), the canvas fades in over it first
   window.setTimeout(() => html.classList.remove('no-3d'), html.classList.contains('no-3d') ? 700 : 0);
@@ -191,7 +205,10 @@ async function init(el: HTMLElement) {
   let resizeTimer = 0;
   addEventListener('resize', () => {
     window.clearTimeout(resizeTimer);
-    resizeTimer = window.setTimeout(() => stage?.resize(), 120);
+    resizeTimer = window.setTimeout(() => {
+      stage?.resize();
+      fitBand();
+    }, 120);
   });
 
   /* ---------- pointer: the camera leans, things on stage answer taps ---------- */

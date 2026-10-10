@@ -207,11 +207,14 @@ export async function createStage(opts: StageOptions) {
     o.rotation.y = r;
   };
   let sizedAs = '';
+  /** Where the page leaves room for the stage, measured between the name and the covers. */
+  let band: [number, number] | null = null;
   function resize() {
     const w = canvas.clientWidth || window.innerWidth;
     const h = canvas.clientHeight || window.innerHeight;
-    if (`${w}x${h}@${pixelRatio}` === sizedAs) return;
-    sizedAs = `${w}x${h}@${pixelRatio}`;
+    const key = `${w}x${h}@${pixelRatio}:${band?.join(',') ?? ''}`;
+    if (key === sizedAs) return;
+    sizedAs = key;
     const aspect = w / h;
     layout = layoutFor(aspect);
     place(mic, layout.mic);
@@ -226,7 +229,9 @@ export async function createStage(opts: StageOptions) {
     // frame the set (floor to the top of the mic, 1.5 m) inside its band on screen
     const SET_H = 1.5;
     const tan = Math.tan(THREE.MathUtils.degToRad(layout.fov / 2));
-    const [top, bottom] = layout.band;
+    let [top, bottom] = band ?? layout.band;
+    // never squeeze the set smaller than a fifth of the screen; let it tuck under the name instead
+    if (bottom - top < 0.2) top = Math.max(0.08, bottom - 0.2);
     let dist = SET_H / ((bottom - top) * 2 * tan);
     dist = Math.max(dist, layout.halfWidth / (aspect * tan * 0.94));
     const visible = 2 * tan * dist;
@@ -442,6 +447,11 @@ export async function createStage(opts: StageOptions) {
       cancelAnimationFrame(raf);
     },
     resize,
+    /** Frames the set between these two heights on screen (0 to 1, top to bottom). */
+    setBand(top: number, bottom: number) {
+      band = [Math.max(0, Math.min(top, 0.9)), Math.max(0.1, Math.min(bottom, 1))];
+      resize();
+    },
     /** -1..1 from the centre of the screen */
     setPointer(x: number, y: number) {
       pointer.set(x, y);

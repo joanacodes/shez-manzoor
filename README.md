@@ -29,7 +29,18 @@ npm run preview   # serve dist/
 
 Add `?stage` to the homepage URL to force the 3D scene on machines without a GPU, for testing. `?skip` jumps past the intro.
 
-To render new stills after changing the scene, open `/?stage&still&tier=high` at 1600×900 (scale 1.5) and at 414×896 (scale 2), wait for the stage to settle, and save the canvas as `src/assets/stage/stage-landscape.jpg` and `stage-portrait.jpg`.
+To render new stills after changing the scene, open `/?stage&still&tier=high`, wait for the stage to settle, and save the canvas into `src/assets/stage/`, once per screen shape:
+
+| File | Window | Scale | Used for |
+| --- | --- | --- | --- |
+| `stage-tall.jpg` | 414×896 | 2 | Phones, 19.5:9 |
+| `stage-short.jpg` | 375×667 | 2 | Phones, 16:9 |
+| `stage-tablet.jpg` | 768×1024 | 1.5 | Tablets, upright |
+| `stage-fourthree.jpg` | 1024×768 | 1.5 | Tablets on their side, 4:3 screens |
+| `stage-wide.jpg` | 1600×900 | 1.5 | Laptops and desktops |
+| `stage-phoneland.jpg` | 844×390 | 2 | Phones on their side |
+
+The camera frames the set in the space the page leaves between his name and the covers, so the stills line up with the page at those sizes.
 
 ## Editing content
 

@@ -40,7 +40,7 @@ const first = items[0];
                   <Picture
                     src={w.image}
                     widths={[150, 220, 300, 400]}
-                    sizes="(min-width: 600px) and (max-aspect-ratio: 17/20) 200px, (min-width: 900px) 190px, 136px"
+                    sizes="(orientation: landscape) and (max-height: 520px) 100px, (min-width: 600px) and (max-aspect-ratio: 17/20) 200px, (min-width: 900px) 190px, 136px"
                     formats={['avif', 'webp']}
                     alt=""
                     loading={i < 4 || i > items.length - 4 ? 'eager' : 'lazy'}
@@ -330,6 +330,17 @@ const first = items[0];
   }
   @media (min-width: 1500px) and (min-height: 940px) {
     .work { --card-w: 196px; }
+  }
+
+  /* phones on their side: smaller covers, so the stage still shows above them */
+  @media (orientation: landscape) and (max-height: 520px) {
+    .work { --card-w: 94px; --card-gap: 12px; gap: 0.2rem; padding-bottom: max(0.35rem, env(safe-area-inset-bottom)); }
+    .work__bar { margin-top: 0.35rem; grid-template-columns: 40px minmax(0, 1fr) 40px; }
+    .work__arrow { width: 40px; height: 40px; }
+    .work__title { font-size: 1.05rem; }
+    .work__by,
+    .card__badge { display: none; }
+    .card__open { width: 22px; height: 22px; right: 5px; bottom: 5px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
