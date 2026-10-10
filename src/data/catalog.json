@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-10T05:13:58.368Z",
+  "fetchedAt": "2026-10-10T05:24:13.850Z",
   "sources": [
     "iTunes Search API",
     "Spotify oEmbed",
@@ -719,8 +719,10 @@
         ],
         "releaseDate": "2024-05-31",
         "album": null,
-        "cover": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b2738188d4c88985d83d7e82e063",
-        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
+        "related": "spotify:artist:3mQ5qiX3jHtEVFMq86xn53",
+        "cover": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b2738188d4c88985d83d7e82e063",
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity",
+        "coverFile": "spotify-cover-d83d7e82e063.jpg"
       },
       "7jtmIUnE94Jan1LQ5WreFw": {
         "name": "A BRIDGE BETWEEN WORLDS",
@@ -729,8 +731,10 @@
         ],
         "releaseDate": "2026-09-24",
         "album": null,
+        "related": "spotify:artist:3q8Gg6UErCDwopoXFWQwb4",
         "cover": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273fa8b39532e2c2a9a76a1d178",
-        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity",
+        "coverFile": "spotify-cover-2a9a76a1d178.jpg"
       },
       "6Byop91LYjc7rhpeGXan0q": {
         "name": "HEY",
@@ -739,8 +743,10 @@
         ],
         "releaseDate": "2026-09-24",
         "album": null,
+        "related": "spotify:artist:3q8Gg6UErCDwopoXFWQwb4",
         "cover": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273fa8b39532e2c2a9a76a1d178",
-        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity",
+        "coverFile": "spotify-cover-2a9a76a1d178.jpg"
       },
       "5HZbbLwrv3mWteZ4l0SCLb": {
         "name": "1 of a kind",
@@ -749,8 +755,10 @@
         ],
         "releaseDate": "2022-09-02",
         "album": null,
-        "cover": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b27342ba82db6c5605fb3defa0f0",
-        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
+        "related": "spotify:artist:3q8Gg6UErCDwopoXFWQwb4",
+        "cover": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b27342ba82db6c5605fb3defa0f0",
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity",
+        "coverFile": "spotify-cover-05fb3defa0f0.jpg"
       },
       "104gRXiV2gMhEqnUGmXNs9": {
         "name": "ANTIGONE",
@@ -759,8 +767,10 @@
         ],
         "releaseDate": "2026-09-24",
         "album": null,
+        "related": "spotify:artist:3q8Gg6UErCDwopoXFWQwb4",
         "cover": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273fa8b39532e2c2a9a76a1d178",
-        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity",
+        "coverFile": "spotify-cover-2a9a76a1d178.jpg"
       },
       "3Y4fXYMfviV8V0nqQjOAyy": {
         "name": "HOW FAR WE'VE COME",
@@ -769,8 +779,10 @@
         ],
         "releaseDate": "2026-09-24",
         "album": null,
+        "related": "spotify:artist:3q8Gg6UErCDwopoXFWQwb4",
         "cover": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273fa8b39532e2c2a9a76a1d178",
-        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity",
+        "coverFile": "spotify-cover-2a9a76a1d178.jpg"
       },
       "5Ql3sZbxAAWj8p5Gg0itpZ": {
         "name": "MAWTINI",
@@ -779,8 +791,10 @@
         ],
         "releaseDate": "2026-09-24",
         "album": null,
+        "related": "spotify:artist:3q8Gg6UErCDwopoXFWQwb4",
         "cover": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273fa8b39532e2c2a9a76a1d178",
-        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity",
+        "coverFile": "spotify-cover-2a9a76a1d178.jpg"
       },
       "6NbaBn9oxJzwnlijBg5jCW": {
         "name": "BURN IT DOWN",
@@ -789,8 +803,10 @@
         ],
         "releaseDate": "2026-09-24",
         "album": null,
+        "related": "spotify:artist:3q8Gg6UErCDwopoXFWQwb4",
         "cover": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b273fa8b39532e2c2a9a76a1d178",
-        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity",
+        "coverFile": "spotify-cover-2a9a76a1d178.jpg"
       },
       "4J5YNEoA4nobpQyGMr8jUX": {
         "name": "Rhythm Section",
@@ -799,8 +815,10 @@
         ],
         "releaseDate": "2020-07-03",
         "album": null,
+        "related": "spotify:artist:3q8Gg6UErCDwopoXFWQwb4",
         "cover": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273b797024adeda01c032d272cb",
-        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity",
+        "coverFile": "spotify-cover-01c032d272cb.jpg"
       },
       "6I0oytpkXMtoaoJ9AGjro5": {
         "name": "Freeze",
@@ -809,8 +827,10 @@
         ],
         "releaseDate": "2024-11-14",
         "album": null,
+        "related": "spotify:artist:3q8Gg6UErCDwopoXFWQwb4",
         "cover": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b2735300fbbe44223edac445deee",
-        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity",
+        "coverFile": "spotify-cover-3edac445deee.jpg"
       }
     }
   },
@@ -818,5 +838,33 @@
     "short": "https://on.soundcloud.com/xJEiUCaJ997a3IyLT1",
     "url": "https://soundcloud.com/shezrmusic"
   },
-  "errors": []
+  "errors": [],
+  "extra": [
+    {
+      "spotifyId": "5Ci2OKV00uh9qzpVWrtWSj",
+      "slug": "jama-narenji-the-undeniable-and-nbeed",
+      "title": "Jama Narenji, The Undeniable & Nbeed",
+      "artists": [
+        "Elaha Soroor",
+        "SHEZ",
+        "Haleemah X",
+        "Lauriem",
+        "Rasha Nahas",
+        "Sai"
+      ],
+      "releaseDate": "2024-05-31",
+      "spotifyCover": "spotify-cover-d83d7e82e063.jpg",
+      "apple": {
+        "trackId": 1748223934,
+        "collectionId": 1748223604,
+        "collection": "We Are Lady Parts (Music From the Original Series - Seasons 1 & 2)",
+        "artist": "Elaha Soroor, Shez, Haleemah X, Lauriem, Rasha Nahas & Sai",
+        "url": "https://music.apple.com/gb/album/jama-narenji-the-undeniable-nbeed/1748223604?i=1748223934&uo=4",
+        "releaseDate": "2024-05-31",
+        "ms": 236669,
+        "genre": "Soundtrack",
+        "artwork": "release-jama-narenji-the-undeniable-and-nbeed.jpg"
+      }
+    }
+  ]
 }
