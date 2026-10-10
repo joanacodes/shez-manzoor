@@ -110,7 +110,6 @@ The awards are plain text above his photo on the home and About pages (and on th
 
 - **Representation.** Manners McDade lists him, and SMA Talent announced his signing. The site currently links to Manners McDade.
 - **Clarkson's Farm.** His bio says "compositions for". Public listings credit another composer for the series score, so the site says "Compositions".
-- **Artwork.** Posters for Clarkson's Farm and Bride or Die. They are drawn in CSS until then.
 - **Bride or Die.** His exact role and the year.
 - **Spotify album links.** Releases whose Spotify album is not known yet link to a Spotify search. Send the album links to add them.
 - **Links.** YouTube, Facebook and Bandcamp URLs, to add to the footer and to `sameAs`. IMDb and LinkedIn are in `sameAs` already.
