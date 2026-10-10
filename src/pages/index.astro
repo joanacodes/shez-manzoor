@@ -225,12 +225,12 @@ const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await t
 </Base>
 
 <script>
-  // the photo of Shez is purple until it reaches 70% of the way down the screen
+  // the photo of Shez is purple until it reaches 10% of the way down the screen
   const photo = document.querySelector<HTMLElement>('[data-tint]');
   if (photo) {
     new IntersectionObserver(([entry]) => photo.classList.toggle('is-lit', entry.isIntersecting), {
-      // the top 70% of the screen: lit from the moment its top edge reaches that line
-      rootMargin: '0px 0px -30% 0px',
+      // the top 10% of the screen: lit from the moment its top edge reaches that line
+      rootMargin: '0px 0px -90% 0px',
     }).observe(photo);
   }
 </script>
@@ -263,7 +263,7 @@ const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await t
     filter: contrast(1.06) brightness(1.12);
     transition: filter 1.4s var(--ease-out);
   }
-  /* purple until the photo reaches 70% of the way down the screen, then its own colours */
+  /* purple until the photo reaches 10% of the way down the screen, then its own colours */
   .about__photo :global(picture)::after {
     content: '';
     position: absolute;

@@ -251,6 +251,14 @@ const previewData = (w: WorkItem, title: string) => ({
   .detail__pos { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em; color: var(--ink-3); min-width: 4.5em; text-align: center; }
 
   .detail__body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+  /* one scrollbar, in green */
+  .detail__body {
+    scrollbar-width: thin;
+    scrollbar-color: var(--mint) transparent;
+  }
+  .detail__body::-webkit-scrollbar { width: 10px; }
+  .detail__body::-webkit-scrollbar-track { background: transparent; }
+  .detail__body::-webkit-scrollbar-thumb { border: 3px solid transparent; border-radius: 999px; background: var(--mint) padding-box; }
   /* swiping or stepping to the next piece of work slides it in from that side */
   .detail__body[data-dir='next'] .detail__card { animation: detail-from-right 0.42s var(--ease-out) both; }
   .detail__body[data-dir='prev'] .detail__card { animation: detail-from-left 0.42s var(--ease-out) both; }
@@ -387,8 +395,11 @@ const previewData = (w: WorkItem, title: string) => ({
       border-radius: 26px;
       border: 1px solid var(--hair-2);
       box-shadow: 0 60px 120px -40px rgb(0 0 0 / 0.9);
+      overflow: hidden;
     }
-    .detail__frame { height: auto; max-height: min(860px, calc(100vh - 4rem)); }
+    /* the inside fits the panel exactly (its border included), so only the text scrolls */
+    .detail[open] { display: flex; flex-direction: column; }
+    .detail__frame { flex: 1 1 auto; height: auto; min-height: 0; }
     .detail__bar { padding: 1rem 1.4rem 0.6rem; }
     .detail__card { grid-template-columns: 400px 1fr; gap: 2.6rem; padding: 0.4rem 2.4rem 2.6rem; align-items: start; }
     .detail__media { position: sticky; top: 0.5rem; }

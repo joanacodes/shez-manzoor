@@ -2,6 +2,8 @@
  * 30-second previews: any button with data-preview plays that clip in one shared player,
  * shown as a bar at the bottom of the screen (over the panels too) to pause, play again,
  * or open the full song. Buttons show a spinner while the song loads, then a pause sign.
+ * When a preview ends, the next song plays: the rest of the list it was picked from (the
+ * carousel, the discography, a tracklist), then every other song on the page, each once.
  */
 const bar = document.querySelector<HTMLElement>('[data-player-bar]');
 if (bar) setup(bar);
@@ -20,6 +22,32 @@ function setup(bar: HTMLElement) {
   let current = '';
   // asked to play, not playing yet (or buffering)
   let loading = false;
+
+  type Song = { url: string; title: string; by: string; art?: string; apple?: string; spotify?: string };
+  const songOf = (b: HTMLElement): Song => ({
+    url: b.dataset.preview!,
+    title: b.dataset.previewTitle ?? '',
+    by: b.dataset.previewBy ?? '',
+    art: b.dataset.previewArt,
+    apple: b.dataset.previewApple,
+    spotify: b.dataset.previewSpotify,
+  });
+  // what plays after the song that was picked, which comes first
+  let queue: Song[] = [];
+  let pos = 0;
+  function queueFrom(b: HTMLElement) {
+    const page = [...document.querySelectorAll<HTMLElement>('[data-preview]')].filter((e) => !e.closest('dialog'));
+    const list = b.closest('ol, ul');
+    const own = list ? [...list.querySelectorAll<HTMLElement>('[data-preview]')] : [b];
+    // in a panel, the page's songs go on from the piece of work the panel is about
+    const from = b.closest('article')?.querySelector<HTMLElement>('.play--preview')?.dataset.preview ?? b.dataset.preview;
+    const at = page.findIndex((e) => e.dataset.preview === from);
+    const seen = new Set<string>();
+    queue = [...own.slice(own.indexOf(b)), ...page.slice(at + 1), ...page.slice(0, at + 1)]
+      .map(songOf)
+      .filter((song) => !seen.has(song.url) && !!seen.add(song.url));
+    pos = 0;
+  }
 
   const buttons = () => document.querySelectorAll<HTMLElement>('[data-preview]');
   const sync = () => {
@@ -41,18 +69,18 @@ function setup(bar: HTMLElement) {
     sync();
   };
 
-  function load(b: HTMLElement) {
-    current = b.dataset.preview!;
+  function load(song: Song) {
+    current = song.url;
     audio.src = current;
-    title.textContent = b.dataset.previewTitle ?? '';
-    by.textContent = b.dataset.previewBy ?? '';
-    if (b.dataset.previewArt) {
-      art.src = b.dataset.previewArt;
+    title.textContent = song.title;
+    by.textContent = song.by;
+    if (song.art) {
+      art.src = song.art;
       art.hidden = false;
     } else art.hidden = true;
     for (const [link, url] of [
-      [apple, b.dataset.previewApple],
-      [spotify, b.dataset.previewSpotify],
+      [apple, song.apple],
+      [spotify, song.spotify],
     ] as const) {
       link.hidden = !url;
       if (url) link.href = url;
@@ -60,10 +88,10 @@ function setup(bar: HTMLElement) {
     progress.style.setProperty('--p', '0');
     if ('mediaSession' in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
-        title: title.textContent ?? '',
-        artist: by.textContent ?? '',
+        title: song.title,
+        artist: song.by,
         album: 'Preview',
-        artwork: b.dataset.previewArt ? [{ src: new URL(b.dataset.previewArt, location.href).href, sizes: '120x120', type: 'image/webp' }] : [],
+        artwork: song.art ? [{ src: new URL(song.art, location.href).href, sizes: '120x120', type: 'image/webp' }] : [],
       });
     }
   }
@@ -73,7 +101,18 @@ function setup(bar: HTMLElement) {
 
   const start = () => {
     setLoading(true);
-    audio.play().catch(() => setLoading(false));
+    const src = audio.src;
+    // a play() cut short by the next song does not stop that song's spinner
+    audio.play().catch(() => audio.src === src && setLoading(false));
+  };
+  /** The next (or previous) song in the queue; false at either end. */
+  const step = (by: 1 | -1) => {
+    const to = pos + by;
+    if (to < 0 || to >= queue.length) return false;
+    pos = to;
+    load(queue[pos]);
+    start();
+    return true;
   };
 
   // the bar sits in an open panel, so it stays above it; back on the page when the panel closes
@@ -93,7 +132,10 @@ function setup(bar: HTMLElement) {
       audio.pause();
       return;
     }
-    if (b.dataset.preview !== current) load(b);
+    if (b.dataset.preview !== current) {
+      queueFrom(b);
+      load(queue[0]);
+    }
     place();
     if (!bar.classList.contains('is-open')) {
       bar.hidden = false;
@@ -113,12 +155,30 @@ function setup(bar: HTMLElement) {
   });
   audio.addEventListener('playing', () => setLoading(false));
   audio.addEventListener('waiting', () => !audio.paused && setLoading(true));
-  for (const ev of ['pause', 'ended', 'error', 'emptied']) audio.addEventListener(ev, () => setLoading(false));
+  for (const ev of ['pause', 'ended', 'error']) audio.addEventListener(ev, () => setLoading(false));
   audio.addEventListener('timeupdate', () => {
     const d = audio.duration || 30;
     progress.style.setProperty('--p', String(Math.min(1, audio.currentTime / d)));
   });
-  audio.addEventListener('ended', () => progress.style.setProperty('--p', '0'));
+  audio.addEventListener('ended', () => {
+    progress.style.setProperty('--p', '0');
+    // one after the other
+    step(1);
+  });
+  // a song that will not load is skipped
+  audio.addEventListener('error', () => {
+    const failed = current;
+    window.setTimeout(() => current === failed && step(1), 1200);
+  });
+  // the next and previous buttons of headphones and the lock screen
+  if ('mediaSession' in navigator) {
+    try {
+      navigator.mediaSession.setActionHandler('nexttrack', () => step(1));
+      navigator.mediaSession.setActionHandler('previoustrack', () => step(-1));
+    } catch {
+      /* not offered by this browser */
+    }
+  }
   // a full player opening in a panel takes over from the preview
   document.addEventListener('click', (e) => {
     if ((e.target as HTMLElement).closest('[data-embed]')) audio.pause();
