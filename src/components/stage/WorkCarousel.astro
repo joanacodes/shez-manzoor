@@ -40,7 +40,7 @@ const first = items[0];
                   <Picture
                     src={w.image}
                     widths={[150, 220, 300, 400]}
-                    sizes="(min-width: 900px) 190px, 136px"
+                    sizes="(min-width: 600px) and (max-aspect-ratio: 17/20) 200px, (min-width: 900px) 190px, 136px"
                     formats={['avif', 'webp']}
                     alt=""
                     loading={i < 4 || i > items.length - 4 ? 'eager' : 'lazy'}
@@ -313,6 +313,13 @@ const first = items[0];
   }
   .work__by { max-width: 100%; font-size: 0.78rem; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+  /* portrait tablets have room below the stage for bigger covers */
+  @media (min-width: 600px) and (max-aspect-ratio: 17/20) {
+    .work { --card-w: 196px; --card-gap: 24px; }
+    .work__title { font-size: 1.6rem; }
+    .work__cat { font-size: 0.66rem; }
+    .work__by { font-size: 0.86rem; }
+  }
   @media (min-width: 900px) {
     .work { --card-w: 160px; --card-gap: 22px; padding-bottom: 1.1rem; }
     .work__title { font-size: 1.6rem; }
