@@ -63,8 +63,13 @@ async function get(url, as = 'json') {
 }
 
 async function save(url, name) {
+  const target = path.join(ART_DIR, name);
+  if (process.env.REFRESH !== '1') {
+    const existing = await fs.stat(target).catch(() => null);
+    if (existing?.size) return { file: name, bytes: existing.size, cached: true };
+  }
   const buf = await get(url, 'buffer');
-  await fs.writeFile(path.join(ART_DIR, name), buf);
+  await fs.writeFile(target, buf);
   return { file: name, bytes: buf.length };
 }
 
@@ -375,7 +380,8 @@ for (const id of [...trackIds].slice(0, 40)) {
       name: e.name ?? e.title,
       artists: (e.artists ?? []).map((a) => a.name),
       releaseDate: e.releaseDate?.isoString?.slice(0, 10) ?? null,
-      album: e.albumUri ?? e.album?.uri ?? null,
+      album: e.albumUri ?? e.album?.uri ?? (String(e.relatedEntityUri ?? '').startsWith('spotify:album:') ? e.relatedEntityUri : null),
+      related: e.relatedEntityUri ?? null,
       cover: (e.coverArt?.sources ?? e.visualIdentity?.image ?? []).map((x) => x.url).slice(-1)[0] ?? null,
       keys: Object.keys(e).join(','),
     };
@@ -387,6 +393,66 @@ for (const id of [...trackIds].slice(0, 40)) {
     log(`  embed track ${id}: ${info.name} | ${info.artists.join(', ')} | ${info.releaseDate} | album ${info.album} | keys ${info.keys}`);
   } catch (err) {
     catalog.errors.push(`spotify embed track ${id}: ${err.message}`);
+  }
+}
+// Covers for the tracks, so features that live on other artists' pages still get artwork
+const coverFiles = new Map();
+for (const info of Object.values(catalog.spotify.trackInfo)) {
+  if (!info.cover) continue;
+  if (!coverFiles.has(info.cover)) {
+    const name = `spotify-cover-${info.cover.split('/').pop().slice(-12)}.jpg`;
+    try {
+      await save(info.cover, name);
+      coverFiles.set(info.cover, name);
+    } catch (err) {
+      catalog.errors.push(`spotify cover ${info.cover}: ${err.message}`);
+      continue;
+    }
+  }
+  info.coverFile = coverFiles.get(info.cover);
+}
+// Spotify tracks that are not on his Apple artist pages (features on other artists' records):
+// find them on Apple Music too, so every song can be played on both services
+const plain = (s) => slugify(String(s).replace(/\(.*?\)|\[.*?\]| - (single|ep)$/gi, ''));
+const appleTitles = new Set(catalog.releases.flatMap((r) => [plain(r.title), ...(r.tracks ?? []).map((t) => plain(t.title))]));
+catalog.extra = [];
+for (const [id, info] of Object.entries(catalog.spotify.trackInfo)) {
+  if (appleTitles.has(plain(info.name))) continue;
+  try {
+    const results = await itunes({ term: `${info.name} ${info.artists[0] ?? ''}`.trim(), entity: 'song', limit: '25' });
+    const hit = results.find((r) => plain(r.trackName) === plain(info.name)) ?? results.find((r) => plain(r.trackName).startsWith(plain(info.name).slice(0, 10)));
+    const entry = {
+      spotifyId: id,
+      slug: plain(info.name),
+      title: info.name,
+      artists: info.artists,
+      releaseDate: info.releaseDate,
+      spotifyCover: info.coverFile ?? null,
+      apple: null,
+    };
+    if (hit) {
+      const art = `release-${plain(info.name)}.jpg`;
+      try {
+        await save(big(hit.artworkUrl100, 1200, 1200), art);
+      } catch (err) {
+        catalog.errors.push(`apple art ${info.name}: ${err.message}`);
+      }
+      entry.apple = {
+        trackId: hit.trackId,
+        collectionId: hit.collectionId,
+        collection: hit.collectionName,
+        artist: hit.artistName,
+        url: hit.trackViewUrl,
+        releaseDate: hit.releaseDate?.slice(0, 10) ?? null,
+        ms: hit.trackTimeMillis ?? null,
+        genre: hit.primaryGenreName ?? null,
+        artwork: art,
+      };
+    }
+    catalog.extra.push(entry);
+    log(`- extra ${info.name}: apple ${hit ? hit.trackViewUrl : 'not found'}`);
+  } catch (err) {
+    catalog.errors.push(`apple search ${info.name}: ${err.message}`);
   }
 }
 // The version of the artist page served to search engines may list the discography
@@ -404,8 +470,17 @@ try {
 for (const id of [...albumIds].filter((x) => !catalog.spotify.albums.some((a) => a.id === x)).slice(0, 40)) {
   try {
     const o = await get(`https://open.spotify.com/oembed?url=${encodeURIComponent(`https://open.spotify.com/album/${id}`)}`);
-    catalog.spotify.albums.push({ id, url: `https://open.spotify.com/album/${id}`, title: o.title, thumbnail: o.thumbnail_url ?? null });
-    log(`- album ${id} | ${o.title}`);
+    const album = { id, url: `https://open.spotify.com/album/${id}`, title: o.title, thumbnail: o.thumbnail_url ?? null, tracks: [] };
+    try {
+      const { text } = await get(`https://open.spotify.com/embed/album/${id}`, 'text');
+      const e = findEntity(nextData(text));
+      album.tracks = (e?.trackList ?? []).map((t) => ({ uri: t.uri, title: t.title, ms: t.duration }));
+      album.releaseDate = e?.releaseDate?.isoString?.slice(0, 10) ?? null;
+    } catch (err) {
+      catalog.errors.push(`spotify album embed ${id}: ${err.message}`);
+    }
+    catalog.spotify.albums.push(album);
+    log(`- album ${id} | ${o.title} | ${album.tracks.length} tracks`);
   } catch (err) {
     catalog.errors.push(`spotify album ${id}: ${err.message}`);
   }
