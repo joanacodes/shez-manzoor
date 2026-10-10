@@ -455,6 +455,40 @@ for (const [id, info] of Object.entries(catalog.spotify.trackInfo)) {
     catalog.errors.push(`apple search ${info.name}: ${err.message}`);
   }
 }
+// The albums those songs come from (such as a series soundtrack), with their full track lists
+for (const e of catalog.extra) {
+  const id = e.apple?.collectionId;
+  if (!id || catalog.soundtracks.some((s) => s.appleId === id)) continue;
+  try {
+    const results = await itunes({ id: String(id), entity: 'song' });
+    const album = results.find((r) => r.wrapperType === 'collection');
+    if (!album) continue;
+    const slug = slugify(album.collectionName);
+    const art = `soundtrack-${slug}.jpg`;
+    try {
+      await save(big(album.artworkUrl100, 1200, 1200), art);
+    } catch (err) {
+      catalog.errors.push(`soundtrack art ${album.collectionName}: ${err.message}`);
+    }
+    catalog.soundtracks.push({
+      slug,
+      title: album.collectionName,
+      artist: album.artistName,
+      appleId: album.collectionId,
+      appleUrl: album.collectionViewUrl?.split('?')[0] ?? null,
+      releaseDate: album.releaseDate?.slice(0, 10) ?? null,
+      trackCount: album.trackCount,
+      genre: album.primaryGenreName ?? null,
+      artwork: art,
+      tracks: results
+        .filter((r) => r.wrapperType === 'track')
+        .map((t) => ({ title: t.trackName, number: t.trackNumber, disc: t.discNumber, ms: t.trackTimeMillis ?? null, artist: t.artistName, appleUrl: t.trackViewUrl?.split('&uo')[0] ?? null })),
+    });
+    log(`- soundtrack ${album.collectionName}: ${album.trackCount} tracks`);
+  } catch (err) {
+    catalog.errors.push(`apple album ${id}: ${err.message}`);
+  }
+}
 // The version of the artist page served to search engines may list the discography
 try {
   const res = await fetch(spotifyUrl, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' } });
