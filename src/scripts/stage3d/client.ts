@@ -6,7 +6,7 @@
 import type { Stage, Pickable } from './scene';
 
 type Phase = 'loading' | 'intro' | 'ready';
-type Data = { channels: { video: string }[]; setlist: string[] };
+type Data = { channels: { video: string; still?: string }[]; setlist: string[] };
 
 const stageEl = document.querySelector<HTMLElement>('[data-stage]');
 if (stageEl) void init(stageEl);
@@ -79,7 +79,7 @@ async function init(el: HTMLElement) {
     }
   };
 
-  /* ---------- skipping the intro ---------- */
+  /* ---------- the intro finishes at once when someone scrolls or uses the keyboard ---------- */
   const skip = () => {
     if (phase === 'ready') return;
     skipped = true;
@@ -90,7 +90,6 @@ async function init(el: HTMLElement) {
     }
     setPhase('ready');
   };
-  el.querySelector('[data-stage-skip]')?.addEventListener('click', skip);
   const skipOnce = (e: Event) => {
     if (phase === 'ready') return;
     if (e.type === 'keydown') {

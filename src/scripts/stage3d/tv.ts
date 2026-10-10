@@ -10,6 +10,8 @@ import { decal, speakerCloth, walnut } from './textures';
 export type Channel = {
   /** short muted clip of his film and TV work */
   video: string;
+  /** a frame of it, shown until the clip plays */
+  still?: string;
 };
 
 const screenVert = /* glsl */ `
@@ -175,84 +177,96 @@ export function createTV(fonts: { serif: string; mono: string }) {
   }
 
   /* ---------- channels: his clips, one after another ---------- */
+  // One video element plays every clip. It sits in the page (iOS only decodes frames for those)
+  // and, once a tap has started it, iOS lets it play the next clips by itself too. A still of
+  // each clip shows until its video runs, so the set is never blank.
   let channels: Channel[] = [];
   let current = -1;
-  let showing = 0; // which show() call is the latest
-  let video: HTMLVideoElement | null = null;
-  let texture: THREE.VideoTexture | null = null;
-  let upcoming: HTMLVideoElement | null = null; // the next clip, loading while this one plays
   let ended = false;
   let noSignal = true;
+  let blocked = false; // the browser wants a tap first (iPhone in Low Power Mode, data saver)
+  let waiting = false; // the still is on, the clip has not started yet
+  const video = document.createElement('video');
+  video.muted = true;
+  video.defaultMuted = true;
+  video.playsInline = true;
+  video.setAttribute('playsinline', '');
+  video.setAttribute('muted', '');
+  video.setAttribute('aria-hidden', 'true');
+  video.preload = 'auto';
+  Object.assign(video.style, { position: 'fixed', left: '0', top: '0', width: '2px', height: '2px', opacity: '0', pointerEvents: 'none' });
+  document.body.append(video);
+  const videoTex = new THREE.VideoTexture(video);
+  videoTex.colorSpace = THREE.SRGBColorSpace;
+  const loader = new THREE.TextureLoader();
+  const stills = new Map<string, THREE.Texture>();
   const glowColor = new THREE.Color(0.6, 0.7, 1.0);
   const tint = document.createElement('canvas');
   tint.width = tint.height = 1;
   const tintCtx = tint.getContext('2d', { willReadFrequently: true })!;
   let tintedAt = 0;
 
-  function off() {
-    uniforms.uTex.value = placeholder;
-    uniforms.uScale.value.set(1, 1);
-    video?.pause();
-    video?.removeAttribute('src');
-    video?.load();
-    texture?.dispose();
-    video = null;
-    texture = null;
-  }
-
-  function load(src: string) {
-    const v = document.createElement('video');
-    v.muted = true;
-    v.playsInline = true;
-    v.preload = 'auto';
-    v.src = src;
-    v.addEventListener('ended', () => {
-      if (v === video) ended = true;
-    });
-    return v;
-  }
-
-  async function show(index: number) {
-    const ch = channels[index];
-    if (!ch) return;
-    const call = ++showing;
-    current = index;
-    ended = false;
-    // static while the set changes channel
-    noSignal = true;
-    const v = upcoming?.getAttribute('src') === ch.video ? upcoming : load(ch.video);
-    upcoming = null;
-    try {
-      // static while it loads; a clip that cannot start within 20 seconds counts as not playing
-      await Promise.race([v.play(), new Promise((_, fail) => window.setTimeout(() => fail(new Error('timeout')), 20000))]);
-    } catch {
-      v.pause();
-      v.removeAttribute('src');
-      v.load();
-      // cannot play here: a moment of static, then the next clip
-      if (call !== showing) return;
-      off();
-      noSignal = true;
-      window.setTimeout(() => {
-        if (call === showing) ended = true;
-      }, 2000);
-      return;
-    }
-    if (call !== showing) {
-      v.pause();
-      return;
-    }
-    off();
-    video = v;
-    texture = new THREE.VideoTexture(v);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    uniforms.uTex.value = texture;
-    // a widescreen film on an old set: trimmed to 16:9 at most, with bars top and bottom
-    const aspect = v.videoWidth / v.videoHeight || 16 / 9;
+  // a widescreen film on an old set: trimmed to 16:9 at most, with bars top and bottom
+  const fit = (w: number, h: number) => {
+    const aspect = w / h || 16 / 9;
     const film = Math.min(aspect, 16 / 9);
     uniforms.uScale.value.set(film / aspect, film / (sw / sh));
+  };
+  const showStill = (src: string) => {
+    const put = (t: THREE.Texture) => {
+      if (!waiting || channels[current]?.still !== src) return;
+      uniforms.uTex.value = t;
+      const img = t.image as HTMLImageElement;
+      fit(img.width, img.height);
+      noSignal = false;
+    };
+    const known = stills.get(src);
+    if (known) return put(known);
+    loader.load(src, (t) => {
+      t.colorSpace = THREE.SRGBColorSpace;
+      stills.set(src, t);
+      put(t);
+    });
+  };
+
+  video.addEventListener('playing', () => {
+    waiting = false;
+    blocked = false;
+    uniforms.uTex.value = videoTex;
+    fit(video.videoWidth, video.videoHeight);
     noSignal = false;
-    if (channels.length > 1) upcoming = load(channels[(index + 1) % channels.length].video);
+  });
+  video.addEventListener('ended', () => (ended = true));
+  const skip = () => {
+    noSignal = true;
+    window.setTimeout(() => (ended = true), 2000);
+  };
+  video.addEventListener('error', () => video.getAttribute('src') && skip());
+
+  const start = () => {
+    video.play().catch((err: DOMException) => {
+      if (err.name === 'NotAllowedError') blocked = true; // the still stays until a tap
+      else if (err.name !== 'AbortError') skip();
+    });
+  };
+  // the first tap anywhere on the page starts it (play() has to be called during the tap)
+  const unlock = () => {
+    if (!blocked || !channels.length) return;
+    blocked = false;
+    start();
+  };
+  for (const type of ['pointerup', 'touchend', 'click', 'keydown']) addEventListener(type, unlock, { capture: true, passive: true });
+
+  function show(index: number) {
+    const ch = channels[index];
+    if (!ch) return;
+    current = index;
+    ended = false;
+    waiting = true;
+    noSignal = !ch.still;
+    if (ch.still) showStill(ch.still);
+    video.src = ch.video;
+    start();
   }
 
   return {
@@ -262,7 +276,7 @@ export function createTV(fonts: { serif: string; mono: string }) {
     /** the colour the picture throws on the stage, read from the film a few times a second */
     get glow() {
       const now = performance.now();
-      if (video && now - tintedAt > 400) {
+      if (!waiting && video.readyState >= 2 && now - tintedAt > 400) {
         tintedAt = now;
         try {
           tintCtx.drawImage(video, 0, 0, 1, 1);
@@ -284,15 +298,16 @@ export function createTV(fonts: { serif: string; mono: string }) {
     },
     /** what is on, for debugging */
     get onAir() {
-      return video ? `${decodeURIComponent(video.currentSrc.split('/').pop() ?? '')}@${video.currentTime.toFixed(1)}` : null;
+      if (!video.currentSrc) return null;
+      const name = decodeURIComponent(video.currentSrc.split('/').pop() ?? '');
+      return waiting ? `${name} (still${blocked ? ', waiting for a tap' : ''})` : `${name}@${video.currentTime.toFixed(1)}`;
     },
     setChannels(list: Channel[]) {
       channels = list;
       if (list.length) void show(0);
     },
     async next() {
-      if (!channels.length) return;
-      await show((current + 1) % channels.length);
+      if (channels.length) show((current + 1) % channels.length);
     },
   };
 }

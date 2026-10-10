@@ -16,7 +16,7 @@ import stillWide from '../../assets/stage/stage-wide.jpg';
 import stillPhoneLand from '../../assets/stage/stage-phoneland.jpg';
 
 // the TV only plays clips: films and series without one are in the credits
-const channels = screenChannels().map(({ video }) => ({ video }));
+const channels = screenChannels().map(({ video, still }) => ({ video, still }));
 const data = JSON.stringify({ channels, setlist: setlistTitles });
 
 // stills of the same stage, one per screen shape, for devices without the 3D scene (rendered from it, see README)
@@ -63,7 +63,6 @@ const fallbackSrc = (await getImage({ src: stillWide, width: 1280, format: 'jpg'
 
   <slot />
 
-  <button class="stage__skip" type="button" data-stage-skip>Skip intro</button>
   <span class="stage__label" data-stage-label aria-hidden="true"></span>
   <script type="application/json" data-stage-data set:html={data} />
 </section>
@@ -132,8 +131,7 @@ const fallbackSrc = (await getImage({ src: stillWide, width: 1280, format: 'jpg'
   :global(html:not(.js)) .stage__fallback { opacity: 1; }
   /* without JavaScript there is no intro: everything is simply there */
   :global(html:not(.js)) .stage__inner { transform: none !important; }
-  :global(html:not(.js)) .stage__loader,
-  :global(html:not(.js)) .stage__skip { display: none; }
+  :global(html:not(.js)) .stage__loader { display: none; }
   :global(html:not(.js) .work) { opacity: 1 !important; pointer-events: auto !important; }
   .stage__fallback img {
     position: absolute;
@@ -228,32 +226,6 @@ const fallbackSrc = (await getImage({ src: stillWide, width: 1280, format: 'jpg'
     to { transform: translateX(250%); }
   }
   .stage:not([data-phase='loading']) .stage__loader { opacity: 0; }
-
-  /* ---------- controls ---------- */
-  .stage__skip {
-    position: absolute;
-    z-index: 3;
-    bottom: max(1rem, env(safe-area-inset-bottom));
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--ink-2);
-    background: rgb(11 9 18 / 0.55);
-    border: 1px solid var(--hair-2);
-    border-radius: 999px;
-    padding: 0.7rem 1rem;
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    transition: opacity 0.5s, transform 0.5s var(--ease-out), color 0.3s, border-color 0.3s;
-  }
-  .stage__skip { right: var(--gutter); cursor: pointer; }
-  .stage__skip:hover { color: var(--ink); border-color: var(--accent); }
-  .stage[data-phase='ready'] .stage__skip { opacity: 0; pointer-events: none; transform: translateY(8px); }
 
   .stage__tip {
     position: absolute;

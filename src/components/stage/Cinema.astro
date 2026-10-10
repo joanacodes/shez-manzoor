@@ -53,8 +53,10 @@ const row = (y: number, s: number, pitch: number, from: number, start: number) =
   return out;
 };
 // shoulders are 128 wide at full size: a pitch of 100 to 104 keeps everyone touching
-const front = row(252, 0.62, 62, -70, 3);
-const back = row(380, 1, 104, -110, 0);
+// three rows, smaller with distance, each row's heads clear of the row in front
+const far = row(222, 0.5, 50, -60, 3);
+const middle = row(296, 0.72, 72, -90, 7);
+const near = row(388, 1, 104, -110, 0);
 ---
 
 {
@@ -64,35 +66,36 @@ const back = row(380, 1, 104, -110, 0);
         <div class="cinema__beam" aria-hidden="true" />
         <div class="cinema__screen" data-cinema-screen role="group" aria-roledescription="slideshow" aria-label="Now showing: clips of his film and television work">
           {channels.map((c, i) => (
-            <figure class:list={['cinema__slide', i === 0 && 'is-on']} data-cinema-slide>
-              <video
-                class="cinema__video"
-                muted
-                playsinline
-                preload="none"
-                data-src={c.video}
-                poster={i === 0 ? c.still : undefined}
-                data-poster={c.still}
-                aria-hidden="true"
-              />
+            <figure class:list={['cinema__slide', i === 0 && 'is-on']} data-cinema-slide data-video={c.video}>
+              {c.still && <img class="cinema__still" src={i === 0 ? c.still : undefined} data-src={c.still} alt="" decoding="async" />}
             </figure>
           ))}
+          {/* one player for every clip: once a tap has started it, iPhones let it play the rest */}
+          <video class="cinema__video" data-cinema-video muted playsinline preload="none" aria-hidden="true" />
+          <button class="cinema__play" type="button" data-cinema-play hidden aria-label="Play the clips">
+            <Icon name="play" />
+          </button>
           <span class="cinema__sheen" aria-hidden="true" />
         </div>
         <svg class="cinema__audience" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
           <defs>
             {/* light from the screen: the far row catches more of it, the near row only on the tops of heads */}
-            <linearGradient id="audience-far" gradientUnits="userSpaceOnUse" x1="0" y1="135" x2="0" y2="360">
+            <linearGradient id="audience-far" gradientUnits="userSpaceOnUse" x1="0" y1="140" x2="0" y2="360">
               <stop offset="0" class="cinema__light cinema__light--far" />
               <stop offset="1" class="cinema__light cinema__light--far-low" />
             </linearGradient>
-            <linearGradient id="audience-near" gradientUnits="userSpaceOnUse" x1="0" y1="212" x2="0" y2="345">
+            <linearGradient id="audience-middle" gradientUnits="userSpaceOnUse" x1="0" y1="182" x2="0" y2="360">
+              <stop offset="0" class="cinema__light cinema__light--middle" />
+              <stop offset="1" class="cinema__light cinema__light--middle-low" />
+            </linearGradient>
+            <linearGradient id="audience-near" gradientUnits="userSpaceOnUse" x1="0" y1="232" x2="0" y2="360">
               <stop offset="0" class="cinema__light cinema__light--near" />
               <stop offset="1" class="cinema__light cinema__light--dark" />
             </linearGradient>
           </defs>
-          <g class="cinema__row cinema__row--front" set:html={front} />
-          <g class="cinema__row cinema__row--back" set:html={back} />
+          <g class="cinema__row cinema__row--far" set:html={far} />
+          <g class="cinema__row cinema__row--middle" set:html={middle} />
+          <g class="cinema__row cinema__row--near" set:html={near} />
         </svg>
       </div>
 
@@ -185,14 +188,38 @@ const back = row(380, 1, 104, -110, 0);
   }
   .cinema__slide.is-on { opacity: 1; }
   /* films are wider than the screen: shown whole, with dark bars like a projection */
+  .cinema__still,
   .cinema__video {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: contain;
-    background: #050409;
   }
+  .cinema__still { background: #050409; }
+  .cinema__video { opacity: 0; transition: opacity 0.5s ease; }
+  .cinema__video.is-playing { opacity: 1; }
+  /* when the phone wants a tap before playing (Low Power Mode, data saver) */
+  .cinema__play {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    margin: -32px 0 0 -32px;
+    border-radius: 50%;
+    border: 1px solid rgb(255 255 255 / 0.35);
+    background: rgb(11 9 18 / 0.55);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    cursor: pointer;
+  }
+  .cinema__play[hidden] { display: none; }
+  .cinema__play :global(svg) { width: 22px; height: 22px; margin-left: 3px; }
   .cinema__sheen {
     position: absolute;
     inset: 0;
@@ -241,17 +268,21 @@ const back = row(380, 1, 104, -110, 0);
   }
   /* only the top edges catch the light from the screen */
   .cinema__row { fill: #040307; transition: filter 1.2s ease; }
-  .cinema__row--front { fill: url(#audience-far); }
-  .cinema__row--back { fill: url(#audience-near); }
+  .cinema__row--far { fill: url(#audience-far); }
+  .cinema__row--middle { fill: url(#audience-middle); }
+  .cinema__row--near { fill: url(#audience-near); }
   /* tinted by the film: --tint is the most vivid colour on screen */
   .cinema__light { stop-color: #040307; transition: stop-color 1.2s ease; }
-  /* two rows that read apart: the far row, nearer the screen, lit; the near row almost black in front of it */
+  /* three rows that read apart: the far row, nearest the screen, catches the most light, the near row almost none */
   .cinema__light--far { stop-color: color-mix(in srgb, rgb(var(--tint)) 28%, #15111c); }
   .cinema__light--far-low { stop-color: color-mix(in srgb, rgb(var(--tint)) 14%, #0f0c15); }
-  .cinema__light--near { stop-color: color-mix(in srgb, rgb(var(--tint)) 5%, #050408); }
+  .cinema__light--middle { stop-color: color-mix(in srgb, rgb(var(--tint)) 14%, #0e0b14); }
+  .cinema__light--middle-low { stop-color: color-mix(in srgb, rgb(var(--tint)) 6%, #08070c); }
+  .cinema__light--near { stop-color: color-mix(in srgb, rgb(var(--tint)) 4%, #040307); }
   .cinema__light--dark { stop-color: #020103; }
-  .cinema__row--front { filter: drop-shadow(0 -1px 0 rgb(var(--tint) / 0.35)) drop-shadow(0 -4px 8px rgb(var(--tint) / 0.12)); }
-  .cinema__row--back { filter: drop-shadow(0 -1.5px 0 rgb(var(--tint) / 0.6)) drop-shadow(0 -8px 14px rgb(var(--tint) / 0.18)); }
+  .cinema__row--far { filter: drop-shadow(0 -1px 0 rgb(var(--tint) / 0.3)) drop-shadow(0 -3px 6px rgb(var(--tint) / 0.1)); }
+  .cinema__row--middle { filter: drop-shadow(0 -1px 0 rgb(var(--tint) / 0.42)) drop-shadow(0 -5px 10px rgb(var(--tint) / 0.14)); }
+  .cinema__row--near { filter: drop-shadow(0 -1.5px 0 rgb(var(--tint) / 0.55)) drop-shadow(0 -8px 14px rgb(var(--tint) / 0.18)); }
   @media (min-width: 900px) {
     .cinema__audience { --h: min(clamp(220px, 26vw, 340px), 40svh); }
   }
