@@ -4,6 +4,9 @@ import Base from '../layouts/Base.astro';
 import StageHero from '../components/stage/StageHero.astro';
 import WorkCarousel from '../components/stage/WorkCarousel.astro';
 import WorkDetails from '../components/stage/WorkDetails.astro';
+import Honours from '../components/stage/Honours.astro';
+import PreviewPlayer from '../components/stage/PreviewPlayer.astro';
+import { thumbOf } from '../lib/thumbs';
 import Award from '../components/Award.astro';
 import Faq from '../components/Faq.astro';
 import ContactCta from '../components/ContactCta.astro';
@@ -19,6 +22,7 @@ const site = Astro.site;
 const jsonLd = graph([websiteSchema(site), personSchema(site, absolute('/og/default.jpg', site)), workSchema(work, site), faqSchema(faq)]);
 const screen = work.filter((w) => w.kind === 'screen');
 const records = work.filter((w) => w.kind === 'record').sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''));
+const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await thumbOf(w.image)] as const)));
 ---
 
 <Base
@@ -48,8 +52,11 @@ const records = work.filter((w) => w.kind === 'record').sort((a, b) => (b.date ?
   <div class="after">
     <!-- ---------- about ---------- -->
     <section id="about" class="section about" aria-labelledby="about-title">
+      <div class="wrap">
+        <Honours />
+      </div>
       <div class="wrap about__grid">
-        <figure class="about__photo" data-reveal>
+        <figure class="about__photo" data-reveal data-tint>
           <Picture
             src={photo}
             alt="Shez Manzoor singing and playing an electric guitar on stage under warm light"
@@ -135,7 +142,7 @@ const records = work.filter((w) => w.kind === 'record').sort((a, b) => (b.date ?
         <ol class="disco" role="list">
           {
             records.map((w) => (
-              <li data-reveal>
+              <li class="disco__item" data-reveal>
                 <button class="disco__row" type="button" data-open-work={w.id}>
                   <span class="disco__art">
                     {w.image && <Picture src={w.image} widths={[96, 144, 192]} sizes="64px" formats={['avif', 'webp']} alt="" loading="lazy" decoding="async" />}
@@ -150,6 +157,22 @@ const records = work.filter((w) => w.kind === 'record').sort((a, b) => (b.date ?
                   </time>
                   <Icon name="plus" class="disco__plus" />
                 </button>
+                {w.preview && (
+                  <button
+                    class="disco__play"
+                    type="button"
+                    data-preview={w.preview.url}
+                    data-preview-title={w.preview.title}
+                    data-preview-by={w.artist}
+                    data-preview-art={thumbs.get(w.id)}
+                    data-preview-apple={w.listen.apple?.url}
+                    data-preview-spotify={w.listen.spotify?.url}
+                    aria-pressed="false"
+                    aria-label={`Play a 30-second preview of ${w.preview.title}`}
+                  >
+                    <Icon name="play" />
+                  </button>
+                )}
               </li>
             ))
           }
@@ -185,28 +208,57 @@ const records = work.filter((w) => w.kind === 'record').sort((a, b) => (b.date ?
   </div>
 
   <WorkDetails items={work} />
+  <PreviewPlayer />
 </Base>
 
+<script>
+  // the photo of Shez is purple until it crosses the middle of the screen
+  const photo = document.querySelector<HTMLElement>('[data-tint]');
+  if (photo) {
+    new IntersectionObserver(([entry]) => photo.classList.toggle('is-lit', entry.isIntersecting), {
+      rootMargin: '-50% 0px -50% 0px',
+    }).observe(photo);
+  }
+</script>
+
 <style>
-  /* everything after the stage slides over it */
+  /* everything after the stage scrolls over it; the stage stays behind, dimmed (see StageHero) */
   .after {
     position: relative;
     z-index: 1;
-    background: var(--stage);
-    box-shadow: 0 -80px 120px 40px var(--stage);
   }
 
   /* ---------- about ---------- */
   .about__grid { display: grid; gap: 2.5rem; }
-  .about__photo { margin: 0; }
+  .about__photo { position: relative; margin: 0; }
+  .about__photo :global(picture) {
+    position: relative;
+    display: block;
+    border-radius: var(--radius);
+    overflow: hidden;
+    isolation: isolate;
+  }
   .about__photo :global(img) {
     display: block;
     width: 100%;
     aspect-ratio: 4 / 5;
     object-fit: cover;
     object-position: 50% 30%;
-    border-radius: var(--radius);
+    filter: contrast(1.06) brightness(1.12);
+    transition: filter 1.4s var(--ease-out);
   }
+  /* purple until the photo reaches the middle of the screen, then its own colours */
+  .about__photo :global(picture)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(165deg, #d9ccff 0%, #8a63ff 50%, #4b2bb0 100%);
+    mix-blend-mode: color;
+    transition: opacity 1.4s var(--ease-out);
+    pointer-events: none;
+  }
+  .about__photo.is-lit :global(img) { filter: none; }
+  .about__photo.is-lit :global(picture)::after { opacity: 0; }
   .about__photo figcaption { margin-top: 0.85rem; }
   .about__text h2 { font-size: var(--fs-h2); margin-top: 1.1rem; }
   .about__text h2 em,
@@ -286,6 +338,28 @@ const records = work.filter((w) => w.kind === 'record').sort((a, b) => (b.date ?
     cursor: pointer;
   }
   .disco__row:hover { background: linear-gradient(90deg, rgb(var(--violet-rgb) / 0.12), transparent 70%); }
+  .disco__item { position: relative; }
+  /* a preview button sits on each cover */
+  .disco__play {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    translate: 0 -50%;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(11 9 18 / 0.72);
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s, scale 0.3s var(--ease-out);
+  }
+  .disco__play :global(svg) { width: 13px; height: 13px; margin-left: 2px; }
+  .disco__play:hover,
+  .disco__play.is-playing { background: var(--mint); color: #0b0912; scale: 1.08; }
   .disco__art { grid-area: art; display: block; width: 56px; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: #120e1b; }
   .disco__art :global(img) { width: 100%; height: 100%; object-fit: cover; display: block; }
   .disco__title { grid-area: title; font-family: var(--serif); font-size: 1.3rem; line-height: 1.1; }
@@ -323,8 +397,16 @@ const records = work.filter((w) => w.kind === 'record').sort((a, b) => (b.date ?
     .credit__badge { display: block; }
     .disco__row { grid-template-columns: 64px minmax(0, 1fr) 9rem 11rem; grid-template-areas: 'art title type date'; }
     .disco__art { width: 64px; }
+    .disco__play { left: 17px; }
     .disco__type,
     .disco__date { margin-top: 0; }
+  }
+  @media (orientation: landscape) and (max-height: 520px) {
+    .about__grid { grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr); gap: 2.5rem; align-items: start; }
+    .about__photo { position: sticky; top: calc(var(--header-h) + 1rem); }
+    .about__photo :global(img) { max-height: 78svh; }
+    .faq-grid { grid-template-columns: 0.7fr 1.3fr; gap: 2.5rem; }
+    .quote blockquote p { font-size: clamp(1.8rem, 10svh, 3rem); }
   }
   @media (min-width: 1100px) {
     .about__grid { grid-template-columns: 0.85fr 1fr; gap: 6rem; align-items: center; }

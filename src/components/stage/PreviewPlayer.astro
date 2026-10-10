@@ -1,0 +1,86 @@
+---
+/** The bar that plays 30-second previews (see scripts/preview.ts). */
+import Icon from '../Icon.astro';
+---
+
+<div class="player" data-player-bar hidden role="region" aria-label="Song preview">
+  <img class="player__art" data-player-art alt="" width="44" height="44" hidden />
+  <div class="player__text">
+    <p class="player__title" data-player-title></p>
+    <p class="player__by"><span data-player-by></span> <span class="player__tag">30-second preview</span></p>
+    <div class="player__progress" data-player-progress aria-hidden="true"><span></span></div>
+  </div>
+  <div class="player__links">
+    <a data-player-apple target="_blank" rel="noopener" aria-label="Full song on Apple Music"><Icon name="note" /></a>
+    <a data-player-spotify target="_blank" rel="noopener" aria-label="Full song on Spotify"><Icon name="spotify" /></a>
+  </div>
+  <button class="player__toggle" type="button" data-player-toggle aria-label="Play preview">
+    <span class="player__icon player__icon--play"><Icon name="play" /></span>
+    <span class="player__icon player__icon--pause" aria-hidden="true"><i></i><i></i></span>
+  </button>
+  <button class="player__close" type="button" data-player-close aria-label="Close preview"><Icon name="close" /></button>
+</div>
+
+<script>
+  import '../../scripts/preview';
+</script>
+
+<style>
+  .player {
+    position: fixed;
+    z-index: 60;
+    left: 50%;
+    bottom: max(0.75rem, env(safe-area-inset-bottom));
+    width: min(560px, calc(100% - 1.5rem));
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.55rem 0.5rem 0.5rem;
+    border-radius: 18px;
+    border: 1px solid var(--hair-2);
+    background: rgb(12 10 18 / 0.86);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 20px 50px -20px rgb(0 0 0 / 0.9);
+    transform: translate(-50%, 140%);
+    transition: transform 0.45s var(--ease-out);
+  }
+  .player.is-open { transform: translate(-50%, 0); }
+  .player[hidden] { display: none; }
+  .player__art { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; }
+  .player__text { min-width: 0; }
+  .player__title { margin: 0; font-family: var(--serif); font-size: 1.05rem; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .player__by { margin: 0.1rem 0 0; font-size: 0.74rem; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .player__tag { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mint); margin-left: 0.3rem; }
+  .player__progress { height: 2px; margin-top: 0.4rem; border-radius: 2px; background: var(--hair); overflow: hidden; }
+  .player__progress span { display: block; height: 100%; background: linear-gradient(90deg, var(--lavender), var(--mint)); transform-origin: left; transform: scaleX(var(--p, 0)); }
+  .player__links { display: flex; gap: 0.15rem; }
+  .player__links a,
+  .player__close,
+  .player__toggle {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 0;
+    background: none;
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+  .player__links a[hidden] { display: none; }
+  .player__links a:hover,
+  .player__close:hover { color: var(--ink); background: rgb(255 255 255 / 0.06); }
+  .player__links :global(svg),
+  .player__close :global(svg) { width: 18px; height: 18px; }
+  .player__toggle { width: 44px; height: 44px; background: var(--ink); color: #0b0912; }
+  .player__toggle :global(svg) { width: 18px; height: 18px; }
+  .player__icon--pause { display: none; gap: 4px; }
+  .player__icon--pause i { display: block; width: 4px; height: 14px; border-radius: 1px; background: currentColor; }
+  .player.is-playing .player__icon--play { display: none; }
+  .player.is-playing .player__icon--pause { display: flex; }
+  @media (max-width: 420px) {
+    .player__links { display: none; }
+  }
+</style>

@@ -329,3 +329,17 @@
   will-change: transform;
 }
 .cursor-light.is-on { opacity: 1; }
+
+/* Phones on their side: sizes follow the screen's height, not its width, so nothing is oversized */
+@media (orientation: landscape) and (max-height: 520px) {
+  :root {
+    --fs-display: clamp(3rem, 15svh, 5.5rem);
+    --fs-h1: clamp(2.4rem, 12svh, 4rem);
+    --fs-h2: clamp(2rem, 10svh, 3.2rem);
+    --fs-h3: clamp(1.35rem, 6svh, 1.9rem);
+    --fs-statement: clamp(1.35rem, 6svh, 2rem);
+    --fs-lede: 1.05rem;
+    --section: clamp(3rem, 16svh, 5rem);
+    --header-h: 56px;
+  }
+}

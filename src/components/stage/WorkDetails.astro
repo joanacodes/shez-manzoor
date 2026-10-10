@@ -8,11 +8,21 @@ import { Picture } from 'astro:assets';
 import Icon from '../Icon.astro';
 import { spotifyTrackEmbed, type WorkItem } from '../../data/work';
 import { href } from '../../lib/url';
+import { thumbOf } from '../../lib/thumbs';
 
 interface Props {
   items: WorkItem[];
 }
 const { items } = Astro.props;
+const thumbs = new Map(await Promise.all(items.map(async (w) => [w.id, await thumbOf(w.image)] as const)));
+// what every preview button of a piece of work carries to the player
+const previewData = (w: WorkItem, title: string) => ({
+  'data-preview-title': title,
+  'data-preview-by': w.kind === 'screen' ? (w.soundtrack?.artist ?? w.title) : w.artist,
+  'data-preview-art': thumbs.get(w.id),
+  'data-preview-apple': w.listen.apple?.url,
+  'data-preview-spotify': w.listen.spotify?.url,
+});
 ---
 
 <dialog class="detail" id="work-dialog" aria-labelledby="detail-title" data-work-dialog>
@@ -93,6 +103,11 @@ const { items } = Astro.props;
             <div class="detail__listen">
               <p class="label">{w.kind === 'screen' ? 'Listen to the soundtrack' : 'Listen'}</p>
               <div class="detail__buttons">
+                {w.preview && (
+                  <button class="play play--preview" type="button" data-preview={w.preview.url} {...previewData(w, w.preview.title)} aria-pressed="false">
+                    <Icon name="play" /> Play a preview
+                  </button>
+                )}
                 {w.listen.apple && (
                   <button class="play play--apple" type="button" data-embed={w.listen.apple.embed} data-height={w.listen.apple.height} data-name="Apple Music">
                     <Icon name="note" /> Play on Apple Music
@@ -147,11 +162,18 @@ const { items } = Astro.props;
                   <li>
                     <span class="n">{String(t.n).padStart(2, '0')}</span>
                     <span class="t">{t.title}</span>
-                    {t.spotify && (
-                      <button class="track-play" type="button" data-embed={spotifyTrackEmbed(t.spotify)} data-height="152" data-name="Spotify" aria-label={`Play ${t.title} on Spotify`}>
-                        <Icon name="play" />
-                      </button>
-                    )}
+                    <span class="track-actions">
+                      {t.preview && (
+                        <button class="track-preview" type="button" data-preview={t.preview} {...previewData(w, t.title)} aria-pressed="false" aria-label={`Play a 30-second preview of ${t.title}`}>
+                          <Icon name="play" />
+                        </button>
+                      )}
+                      {t.spotify && (
+                        <button class="track-play" type="button" data-embed={spotifyTrackEmbed(t.spotify)} data-height="152" data-name="Spotify" aria-label={`Play ${t.title} on Spotify`}>
+                          <Icon name="spotify" />
+                        </button>
+                      )}
+                    </span>
                     <span class="l">{t.length}</span>
                   </li>
                 ))}
@@ -229,6 +251,14 @@ const { items } = Astro.props;
   .detail__pos { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em; color: var(--ink-3); min-width: 4.5em; text-align: center; }
 
   .detail__body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+  /* swiping or stepping to the next piece of work slides it in from that side */
+  .detail__body[data-dir='next'] .detail__card { animation: detail-from-right 0.42s var(--ease-out) both; }
+  .detail__body[data-dir='prev'] .detail__card { animation: detail-from-left 0.42s var(--ease-out) both; }
+  @keyframes detail-from-right { from { opacity: 0; transform: translateX(42px); } }
+  @keyframes detail-from-left { from { opacity: 0; transform: translateX(-42px); } }
+  @media (prefers-reduced-motion: reduce) {
+    .detail__body .detail__card { animation: none !important; }
+  }
   .detail__card { display: grid; gap: 1.6rem; padding: 0.4rem var(--gutter) max(2.5rem, env(safe-area-inset-bottom)); }
   .detail__card[data-kind='screen'] { --accent: var(--mint); --accent-rgb: var(--mint-rgb); }
 
@@ -331,12 +361,18 @@ const { items } = Astro.props;
 
   .detail__tracks { margin-top: 1.8rem; }
   .detail__tracks ol { margin: 0.7rem 0 0; padding: 0; list-style: none; border-top: 1px solid var(--hair); }
-  .detail__tracks li { display: grid; grid-template-columns: 2.2rem 1fr auto auto; align-items: center; gap: 0.5rem; min-height: 46px; border-bottom: 1px solid var(--hair); }
+  .detail__tracks li { display: grid; grid-template-columns: 2.2rem 1fr auto auto; align-items: center; gap: 0.5rem; min-height: 50px; border-bottom: 1px solid var(--hair); }
+  .track-actions { display: flex; gap: 0.35rem; grid-column: 3; }
+  .track-preview { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; border: 0; background: rgb(124 239 192 / 0.14); color: var(--mint); cursor: pointer; }
+  .track-preview svg { width: 13px; height: 13px; margin-left: 2px; }
+  .track-preview:hover, .track-preview.is-playing { background: var(--mint); color: #0b0912; }
+  .play--preview { background: var(--mint); border-color: var(--mint); color: #0b0912; }
+  .play--preview:hover, .play--preview.is-playing { background: #a8ffe0; border-color: #a8ffe0; }
   .detail__tracks .n { font-family: var(--mono); font-size: 0.7rem; color: var(--ink-3); }
   .detail__tracks .t { font-size: 0.95rem; }
   .detail__tracks .l { font-family: var(--mono); font-size: 0.72rem; color: var(--ink-3); grid-column: 4; }
-  .track-play { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgb(30 215 96 / 0.4); background: transparent; color: #1ed760; cursor: pointer; grid-column: 3; }
-  .track-play svg { width: 14px; height: 14px; }
+  .track-play { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgb(30 215 96 / 0.4); background: transparent; color: #1ed760; cursor: pointer; }
+  .track-play svg { width: 16px; height: 16px; }
   .track-play:hover, .track-play.is-on { background: rgb(30 215 96 / 0.15); }
 
   .detail__story { margin-top: 1.8rem; display: grid; gap: 0.9rem; color: var(--ink-2); max-width: 60ch; }

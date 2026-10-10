@@ -106,13 +106,11 @@ async function init(el: HTMLElement) {
     if ((e.target as HTMLElement).closest('[data-work]')) skip();
   });
 
-  // the fixed scene is hidden once the stage has scrolled out of view
-  new IntersectionObserver(([entry]) => el.classList.toggle('is-away', !entry.isIntersecting)).observe(el);
-
   /* ---------- scrolling: the stage dims and the camera looks up into the light ---------- */
   const onScroll = () => {
     const v = Math.min(1, Math.max(0, scrollY / (innerHeight * 0.9)));
-    el.style.setProperty('--veil', (v * 0.8).toFixed(3));
+    // dim the stage as the page scrolls over it, enough for the text on top to read clearly
+    el.style.setProperty('--veil', (v * 0.78).toFixed(3));
     stage?.setScroll(v);
   };
   addEventListener('scroll', onScroll, { passive: true });

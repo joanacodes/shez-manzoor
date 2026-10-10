@@ -61,7 +61,10 @@ function setup(root: HTMLElement, dialog: HTMLDialogElement) {
       current = idx;
       cards.forEach((c, i) => {
         c.classList.toggle('is-front', i === idx);
+        items[i].classList.toggle('is-front', i === idx);
         c.tabIndex = i === idx ? 0 : -1;
+        const play = items[i].querySelector<HTMLElement>('.card__play');
+        if (play) play.tabIndex = i === idx ? 0 : -1;
       });
       if (caption) {
         caption.classList.add('is-changing');
@@ -241,17 +244,46 @@ function setup(root: HTMLElement, dialog: HTMLDialogElement) {
     history.replaceState(null, '', `#${id}`);
   }
   function open(i: number) {
+    delete body.dataset.dir;
     fill(i);
     turnTo(shown);
     if (!dialog.open) dialog.showModal();
   }
-  dialog.querySelector('[data-detail-prev]')?.addEventListener('click', () => {
-    fill(shown - 1);
+  /** Next or previous piece of work, sliding in from the side it comes from. */
+  const turnPanel = (by: 1 | -1) => {
+    body.dataset.dir = by > 0 ? 'next' : 'prev';
+    fill(shown + by);
     turnTo(shown);
-  });
-  dialog.querySelector('[data-detail-next]')?.addEventListener('click', () => {
-    fill(shown + 1);
-    turnTo(shown);
+  };
+  dialog.querySelector('[data-detail-prev]')?.addEventListener('click', () => turnPanel(-1));
+  dialog.querySelector('[data-detail-next]')?.addEventListener('click', () => turnPanel(1));
+  // a sideways swipe on the panel moves to the next or previous one; scrolling up and down is untouched
+  let touchX = 0;
+  let touchY = 0;
+  let touchAt = 0;
+  body.addEventListener(
+    'touchstart',
+    (e) => {
+      touchX = e.touches[0].clientX;
+      touchY = e.touches[0].clientY;
+      touchAt = e.timeStamp;
+    },
+    { passive: true },
+  );
+  body.addEventListener(
+    'touchend',
+    (e) => {
+      const t = e.changedTouches[0];
+      const dx = t.clientX - touchX;
+      const dy = t.clientY - touchY;
+      if (Math.abs(dx) > 56 && Math.abs(dx) > Math.abs(dy) * 1.6 && e.timeStamp - touchAt < 900) turnPanel(dx < 0 ? 1 : -1);
+    },
+    { passive: true },
+  );
+  dialog.addEventListener('keydown', (e) => {
+    if ((e.target as HTMLElement).closest('iframe, input, textarea')) return;
+    if (e.key === 'ArrowRight') turnPanel(1);
+    if (e.key === 'ArrowLeft') turnPanel(-1);
   });
   dialog.querySelector('[data-detail-close]')?.addEventListener('click', () => dialog.close());
   dialog.addEventListener('click', (e) => {

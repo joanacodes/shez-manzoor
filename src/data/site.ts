@@ -38,6 +38,40 @@ export const award = {
   label: 'RTS Craft & Design Award 2024, Music – Original Score (Scripted), We Are Lady Parts',
 } as const;
 
+/**
+ * His own awards and nominations, newest first. Checked against the RTS and Music+Sound Awards
+ * listings (October 2026). Productions' honours are listed separately: they are not his awards.
+ */
+export const honours = [
+  {
+    result: 'Winner',
+    year: 2024,
+    ceremony: 'RTS Craft & Design Awards',
+    body: 'Royal Television Society',
+    category: 'Music – Original Score (Scripted)',
+    work: 'We Are Lady Parts',
+    note: 'Shared with Nida Manzoor, Sanya Manzoor and Benjamin Fregin',
+  },
+  {
+    result: 'Nominee',
+    year: 2024,
+    ceremony: 'Music+Sound Awards',
+    body: 'Music+Sound Awards, International',
+    category: 'Best Original Composition in a Television Programme',
+    work: 'We Are Lady Parts',
+    note: '',
+  },
+] as const;
+
+/** Honours won by the productions he scored. */
+export const productionHonours = [
+  {
+    work: 'We Are Lady Parts',
+    items: ['Peabody Award, 2022 and 2025', 'Three BAFTA TV Craft Awards, 2022', 'Two BAFTA TV Award nominations, 2025'],
+  },
+  { work: 'Polite Society', items: ['World premiere, Sundance Film Festival 2023', 'British Independent Film Awards nominations, 2023'] },
+] as const;
+
 export const links = {
   spotify: 'https://open.spotify.com/artist/3q8Gg6UErCDwopoXFWQwb4',
   spotifyEmbed: 'https://open.spotify.com/embed/artist/3q8Gg6UErCDwopoXFWQwb4?utm_source=generator&theme=0',

@@ -319,9 +319,12 @@ const fallbackSrc = (await getImage({ src: stillWide, width: 1280, format: 'jpg'
   /* the header waits in the wings until the intro is over */
   :global(.site-header) { transition: opacity 0.8s ease, visibility 0.8s; }
   :global(html[data-intro='on'] .site-header) { opacity: 0; visibility: hidden; }
-  /* once the stage has scrolled away, the fixed scene steps out (it would sit over the footer) */
-  .stage.is-away .stage__scene { visibility: hidden; }
-  :global(.site-footer) { background: var(--stage); }
+  /* the stage stays behind the whole page; the footer gets a dark glass so its text reads clearly */
+  :global(.site-footer) {
+    background: rgb(5 4 9 / 0.8);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
   /* ?still: just the stage, for making the still images */
   :global(html.still .site-header),
   :global(html.still astro-dev-toolbar),

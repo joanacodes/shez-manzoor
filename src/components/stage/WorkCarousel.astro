@@ -7,6 +7,7 @@
 import { Picture } from 'astro:assets';
 import Icon from '../Icon.astro';
 import type { WorkItem } from '../../data/work';
+import { thumbOf } from '../../lib/thumbs';
 
 interface Props {
   items: WorkItem[];
@@ -15,6 +16,7 @@ const { items } = Astro.props;
 const cat = (w: WorkItem) => `${w.category}${w.year ? ` · ${w.year}` : ''}`;
 const by = (w: WorkItem) => (w.kind === 'screen' ? w.role : w.artist);
 const first = items[0];
+const thumbs = new Map(await Promise.all(items.map(async (w) => [w.id, await thumbOf(w.image)] as const)));
 ---
 
 <div class="work" id="work" data-work-carousel aria-roledescription="carousel" aria-label="His work: records, film and television">
@@ -23,6 +25,7 @@ const first = items[0];
       {
         items.map((w, i) => (
           <li class="work__item" style={`--i:${i}`}>
+            <div class="work__face">
             <button
               class="card"
               type="button"
@@ -43,7 +46,8 @@ const first = items[0];
                     sizes="(orientation: landscape) and (max-height: 520px) 100px, (min-width: 600px) and (max-aspect-ratio: 17/20) 200px, (min-width: 900px) 190px, 136px"
                     formats={['avif', 'webp']}
                     alt=""
-                    loading={i < 4 || i > items.length - 4 ? 'eager' : 'lazy'}
+                    loading="eager"
+                    fetchpriority={i < 4 || i > items.length - 4 ? 'auto' : 'low'}
                     decoding="async"
                     draggable="false"
                   />
@@ -61,6 +65,24 @@ const first = items[0];
                 {w.title}. {cat(w)}. {by(w)}.
               </span>
             </button>
+            {w.preview && (
+              <button
+                class="card__play"
+                type="button"
+                data-preview={w.preview.url}
+                data-preview-title={w.preview.title}
+                data-preview-by={w.kind === 'screen' ? w.soundtrack?.artist ?? w.title : w.artist}
+                data-preview-art={thumbs.get(w.id)}
+                data-preview-apple={w.listen.apple?.url}
+                data-preview-spotify={w.listen.spotify?.url}
+                aria-label={`Play a 30-second preview of ${w.preview.title}`}
+                aria-pressed="false"
+                tabindex="-1"
+              >
+                <Icon name="play" />
+              </button>
+            )}
+            </div>
           </li>
         ))
       }
@@ -182,7 +204,8 @@ const first = items[0];
     -webkit-user-drag: none;
     pointer-events: none;
   }
-  .card.is-front { scale: 1.1; }
+  .work__face { position: relative; transition: scale 0.5s var(--ease-out), translate 0.5s var(--ease-out); }
+  .work__item.is-front .work__face { scale: 1.1; }
   .card.is-front .card__art {
     box-shadow: 0 0 0 1.5px rgb(var(--front-rgb, 205 187 255) / 0.75), 0 0 50px -4px rgb(var(--front-rgb, 205 187 255) / 0.5), 0 30px 50px -20px rgb(0 0 0 / 0.95);
   }
@@ -190,8 +213,32 @@ const first = items[0];
   .card:focus-visible { outline: none; }
   .card:focus-visible .card__art { box-shadow: 0 0 0 3px var(--mint), 0 0 50px -4px rgb(124 239 192 / 0.6); }
   @media (hover: hover) {
-    .card.is-front:hover { translate: 0 -6px; }
+    .work__item.is-front .work__face:hover { translate: 0 -6px; }
   }
+  /* play a preview from the cover in front */
+  .card__play {
+    position: absolute;
+    left: 7px;
+    top: calc(var(--card-w) - 35px);
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--mint);
+    color: #0b0912;
+    cursor: pointer;
+    opacity: 0;
+    scale: 0.6;
+    pointer-events: none;
+    transition: opacity 0.3s, scale 0.4s var(--ease-out);
+  }
+  .card__play :global(svg) { width: 14px; height: 14px; margin-left: 2px; }
+  .work__item.is-front .card__play { opacity: 1; scale: 1; pointer-events: auto; }
+  .card__play.is-playing { background: var(--ink); box-shadow: 0 0 0 4px rgb(124 239 192 / 0.35); animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 8px rgb(124 239 192 / 0.12); } }
 
   .card__badge {
     position: absolute;

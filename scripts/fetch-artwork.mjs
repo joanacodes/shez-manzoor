@@ -310,22 +310,7 @@ for (const id of [...trackIds].slice(0, 40)) {
     catalog.errors.push(`spotify track page ${id}: ${err.message}`);
   }
 }
-for (const id of [...albumIds].slice(0, 40)) {
-  try {
-    const o = await get(`https://open.spotify.com/oembed?url=${encodeURIComponent(`https://open.spotify.com/album/${id}`)}`);
-    let date = null;
-    let songs = [];
-    try {
-      const { text } = await get(`https://open.spotify.com/album/${id}`, 'text');
-      date = meta(text, 'music:release_date');
-      songs = [...text.matchAll(/<meta[^>]+property="music:song"[^>]+content="https:\/\/open\.spotify\.com\/track\/([A-Za-z0-9]{22})"/g)].map((m) => m[1]);
-    } catch {}
-    catalog.spotify.albums.push({ id, url: `https://open.spotify.com/album/${id}`, title: o.title, date, songs, thumbnail: o.thumbnail_url ?? null });
-    log(`- album ${id} | ${o.title} | ${date} | ${songs.length} songs`);
-  } catch (err) {
-    catalog.errors.push(`spotify album ${id}: ${err.message}`);
-  }
-}
+// albums are read further down, once every Apple release is known
 for (const id of [...trackIds].slice(0, 40)) {
   try {
     const o = await get(`https://open.spotify.com/oembed?url=${encodeURIComponent(`https://open.spotify.com/track/${id}`)}`);
