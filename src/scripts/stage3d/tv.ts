@@ -29,6 +29,8 @@ uniform float uTime;
 uniform float uPower;
 uniform float uStatic;
 uniform float uBright;
+// where the picture sits on the tube: (1, 1) fills it; wider clips get bars top and bottom
+uniform vec2 uScale;
 varying vec2 vUv;
 float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
 vec2 barrel(vec2 uv) { vec2 c = uv - 0.5; float r2 = dot(c, c); return 0.5 + c * (1.0 + 0.1 * r2 + 0.08 * r2 * r2); }
@@ -37,10 +39,12 @@ void main() {
   vec2 uv = barrel(vUv);
   float mask = rounded(uv);
   float shift = 0.0022 + uStatic * 0.012;
+  vec2 tuv = (uv - 0.5) * uScale + 0.5;
   vec3 col;
-  col.r = texture2D(uTex, uv + vec2(shift, 0.0)).r;
-  col.g = texture2D(uTex, uv).g;
-  col.b = texture2D(uTex, uv - vec2(shift, 0.0)).b;
+  col.r = texture2D(uTex, tuv + vec2(shift, 0.0)).r;
+  col.g = texture2D(uTex, tuv).g;
+  col.b = texture2D(uTex, tuv - vec2(shift, 0.0)).b;
+  col *= step(0.0, tuv.y) * step(tuv.y, 1.0);
   float n = hash(floor(uv * vec2(320.0, 240.0)) + fract(uTime * 23.0) * 91.0);
   col = mix(col, vec3(n * 0.9), clamp(uStatic, 0.0, 1.0));
   col *= 0.8 + 0.2 * sin(uv.y * 240.0 * 6.2831);
@@ -126,6 +130,7 @@ export function createTV(fonts: { serif: string; mono: string }) {
     uPower: { value: 0 },
     uStatic: { value: 0 },
     uBright: { value: 1.35 },
+    uScale: { value: new THREE.Vector2(1, 1) },
   };
   const screenMat = new THREE.ShaderMaterial({ vertexShader: screenVert, fragmentShader: screenFrag, uniforms, toneMapped: false });
   const screen = new THREE.Mesh(geo, screenMat);
@@ -269,6 +274,9 @@ export function createTV(fonts: { serif: string; mono: string }) {
         const vt = new THREE.VideoTexture(v);
         vt.colorSpace = THREE.SRGBColorSpace;
         uniforms.uTex.value = vt;
+        // a widescreen film on an old set: trimmed to 16:9 at most, with bars top and bottom
+        const film = Math.min(v.videoWidth / v.videoHeight || 16 / 9, 16 / 9);
+        uniforms.uScale.value.set(film / (v.videoWidth / v.videoHeight || film), film / (sw / sh));
         return;
       } catch {
         /* fall back to the poster */
@@ -284,6 +292,7 @@ export function createTV(fonts: { serif: string; mono: string }) {
     }
     drawCard(ch, index, img);
     uniforms.uTex.value = pictureTex;
+    uniforms.uScale.value.set(1, 1);
   }
 
   return {

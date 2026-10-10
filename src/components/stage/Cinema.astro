@@ -186,12 +186,14 @@ const back = row(
     from { transform: scale(1.06); }
     to { transform: scale(1); }
   }
+  /* films are wider than the screen: shown whole, with dark bars like a projection */
   .cinema__video {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    background: #050409;
     opacity: 0;
     transition: opacity 0.8s ease;
   }
