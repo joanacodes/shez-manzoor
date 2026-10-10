@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-10T08:35:20.137Z",
+  "fetchedAt": "2026-10-10T08:42:38.748Z",
   "sources": [
     "iTunes Search API",
     "Spotify oEmbed",
@@ -725,17 +725,91 @@
         "id": "0f5viaGiax7fV9JHS5NO2f",
         "url": "https://open.spotify.com/album/0f5viaGiax7fV9JHS5NO2f",
         "title": "Our Time EP",
-        "date": null,
-        "songs": [],
-        "thumbnail": "https://i.scdn.co/image/ab67616d00001e0242ba82db6c5605fb3defa0f0"
+        "thumbnail": "https://i.scdn.co/image/ab67616d00001e0242ba82db6c5605fb3defa0f0",
+        "tracks": [
+          {
+            "uri": "spotify:track:5HZbbLwrv3mWteZ4l0SCLb",
+            "title": "1 of a kind",
+            "ms": 204175,
+            "number": 1,
+            "artists": "SHEZ",
+            "preview": "https://p.scdn.co/mp3-preview/c6cc5b6548f05c0d2f5747c2741f7fc32ed8ed0a"
+          },
+          {
+            "uri": "spotify:track:0EFzOf1go8tmv3VVjdISex",
+            "title": "our.time",
+            "ms": 136424,
+            "number": 2,
+            "artists": "SHEZ",
+            "preview": "https://p.scdn.co/mp3-preview/b22f1ff80a1554400d17e428e6bbca6a5d72453d"
+          },
+          {
+            "uri": "spotify:track:4dAwaLsuQXkEKahQXeFXo8",
+            "title": "Struck/Gold",
+            "ms": 180000,
+            "number": 3,
+            "artists": "SHEZ",
+            "preview": "https://p.scdn.co/mp3-preview/1433254fae50daf97f946d1da6ad5031b0d06716"
+          },
+          {
+            "uri": "spotify:track:5gpHKek7bN0e8hXKRNSqIA",
+            "title": "-ve space",
+            "ms": 188363,
+            "number": 4,
+            "artists": "SHEZ",
+            "preview": "https://p.scdn.co/mp3-preview/8eefcd11cd63b4f4fc107f444a4f9b5597276aaf"
+          },
+          {
+            "uri": "spotify:track:7kWq3UsAc2lG6ondTl0upi",
+            "title": "Set Me Alight",
+            "ms": 191462,
+            "number": 5,
+            "artists": "SHEZ",
+            "preview": "https://p.scdn.co/mp3-preview/08ccb9a7dd3b9838f30d33caff25fcebdeda5fd8"
+          },
+          {
+            "uri": "spotify:track:1yrrBJHL0lvaZHw4DZf8kV",
+            "title": "I Deserve Better",
+            "ms": 218293,
+            "number": 6,
+            "artists": "SHEZ",
+            "preview": "https://p.scdn.co/mp3-preview/ce2280ee076c066ea96ddf1655fed96a92544a66"
+          }
+        ],
+        "artists": [
+          "SHEZ"
+        ],
+        "releaseDate": null,
+        "totalTracks": 6,
+        "type": "album",
+        "group": "linked",
+        "onApple": true,
+        "coverFile": "spotify-album-0f5viaGiax7fV9JHS5NO2f.jpg"
       },
       {
         "id": "0b3OOvrBz0WAphEUq5dteb",
         "url": "https://open.spotify.com/album/0b3OOvrBz0WAphEUq5dteb",
         "title": "Let Go",
-        "date": null,
-        "songs": [],
-        "thumbnail": "https://i.scdn.co/image/ab67616d00001e02878accf20ad252d3510f6a82"
+        "thumbnail": "https://i.scdn.co/image/ab67616d00001e02878accf20ad252d3510f6a82",
+        "tracks": [
+          {
+            "uri": "spotify:track:7KXL9ZolbSHDDbupd8g3EJ",
+            "title": "Let Go",
+            "ms": 192417,
+            "number": 1,
+            "artists": "SHEZ",
+            "preview": "https://p.scdn.co/mp3-preview/523e667a41119b71f82c681aac7ce209cc63369e"
+          }
+        ],
+        "artists": [
+          "SHEZ"
+        ],
+        "releaseDate": null,
+        "totalTracks": 1,
+        "type": "single",
+        "group": "linked",
+        "onApple": true,
+        "coverFile": "spotify-album-0b3OOvrBz0WAphEUq5dteb.jpg"
       }
     ],
     "tracks": [
