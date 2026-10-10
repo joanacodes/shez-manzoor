@@ -1,6 +1,6 @@
 /**
- * The stage: an electric guitar on its stand, a vocal mic, an old TV playing his film
- * and TV work, and one light from above. Runs the intro (lights come up, the camera
+ * The stage: an electric guitar on its stand with an amp behind it, a vocal mic, an old TV
+ * playing his film and TV work, and one light from above. Runs the intro (lights come up, the camera
  * walks in) and then idles, reacting to the pointer, the scroll position and taps.
  */
 import * as THREE from 'three';
@@ -8,6 +8,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
+import { createAmp } from './amp';
 import { createGuitar, createGuitarStand, mountGuitar } from './guitar';
 import { createMicStand } from './mic';
 import { createTV, type Channel } from './tv';
@@ -41,6 +42,8 @@ type Spot = [x: number, z: number, rotY: number];
 type Layout = {
   mic: Spot;
   guitar: Spot;
+  /** behind the guitar, a little to its left, turned towards the middle */
+  amp: Spot;
   tv: Spot;
   setlist: Spot;
   /** vertical field of view, degrees */
@@ -59,6 +62,7 @@ function layoutFor(aspect: number): Layout {
     return {
       mic: [0.02, 0.3, 0],
       guitar: [-0.52, -0.42, 0.45],
+      amp: [-0.66, -1.02, 0.38],
       tv: [0.47, -0.62, -0.52],
       setlist: [0.3, 0.78, 0.22],
       fov: 38,
@@ -70,6 +74,7 @@ function layoutFor(aspect: number): Layout {
   return {
     mic: [0, 0.24, 0],
     guitar: [-1.02, -0.18, 0.42],
+    amp: [-1.26, -0.86, 0.32],
     tv: [1.04, -0.32, -0.4],
     setlist: [0.4, 0.7, 0.22],
     fov: 28,
@@ -127,6 +132,9 @@ export async function createStage(opts: StageOptions) {
   const guitar = createGuitar({ serif: fonts.serif });
   mountGuitar(stand, guitar);
   scene.add(stand);
+
+  const amp = createAmp(fonts);
+  scene.add(amp.group);
   const strings = guitar.getObjectByName('strings') as THREE.Mesh;
 
   const mic = createMicStand();
@@ -219,6 +227,7 @@ export async function createStage(opts: StageOptions) {
     layout = layoutFor(aspect);
     place(mic, layout.mic);
     place(stand, layout.guitar);
+    place(amp.group, layout.amp);
     place(tv.group, layout.tv);
     place(sheet, layout.setlist);
     washes.forEach((w, i) => {
@@ -305,6 +314,7 @@ export async function createStage(opts: StageOptions) {
     // the TV warms up, then plays his clips one after another
     const power = smooth(T.tvOn, T.tvFull, t);
     tv.uniforms.uPower.value = power;
+    amp.setPower(power);
     tv.uniforms.uTime.value = time;
     if (!zapping && (tv.ended || time >= nextChannelAt)) zap();
     staticLevel = Math.max(0, staticLevel - dt * 2.6);

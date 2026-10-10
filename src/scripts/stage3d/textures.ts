@@ -248,6 +248,129 @@ export function setlist(titles: string[], fonts: { serif: string; mono: string }
   );
 }
 
+/** Black tolex: pebbled vinyl for the amp, with a bump map for its grain. */
+export function tolex() {
+  seed = 71;
+  const color = canvas(512, 512, (ctx, w, h) => {
+    ctx.fillStyle = '#161616';
+    ctx.fillRect(0, 0, w, h);
+    for (let i = 0; i < 22000; i++) {
+      const v = Math.round(range(6, 42));
+      ctx.fillStyle = `rgba(${v},${v},${v + 2},${range(0.35, 0.85)})`;
+      const d = range(1, 2.6);
+      ctx.fillRect(range(0, w), range(0, h), d, d);
+    }
+  });
+  const bump = canvas(512, 512, (ctx, w, h) => {
+    ctx.fillStyle = 'rgb(128,128,128)';
+    ctx.fillRect(0, 0, w, h);
+    for (let i = 0; i < 9000; i++) {
+      const v = Math.round(range(60, 230));
+      ctx.fillStyle = `rgba(${v},${v},${v},0.75)`;
+      ctx.beginPath();
+      ctx.arc(range(0, w), range(0, h), range(0.8, 2.4), 0, Math.PI * 2);
+      ctx.fill();
+    }
+  });
+  return { map: texture(color, { repeat: [3, 3] }), bump: texture(bump, { color: false, repeat: [3, 3] }) };
+}
+
+/** Silver grille cloth: a fine weave of pale and dark threads with a little sparkle. */
+export function grilleCloth() {
+  seed = 73;
+  return texture(
+    canvas(256, 256, (ctx, w, h) => {
+      ctx.fillStyle = '#9a9893';
+      ctx.fillRect(0, 0, w, h);
+      for (let y = 0; y < h; y += 2) {
+        ctx.fillStyle = `rgba(24,24,28,${y % 4 ? 0.34 : 0.12})`;
+        ctx.fillRect(0, y, w, 1);
+      }
+      for (let x = 0; x < w; x += 2) {
+        ctx.fillStyle = `rgba(236,234,228,${x % 4 ? 0.2 : 0.07})`;
+        ctx.fillRect(x, 0, 1, h);
+      }
+      for (let i = 0; i < 1500; i++) {
+        ctx.fillStyle = `rgba(255,255,255,${range(0.2, 0.7)})`;
+        ctx.fillRect(Math.floor(range(0, w)), Math.floor(range(0, h)), 1, 1);
+      }
+    }),
+    { repeat: [9, 5] },
+  );
+}
+
+/** The amp's black control panel: white labels over each knob and input. */
+export function ampPanel(font: string, marks: { x: number; label: string; jack: boolean }[], pilot: number, knobY: number) {
+  return texture(
+    canvas(1024, 150, (ctx, w, h) => {
+      ctx.fillStyle = '#0c0c0d';
+      ctx.fillRect(0, 0, w, h);
+      // a thin bright rule along the top and bottom edges
+      ctx.fillStyle = 'rgba(210,210,210,0.32)';
+      ctx.fillRect(0, 5, w, 2);
+      ctx.fillRect(0, h - 7, w, 2);
+      ctx.fillStyle = '#ece8df';
+      ctx.font = `600 13px ${font}`;
+      ctx.textAlign = 'center';
+      const y = (1 - knobY) * h;
+      for (const m of marks) {
+        if (m.label) ctx.fillText(m.label, m.x * w, y - 32);
+        if (m.jack) {
+          ctx.beginPath();
+          ctx.arc(m.x * w, y, 7, 0, Math.PI * 2);
+          ctx.fillStyle = '#000';
+          ctx.fill();
+          ctx.fillStyle = '#ece8df';
+        }
+      }
+      ctx.fillText('ON', pilot * w, y - 32);
+    }),
+  );
+}
+
+/** A chrome script badge, written in the site's serif, with a swash under it. */
+export function scriptBadge(text: string, font: string) {
+  return texture(
+    canvas(512, 192, (ctx, w, h) => {
+      ctx.clearRect(0, 0, w, h);
+      const g = ctx.createLinearGradient(0, 30, 0, h - 30);
+      g.addColorStop(0, '#ffffff');
+      g.addColorStop(0.45, '#c9c9c9');
+      g.addColorStop(0.55, '#8f8f8f');
+      g.addColorStop(1, '#e6e6e6');
+      ctx.fillStyle = g;
+      ctx.strokeStyle = g;
+      ctx.font = font;
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, 40, h * 0.44);
+      // the tail: a swash from under the first letter out to the right
+      ctx.lineWidth = 9;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(52, h * 0.8);
+      ctx.quadraticCurveTo(w * 0.45, h * 0.66, w - 40, h * 0.74);
+      ctx.stroke();
+    }),
+  );
+}
+
+/** A soft dark patch for under things standing on the floor, used as an alpha map. */
+export function contactShadow() {
+  return texture(
+    canvas(256, 256, (ctx, w, h) => {
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, w, h);
+      const g = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
+      g.addColorStop(0, '#fff');
+      g.addColorStop(0.5, '#a0a0a0');
+      g.addColorStop(1, '#000');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, w, h);
+    }),
+    { color: false },
+  );
+}
+
 /** Small brand decals: the headstock logo and the TV badge. */
 export function decal(text: string, font: string, color: string, w = 512, h = 160) {
   return texture(

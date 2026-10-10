@@ -2,7 +2,7 @@
 
 Website for **Shez Manzoor**, London composer for film and TV, who also releases soul and R&B as **SHEZ**.
 
-**Design 2: the stage.** This branch is the second design, published at `/design-2/` for comparison. The homepage opens on his name in the dark, like a preloader. Then a light comes on above a stage set with his electric guitar on its stand, a vocal mic and an old TV that plays his film and TV work. The name dims into the backdrop. After 3.5 seconds a ring of covers and posters for everything he has made turns into view in front. Each one opens a panel with the release date, credits, tracklist, and Apple Music and Spotify players. Scrolling down gives the full story, the film and TV credits, the full discography, press, FAQ and contact.
+**Design 2: the stage.** This branch is the second design, published at `/design-2/` for comparison. The homepage opens on his name in the dark, like a preloader. Then a light comes on above a stage set with his electric guitar on its stand, a 1960s-style amp behind it, a vocal mic and an old TV that plays his film and TV work. The name dims into the backdrop. After 3.5 seconds a ring of covers and posters for everything he has made turns into view in front. Each one opens a panel with the release date, credits, tracklist, and Apple Music and Spotify players. Scrolling down gives the full story, the film and TV credits, the full discography, press, FAQ and contact.
 
 On stage, the TV changes channel when tapped, the guitar strums, and the mic changes the colour of the light. Purple and green, his colours, wash the curtain either side.
 
