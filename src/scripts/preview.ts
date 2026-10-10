@@ -4,6 +4,7 @@
  * or open the full song. Buttons show a spinner while the song loads, then a pause sign.
  * When a preview ends, the next song plays: the rest of the list it was picked from (the
  * carousel, the discography, a tracklist), then every other song on the page, each once.
+ * Songs fade in and out, and the bar fades to the new one.
  */
 const bar = document.querySelector<HTMLElement>('[data-player-bar]');
 if (bar) setup(bar);
@@ -22,6 +23,7 @@ function setup(bar: HTMLElement) {
   let current = '';
   // asked to play, not playing yet (or buffering)
   let loading = false;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 
   type Song = { url: string; title: string; by: string; art?: string; apple?: string; spotify?: string };
   const songOf = (b: HTMLElement): Song => ({
@@ -86,6 +88,13 @@ function setup(bar: HTMLElement) {
       if (url) link.href = url;
     }
     progress.style.setProperty('--p', '0');
+    // the new song's cover and name fade in
+    if (bar.classList.contains('is-open')) {
+      const lift = reduced.matches ? 'none' : 'translateY(6px)';
+      for (const el of [art, title.parentElement!]) {
+        el.animate?.([{ opacity: 0, transform: lift }, { opacity: 1, transform: 'none' }], { duration: 600, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' });
+      }
+    }
     if ('mediaSession' in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: song.title,
@@ -101,6 +110,8 @@ function setup(bar: HTMLElement) {
 
   const start = () => {
     setLoading(true);
+    // silent until it fades in
+    audio.volume = 0;
     const src = audio.src;
     // a play() cut short by the next song does not stop that song's spinner
     audio.play().catch(() => audio.src === src && setLoading(false));
@@ -154,6 +165,26 @@ function setup(bar: HTMLElement) {
     refit();
   });
   audio.addEventListener('playing', () => setLoading(false));
+
+  // each song fades in as it starts (or starts again) and out over its last seconds. A timer
+  // rather than animation frames, so it carries on in a background tab. iPhones ignore the
+  // volume a page sets and play at full volume.
+  const FADE_IN = 1.2;
+  const FADE_OUT = 1.6;
+  let fadeFrom = 0;
+  let fadeTimer = 0;
+  const fade = () => {
+    const sinceStart = (performance.now() - fadeFrom) / 1000;
+    const left = (Number.isFinite(audio.duration) ? audio.duration : 30) - audio.currentTime;
+    audio.volume = Math.max(0, Math.min(1, sinceStart / FADE_IN, left / FADE_OUT));
+  };
+  audio.addEventListener('playing', () => {
+    fadeFrom = performance.now();
+    fade();
+    window.clearInterval(fadeTimer);
+    fadeTimer = window.setInterval(fade, 40);
+  });
+  for (const ev of ['pause', 'ended', 'error']) audio.addEventListener(ev, () => window.clearInterval(fadeTimer));
   audio.addEventListener('waiting', () => !audio.paused && setLoading(true));
   for (const ev of ['pause', 'ended', 'error']) audio.addEventListener(ev, () => setLoading(false));
   audio.addEventListener('timeupdate', () => {

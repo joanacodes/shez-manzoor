@@ -67,7 +67,8 @@
     /* space */
     --gutter: clamp(1.25rem, 5vw, 4rem);
     --max: 1360px;
-    --section: clamp(4.5rem, 13vw, 10rem);
+    /* space above and below each section: the same on phones, tighter on large screens */
+    --section: clamp(4.5rem, 9vw, 7rem);
     --radius: 20px;
     --radius-sm: 12px;
     --header-h: 64px;
