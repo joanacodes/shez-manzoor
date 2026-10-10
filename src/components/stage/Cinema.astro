@@ -37,24 +37,20 @@ const person = (x: number, y: number, s: number, who: Who) => {
   if (who === 'cap') p.push(`<ellipse cx="${f(x)}" cy="${f(y - 137 * s)}" rx="${f(28 * s)}" ry="${f(18 * s)}"/>`);
   return p.join('');
 };
-// seat backs side by side, the same colour as the people, so each row reads as one dark mass
-const seat = (x: number, y: number, s: number, w: number) =>
-  `<path d="M${f(x - w / 2)} ${f(y + 60)} L${f(x - w / 2)} ${f(y - 30 * s)} Q${f(x - w / 2)} ${f(y - 46 * s)} ${f(x - w / 2 + 14 * s)} ${f(y - 46 * s)} L${f(x + w / 2 - 14 * s)} ${f(y - 46 * s)} Q${f(x + w / 2)} ${f(y - 46 * s)} ${f(x + w / 2)} ${f(y - 30 * s)} L${f(x + w / 2)} ${f(y + 60)} Z"/>`;
-// a full house: shoulder to shoulder, a little uneven, never the same silhouette twice in a row
+// a full house with no gaps: in each row the shoulders overlap, on a solid dark band (the seats)
 const crowd: Who[] = ['plain', 'long', 'bun', 'plain', 'afro', 'hijab', 'cap', 'long', 'plain', 'lean', 'bun', 'afro'];
 let seed = 11;
 const jitter = () => ((seed = (seed * 16807) % 2147483647) / 2147483647 - 0.5) * 2;
-const row = (from: number, to: number, pitch: number, y: number, s: number, start: number) => {
-  let out = '';
-  for (let x = from, i = start; x <= to; x += pitch, i += 5) {
-    const size = s * (1 + jitter() * 0.05);
-    out += person(x + jitter() * pitch * 0.06, y, size, crowd[i % crowd.length]) + seat(x, y, s, pitch - 4 * s);
+const row = (y: number, s: number, pitch: number, from: number, start: number) => {
+  let out = `<rect x="-200" y="${f(y - 40 * s)}" width="1600" height="${f(420 - y + 40 * s)}"/>`;
+  for (let x = from, i = start; x <= 1300; x += pitch, i += 5) {
+    out += person(x + jitter() * pitch * 0.04, y, s * (1 + jitter() * 0.04), crowd[i % crowd.length]);
   }
   return out;
 };
-// the far row sits between the heads of the near row
-const front = row(-40, 1250, 92, 252, 0.62, 3);
-const back = row(-86, 1300, 148, 380, 1, 0);
+// shoulders are 128 wide at full size: a pitch of 100 to 104 keeps everyone touching
+const front = row(252, 0.62, 62, -70, 3);
+const back = row(380, 1, 104, -110, 0);
 ---
 
 {
@@ -218,9 +214,9 @@ const back = row(-86, 1300, 148, 380, 1, 0);
     pointer-events: none;
   }
   /* only the top edges catch the light from the screen */
-  .cinema__row { transition: filter 1.2s ease; }
-  .cinema__row--front { fill: #0a0810; filter: drop-shadow(0 -1px 0 rgb(var(--glow) / 0.42)) drop-shadow(0 -4px 8px rgb(var(--glow) / 0.12)); }
-  .cinema__row--back { fill: #020103; filter: drop-shadow(0 -1.5px 0 rgb(var(--glow) / 0.55)) drop-shadow(0 -8px 14px rgb(var(--glow) / 0.16)); }
+  .cinema__row { fill: #040307; transition: filter 1.2s ease; }
+  .cinema__row--front { filter: drop-shadow(0 -1px 0 rgb(var(--glow) / 0.42)) drop-shadow(0 -4px 8px rgb(var(--glow) / 0.12)); }
+  .cinema__row--back { filter: drop-shadow(0 -1.5px 0 rgb(var(--glow) / 0.55)) drop-shadow(0 -8px 14px rgb(var(--glow) / 0.16)); }
   @media (min-width: 900px) {
     .cinema__audience { --h: min(clamp(220px, 26vw, 340px), 40svh); }
   }
