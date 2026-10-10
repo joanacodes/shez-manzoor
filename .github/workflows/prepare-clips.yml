@@ -2,12 +2,14 @@ name: Prepare clips
 
 # Videos uploaded to public/clips (screen recordings, .mov, .mp4…) become small silent MP4s
 # with the black bars cropped off, plus a still for each, for the TV and the cinema.
+# Google Drive files listed in public/clips/drive.txt are downloaded first (they must be
+# shared with "Anyone with the link"; the job waits up to two hours for that).
 # The result is committed to this branch, then the preview is republished.
 
 on:
   push:
     branches: ['claude/shez-manzoor-stage-design']
-    paths: ['public/clips/**', 'scripts/prepare-clips.mjs', '.github/workflows/prepare-clips.yml']
+    paths: ['public/clips/**', 'scripts/prepare-clips.mjs', 'scripts/fetch-drive-clips.mjs', '.github/workflows/prepare-clips.yml']
   workflow_dispatch:
 
 permissions:
@@ -21,6 +23,7 @@ concurrency:
 jobs:
   prepare:
     runs-on: ubuntu-latest
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -28,6 +31,8 @@ jobs:
           node-version: 22
       - name: Install ffmpeg
         run: command -v ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends ffmpeg)
+      - name: Download from Google Drive
+        run: node scripts/fetch-drive-clips.mjs
       - name: Prepare
         run: node scripts/prepare-clips.mjs
       - name: Save to the branch
