@@ -48,6 +48,8 @@ All facts live in `src/data/`. Pages, structured data and `llms.txt` are generat
 
 **TV clips.** The TV shows posters until clips arrive. Save short MP4s (10–20 seconds, no sound needed, about 640×480) as `public/clips/<slug>.mp4`: `we-are-lady-parts.mp4`, `polite-society.mp4`, `clarksons-farm.mp4`, `bride-or-die.mp4`. The TV plays each one in place of that poster at the next build.
 
+**Posters added by hand.** A poster saved as `src/assets/artwork/screen-<slug>.jpg` (or `.png`, `.webp`), for example `screen-clarksons-farm.jpg`, is used for that credit on the cards, in its panel and on the TV.
+
 ## Environment variables
 
 | Variable | Default | Use |

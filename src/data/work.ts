@@ -43,8 +43,10 @@ export type WorkItem = {
 
 type CatalogRelease = (typeof catalog.releases)[number];
 
-const art = import.meta.glob<{ default: ImageMetadata }>('../assets/artwork/*.jpg', { eager: true });
+const art = import.meta.glob<{ default: ImageMetadata }>('../assets/artwork/*.{jpg,jpeg,png,webp}', { eager: true });
 const image = (file?: string | null) => (file ? art[`../assets/artwork/${file}`]?.default : undefined);
+/** A poster added by hand as src/assets/artwork/screen-<slug>.jpg (or .png, .webp) wins over a fetched one. */
+const poster = (slug: string) => ['jpg', 'jpeg', 'png', 'webp'].map((ext) => image(`screen-${slug}.${ext}`)).find(Boolean);
 
 const plain = (s: string) =>
   s
@@ -249,7 +251,7 @@ function screenFrom(p: Project): WorkItem {
     role: p.role,
     date: ost?.releaseDate ?? undefined,
     year: p.years ?? '',
-    image: image(latestSeason) ?? ostItem?.image,
+    image: poster(p.slug) ?? image(latestSeason) ?? ostItem?.image,
     image2: image(firstSeason),
     imageAlt: ost ? `Poster artwork for ${p.title}` : `Artwork for ${p.title}`,
     summary: p.summary,
