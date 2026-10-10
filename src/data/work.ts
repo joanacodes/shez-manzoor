@@ -100,6 +100,9 @@ type SpotifyAlbum = {
 };
 const spotifyAlbums = (catalog.spotify.albums ?? []) as SpotifyAlbum[];
 const trackId = (t?: SpotifyTrack) => (t ? String(t.uri).split(':').pop() : undefined);
+// songs on those albums too, for the singles that came out before them
+for (const a of spotifyAlbums)
+  for (const t of a.tracks ?? []) if (!spotifyByTitle.has(plain(t.title))) spotifyByTitle.set(plain(t.title), trackId(t)!);
 /** The same release on Spotify: same title (ignoring "- Single", "feat." and punctuation) and the same number of tracks. */
 const squash = (s: string) =>
   s
