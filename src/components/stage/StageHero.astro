@@ -1,0 +1,316 @@
+---
+/**
+ * The first screen: his name in the dark, then a stage lights up behind it (guitar on its
+ * stand, a mic, an old TV playing his film and TV work) and the name dims into the
+ * backdrop. The carousel of his work arrives in front (passed in as the slot).
+ */
+import { getImage } from 'astro:assets';
+import Icon from '../Icon.astro';
+import { setlistTitles, tvChannels } from '../../data/work';
+import stillWide from '../../assets/stage/stage-landscape.jpg';
+import stillTall from '../../assets/stage/stage-portrait.jpg';
+
+const shrink = async (src?: ImageMetadata) => (src ? (await getImage({ src, width: 640, format: 'webp', quality: 74 })).src : undefined);
+const channels = [];
+for (const c of tvChannels) {
+  channels.push({ title: c.title, kind: c.kind, image: await shrink(c.image) });
+  if (c.image2) channels.push({ title: c.title, kind: `${c.kind}, series 1`, image: await shrink(c.image2) });
+}
+const data = JSON.stringify({ channels, setlist: setlistTitles });
+
+// stills of the same stage, for devices without the 3D scene (rendered from it, see README)
+const srcset = async (src: ImageMetadata, widths: number[], format: 'avif' | 'webp') =>
+  (await Promise.all(widths.map(async (w) => `${(await getImage({ src, width: w, format, quality: format === 'avif' ? 55 : 72 })).src} ${w}w`))).join(', ');
+const tall = { avif: await srcset(stillTall, [414, 828], 'avif'), webp: await srcset(stillTall, [414, 828], 'webp') };
+const wide = { avif: await srcset(stillWide, [1280, 1920, 2400], 'avif'), webp: await srcset(stillWide, [1280, 1920, 2400], 'webp') };
+const fallbackSrc = (await getImage({ src: stillWide, width: 1280, format: 'jpg', quality: 72 })).src;
+---
+
+<section class="stage" id="top" data-stage data-phase="loading" aria-labelledby="stage-title">
+  <div class="stage__scene" aria-hidden="true">
+    <div class="stage__fallback">
+      <picture>
+        <source media="(max-aspect-ratio: 17/20)" type="image/avif" srcset={tall.avif} sizes="100vw" />
+        <source media="(max-aspect-ratio: 17/20)" type="image/webp" srcset={tall.webp} sizes="100vw" />
+        <source type="image/avif" srcset={wide.avif} sizes="100vw" />
+        <source type="image/webp" srcset={wide.webp} sizes="100vw" />
+        <img src={fallbackSrc} alt="" width="2400" height="1350" loading="lazy" decoding="async" />
+      </picture>
+    </div>
+    <canvas class="stage__canvas" data-stage-canvas></canvas>
+    <div class="stage__veil"></div>
+  </div>
+
+  <div class="stage__inner wrap">
+    <h1 class="stage__title" id="stage-title">
+      <span class="stage__first">Shez Manzoor</span>
+      <span class="stage__name">SHEZ</span>
+      <span class="stage__roles">Music producer <span aria-hidden="true">·</span><span class="sr-only">,</span> Singer-songwriter</span>
+    </h1>
+    <div class="stage__loader" aria-hidden="true"><span></span></div>
+  </div>
+
+  <slot />
+
+  <p class="stage__tip" data-stage-tip hidden>
+    <Icon name="tv" /> <span data-stage-tip-text>Tap the TV, the guitar or the mic</span>
+  </p>
+  <button class="stage__skip" type="button" data-stage-skip>Skip intro</button>
+  <span class="stage__label" data-stage-label aria-hidden="true"></span>
+  <script type="application/json" data-stage-data set:html={data} />
+</section>
+
+<script>
+  import '../../scripts/stage3d/client';
+</script>
+
+<style>
+  .stage {
+    position: relative;
+    isolation: isolate;
+    min-height: 100svh;
+    min-height: max(100svh, 560px);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    overflow: clip;
+  }
+
+  /* the scene sits behind the whole page and is covered as the page scrolls */
+  .stage__scene {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: #040306;
+    pointer-events: none;
+  }
+  .stage__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.6s linear;
+  }
+  :global(html.has-3d) .stage__canvas { opacity: 1; }
+  .stage__veil {
+    position: absolute;
+    inset: 0;
+    background: #050409;
+    opacity: var(--veil, 0);
+  }
+
+  /* without WebGL (or with reduced motion): a still of the same stage */
+  .stage__fallback {
+    position: absolute;
+    inset: 0;
+    display: none;
+    opacity: 0;
+    background:
+      radial-gradient(ellipse 34% 60% at 50% 34%, rgb(255 236 210 / 0.2), transparent 70%),
+      radial-gradient(ellipse 42% 18% at 50% 82%, rgb(255 236 210 / 0.16), transparent 70%),
+      radial-gradient(ellipse 30% 70% at 8% 30%, rgb(122 77 255 / 0.4), transparent 70%),
+      radial-gradient(ellipse 30% 70% at 92% 30%, rgb(30 200 140 / 0.32), transparent 70%),
+      repeating-linear-gradient(90deg, rgb(0 0 0 / 0.35) 0 2.2%, transparent 2.2% 4.6%),
+      #07060b;
+    background-size: cover;
+    background-position: center;
+  }
+  :global(html.no-3d) .stage__fallback,
+  :global(html:not(.js)) .stage__fallback { display: block; }
+  :global(html:not(.js)) .stage__fallback { opacity: 1; }
+  /* without JavaScript there is no intro: everything is simply there */
+  :global(html:not(.js)) .stage__inner { transform: none !important; }
+  :global(html:not(.js)) .stage__loader,
+  :global(html:not(.js)) .stage__skip { display: none; }
+  :global(html:not(.js) .work) { opacity: 1 !important; pointer-events: auto !important; }
+  .stage__fallback img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  :global(html.no-3d) .stage[data-phase='intro'] .stage__fallback,
+  :global(html.no-3d) .stage[data-phase='ready'] .stage__fallback {
+    animation: strike 1.1s steps(1, end) both;
+  }
+  @keyframes strike {
+    0% { opacity: 0; }
+    10% { opacity: 0.55; }
+    20% { opacity: 0.05; }
+    30% { opacity: 0.4; }
+    40% { opacity: 0.1; }
+    55%, 100% { opacity: 1; }
+  }
+
+  /* ---------- the name ---------- */
+  .stage__inner {
+    position: relative;
+    z-index: 1;
+    padding-top: calc(var(--header-h) + clamp(0.25rem, 2.2svh, 1.75rem));
+    text-align: center;
+    pointer-events: none;
+    transition: transform 1.6s var(--ease-in-out);
+  }
+  .stage[data-phase='loading'] .stage__inner { transform: translateY(calc(50svh - var(--header-h) - 50%)); }
+  .stage__title {
+    display: grid;
+    justify-items: center;
+    gap: 0.1em;
+    margin: 0;
+    font-weight: 400;
+    transition: opacity 2.4s ease, filter 2.4s ease;
+  }
+  .stage__first {
+    font-family: var(--mono);
+    font-size: clamp(0.7rem, 2.6vw, 0.85rem);
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    padding-left: 0.32em;
+  }
+  .stage__name {
+    font-family: var(--serif);
+    font-size: clamp(4.4rem, min(27vw, 13svh), 7.5rem);
+    line-height: 0.82;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    text-shadow: 0 0 60px rgb(0 0 0 / 0.5);
+    transition: color 2.4s ease, text-shadow 2.4s ease, letter-spacing 3s var(--ease-out);
+  }
+  .stage__roles {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(1.15rem, 5.2vw, 2rem);
+    color: var(--ink-2);
+    text-shadow: 0 1px 14px rgb(0 0 0 / 0.8);
+  }
+  .stage__roles > span[aria-hidden] { color: var(--mint); margin-inline: 0.2em; font-style: normal; }
+
+  /* once the lights are up, the words step back into the dark */
+  .stage:not([data-phase='loading']) .stage__name {
+    color: rgb(242 236 226 / 0.4);
+    letter-spacing: 0.02em;
+    text-shadow: 0 0 40px rgb(205 187 255 / 0.12);
+  }
+  .stage:not([data-phase='loading']) .stage__first,
+  .stage:not([data-phase='loading']) .stage__roles { color: rgb(242 236 226 / 0.62); transition: color 2.4s ease; }
+
+  .stage__loader {
+    width: min(160px, 40vw);
+    height: 1px;
+    margin: 1.6rem auto 0;
+    background: var(--hair);
+    overflow: hidden;
+    transition: opacity 0.5s;
+  }
+  .stage__loader span {
+    display: block;
+    height: 100%;
+    width: 40%;
+    background: linear-gradient(90deg, transparent, var(--lavender), var(--mint), transparent);
+    animation: load 1.3s var(--ease-in-out) infinite;
+  }
+  @keyframes load {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(250%); }
+  }
+  .stage:not([data-phase='loading']) .stage__loader { opacity: 0; }
+
+  /* ---------- controls ---------- */
+  .stage__skip {
+    position: absolute;
+    z-index: 3;
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    background: rgb(11 9 18 / 0.55);
+    border: 1px solid var(--hair-2);
+    border-radius: 999px;
+    padding: 0.7rem 1rem;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: opacity 0.5s, transform 0.5s var(--ease-out), color 0.3s, border-color 0.3s;
+  }
+  .stage__skip { right: var(--gutter); cursor: pointer; }
+  .stage__skip:hover { color: var(--ink); border-color: var(--accent); }
+  .stage[data-phase='ready'] .stage__skip { opacity: 0; pointer-events: none; transform: translateY(8px); }
+
+  .stage__tip {
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    top: calc(var(--header-h) + 0.25rem);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgb(124 239 192 / 0.8);
+    pointer-events: none;
+    animation: tip 6s ease 1.2s both;
+  }
+  .stage__tip :global(svg) { inline-size: 1.2em; block-size: 1.2em; }
+  .stage__tip[hidden] { display: none; }
+  @keyframes tip {
+    0% { opacity: 0; }
+    12%, 80% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* a label that follows the pointer over the guitar, the mic and the TV */
+  .stage__label {
+    position: fixed;
+    z-index: 5;
+    left: 0;
+    top: 0;
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #0b0912;
+    background: var(--mint);
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(var(--x, 0), var(--y, 0)) translate(14px, 14px);
+    transition: opacity 0.2s;
+    white-space: nowrap;
+  }
+  .stage__label.is-on { opacity: 1; }
+
+  @media (min-width: 900px) {
+    .stage__name { font-size: clamp(5rem, min(11vw, 15svh), 10.5rem); }
+    .stage__roles { font-size: clamp(1.3rem, 2.4vw, 1.9rem); }
+  }
+
+  /* the header waits in the wings until the intro is over */
+  :global(.site-header) { transition: opacity 0.8s ease, visibility 0.8s; }
+  :global(html[data-intro='on'] .site-header) { opacity: 0; visibility: hidden; }
+  /* once the stage has scrolled away, the fixed scene steps out (it would sit over the footer) */
+  .stage.is-away .stage__scene { visibility: hidden; }
+  :global(.site-footer) { background: var(--stage); }
+  /* ?still: just the stage, for making the still images */
+  :global(html.still .site-header),
+  :global(html.still astro-dev-toolbar),
+  :global(html.still .stage > :not(.stage__scene)) { visibility: hidden !important; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stage__inner, .stage__title, .stage__name { transition: none; }
+    .stage__loader span { animation: none; }
+  }
+</style>

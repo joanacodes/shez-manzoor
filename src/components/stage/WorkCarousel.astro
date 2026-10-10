@@ -1,0 +1,331 @@
+---
+/**
+ * All of his work on a ring of covers and posters that turns in 3D: drag or swipe it,
+ * use the arrows, the keyboard or a trackpad. The cover in front opens its details;
+ * any other cover turns to the front. The caption below names the one in front.
+ */
+import { Picture } from 'astro:assets';
+import Icon from '../Icon.astro';
+import type { WorkItem } from '../../data/work';
+
+interface Props {
+  items: WorkItem[];
+}
+const { items } = Astro.props;
+const cat = (w: WorkItem) => `${w.category}${w.year ? ` · ${w.year}` : ''}`;
+const by = (w: WorkItem) => (w.kind === 'screen' ? w.role : w.artist);
+const first = items[0];
+---
+
+<div class="work" id="work" data-work-carousel aria-roledescription="carousel" aria-label="His work: records, film and television">
+  <div class="work__viewport" data-work-viewport>
+    <ul class="work__ring" role="list" data-work-ring>
+      {
+        items.map((w, i) => (
+          <li class="work__item" style={`--i:${i}`}>
+            <button
+              class="card"
+              type="button"
+              data-work={w.id}
+              data-kind={w.kind}
+              data-cat={cat(w)}
+              data-title={w.title}
+              data-by={by(w)}
+              aria-haspopup="dialog"
+              aria-controls="work-dialog"
+              aria-roledescription="slide"
+            >
+              <span class="card__art">
+                {w.image ? (
+                  <Picture
+                    src={w.image}
+                    widths={[150, 220, 300, 400]}
+                    sizes="(min-width: 900px) 190px, 136px"
+                    formats={['avif', 'webp']}
+                    alt=""
+                    loading={i < 4 || i > items.length - 4 ? 'eager' : 'lazy'}
+                    decoding="async"
+                    draggable="false"
+                  />
+                ) : (
+                  <span class={`card__made card__made--${w.id}`}>
+                    <span>{w.title}</span>
+                  </span>
+                )}
+                {w.badge && <span class="card__badge">{w.badge}</span>}
+                <span class="card__open" aria-hidden="true">
+                  <Icon name="plus" />
+                </span>
+              </span>
+              <span class="sr-only">
+                {w.title}. {cat(w)}. {by(w)}.
+              </span>
+            </button>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="work__bar">
+    <button class="work__arrow" type="button" data-work-prev aria-label="Previous">
+      <Icon name="chevron-left" />
+    </button>
+    <p class="work__caption" aria-hidden="true" data-work-caption data-kind={first.kind}>
+      <span class="work__cat"><span data-work-current>01</span>/{String(items.length).padStart(2, '0')} · <span data-work-cat>{cat(first)}</span></span>
+      <span class="work__title" data-work-title>{first.title}</span>
+      <span class="work__by" data-work-by>{by(first)}</span>
+    </p>
+    <button class="work__arrow" type="button" data-work-next aria-label="Next">
+      <Icon name="chevron-right" />
+    </button>
+  </div>
+  <p class="sr-only" aria-live="polite" data-work-live></p>
+</div>
+
+<script>
+  import '../../scripts/carousel';
+</script>
+
+<style>
+  .work {
+    --card-w: 136px;
+    --card-gap: 16px;
+    position: relative;
+    z-index: 2;
+    align-self: end;
+    display: grid;
+    gap: 0.5rem;
+    padding-bottom: max(0.9rem, env(safe-area-inset-bottom));
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+  }
+  :global(.stage[data-phase='ready']) .work { opacity: 1; pointer-events: auto; }
+
+  .work__viewport {
+    position: relative;
+    height: calc(var(--card-w) * 1.18);
+    perspective-origin: 50% -40%;
+    touch-action: pan-y;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .work__viewport.is-dragging { cursor: grabbing; }
+
+  .work__ring {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 0;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    transform-style: preserve-3d;
+    transform: translateZ(calc(-1 * var(--r, 600px))) rotateY(var(--turn, 0deg));
+  }
+  .work__item {
+    position: absolute;
+    top: 0;
+    left: calc(var(--card-w) / -2);
+    width: var(--card-w);
+    transform-style: preserve-3d;
+    transform: rotateY(calc(var(--i) * var(--step, 20deg))) translateZ(var(--r, 600px));
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    opacity: var(--o, 1);
+  }
+
+  /* ---------- a cover ---------- */
+  .card {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: 14px;
+    background: none;
+    color: var(--ink);
+    cursor: pointer;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transition: translate 0.5s var(--ease-out), scale 0.5s var(--ease-out);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .card__art {
+    position: relative;
+    display: block;
+    aspect-ratio: 1;
+    border-radius: inherit;
+    overflow: hidden;
+    background: #120e1b;
+    box-shadow: 0 0 0 1px rgb(242 236 226 / 0.1), 0 26px 40px -20px rgb(0 0 0 / 0.95);
+    transition: box-shadow 0.4s var(--ease-out);
+    -webkit-box-reflect: below 6px linear-gradient(transparent 62%, rgb(255 255 255 / 0.16));
+  }
+  .card__art::after {
+    /* covers turned away sink into the dark */
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #07060b;
+    opacity: var(--shade, 0);
+    pointer-events: none;
+  }
+  .card__art :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    -webkit-user-drag: none;
+    pointer-events: none;
+  }
+  .card.is-front { scale: 1.1; }
+  .card.is-front .card__art {
+    box-shadow: 0 0 0 1.5px rgb(var(--front-rgb, 205 187 255) / 0.75), 0 0 50px -4px rgb(var(--front-rgb, 205 187 255) / 0.5), 0 30px 50px -20px rgb(0 0 0 / 0.95);
+  }
+  .card[data-kind='screen'] { --front-rgb: 124 239 192; }
+  .card:focus-visible { outline: none; }
+  .card:focus-visible .card__art { box-shadow: 0 0 0 3px var(--mint), 0 0 50px -4px rgb(124 239 192 / 0.6); }
+  @media (hover: hover) {
+    .card.is-front:hover { translate: 0 -6px; }
+  }
+
+  .card__badge {
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    max-width: calc(100% - 12px);
+    padding: 0.25rem 0.45rem;
+    border-radius: 999px;
+    background: rgb(11 9 18 / 0.8);
+    font-family: var(--mono);
+    font-size: 0.5rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mint);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .card__open {
+    position: absolute;
+    right: 7px;
+    bottom: 7px;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgb(11 9 18 / 0.78);
+    color: var(--ink);
+    opacity: 0;
+    scale: 0.6;
+    transition: opacity 0.3s, scale 0.4s var(--ease-out);
+  }
+  .card__open :global(svg) { width: 16px; height: 16px; }
+  .card.is-front .card__open { opacity: 1; scale: 1; }
+
+  /* artwork drawn for credits that have no picture yet */
+  .card__made {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: end start;
+    padding: 12%;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.35rem;
+    line-height: 1;
+    color: #f4efe6;
+    text-shadow: 0 2px 18px rgb(0 0 0 / 0.6);
+  }
+  .card__made span { max-width: 85%; }
+  .card__made--clarksons-farm {
+    background:
+      radial-gradient(circle at 78% 22%, rgb(255 214 120 / 0.85) 0 9%, rgb(255 190 90 / 0.25) 10% 24%, transparent 25%),
+      repeating-linear-gradient(-28deg, transparent 0 10px, rgb(10 30 14 / 0.55) 10px 13px),
+      linear-gradient(180deg, #e8b765 0%, #c7883e 30%, #4f7a36 31%, #2f5d2a 70%, #183a1b 100%);
+  }
+  .card__made--bride-or-die {
+    background:
+      linear-gradient(90deg, #0c0a08 0 12%, transparent 12% 88%, #0c0a08 88%),
+      repeating-linear-gradient(180deg, transparent 0 9px, rgb(240 230 210 / 0.9) 9px 17px, transparent 17px 26px) 4% 0 / 6% 100% no-repeat,
+      repeating-linear-gradient(180deg, transparent 0 9px, rgb(240 230 210 / 0.9) 9px 17px, transparent 17px 26px) 96% 0 / 6% 100% no-repeat,
+      radial-gradient(circle at 50% 40%, #e6563a, #8e1f2b 55%, #2a0b14);
+  }
+
+  /* covers arrive from the dark once the stage is lit */
+  :global(.stage[data-phase='ready']) .card { animation: card-in 1.1s var(--ease-out) both; animation-delay: calc(var(--d, 0) * 70ms); }
+  @keyframes card-in {
+    from { opacity: 0; transform: translateZ(-420px) translateY(60px) rotateX(16deg); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* ---------- caption and arrows ---------- */
+  .work__bar {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    align-items: center;
+    gap: 0.6rem;
+    width: min(100% - 2 * var(--gutter), 520px);
+    margin: 0.9rem auto 0;
+  }
+  .work__arrow {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--hair-2);
+    background: rgb(11 9 18 / 0.6);
+    color: var(--ink);
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .work__arrow:hover { border-color: var(--accent); background: rgb(205 187 255 / 0.12); }
+  .work__arrow :global(svg) { inline-size: 20px; block-size: 20px; }
+  .work__caption {
+    display: grid;
+    justify-items: center;
+    gap: 0.15rem;
+    margin: 0;
+    text-align: center;
+    min-width: 0;
+    text-shadow: 0 1px 12px rgb(0 0 0 / 0.9);
+    transition: opacity 0.25s;
+  }
+  .work__caption.is-changing { opacity: 0; }
+  .work__cat { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--lavender); }
+  .work__caption[data-kind='screen'] .work__cat { color: var(--mint); }
+  .work__title {
+    max-width: 100%;
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    line-height: 1.05;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .work__by { max-width: 100%; font-size: 0.78rem; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  @media (min-width: 900px) {
+    .work { --card-w: 160px; --card-gap: 22px; padding-bottom: 1.1rem; }
+    .work__title { font-size: 1.6rem; }
+    .work__cat { font-size: 0.66rem; }
+    .work__by { font-size: 0.86rem; }
+    .card__made { font-size: 1.6rem; }
+    .card__badge { font-size: 0.56rem; }
+  }
+  @media (min-width: 1500px) and (min-height: 940px) {
+    .work { --card-w: 196px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.stage[data-phase='ready']) .card { animation: none; }
+  }
+</style>

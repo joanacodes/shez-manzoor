@@ -42,6 +42,10 @@ export const links = {
   spotify: 'https://open.spotify.com/artist/3q8Gg6UErCDwopoXFWQwb4',
   spotifyEmbed: 'https://open.spotify.com/embed/artist/3q8Gg6UErCDwopoXFWQwb4?utm_source=generator&theme=0',
   instagram: 'https://www.instagram.com/shezmusic/',
+  appleMusic: 'https://music.apple.com/gb/artist/shez/1484492113',
+  /** His composer page on Apple Music (soundtracks are credited to Shez Manzoor) */
+  appleMusicComposer: 'https://music.apple.com/gb/artist/shez-manzoor/1477261034',
+  soundcloud: 'https://soundcloud.com/shezrmusic',
   britishComedyGuide: 'https://www.comedy.co.uk/people/shez_manzoor/',
   stereofox: 'https://label.stereofox.com/?p=3060',
   /** TO CONFIRM: Manners McDade lists him, and SMA Talent announced his signing. Use whichever is current. */
@@ -52,7 +56,7 @@ export const links = {
 } as const;
 
 /** Profiles that describe the same person. Feeds schema.org sameAs for search and AI answers. */
-export const sameAs = [links.spotify, links.instagram, links.agent.url, links.britishComedyGuide];
+export const sameAs = [links.spotify, links.appleMusic, links.appleMusicComposer, links.soundcloud, links.instagram, links.agent.url, links.britishComedyGuide];
 
 export const bios = {
   short:

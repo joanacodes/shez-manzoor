@@ -113,3 +113,53 @@ export function breadcrumbSchema(trail: { name: string; path: string }[], site: 
 export function graph(nodes: Json[]): string {
   return JSON.stringify({ '@context': 'https://schema.org', '@graph': nodes }).replace(/</g, '\\u003c');
 }
+
+/** All of his work as one list: records (MusicAlbum) and screen credits (Movie, TVSeries). */
+export function workSchema(
+  items: {
+    kind: 'screen' | 'record';
+    category: string;
+    title: string;
+    artist: string;
+    date?: string;
+    genre?: string;
+    page?: string;
+    tracks: unknown[];
+    listen: { apple?: { url: string }; spotify?: { url: string; exact: boolean } };
+  }[],
+  site: URL | undefined,
+): Json {
+  const me = { '@id': ids(site).person };
+  const releaseType: Record<string, string> = {
+    EP: 'https://schema.org/EPRelease',
+    Soundtrack: 'https://schema.org/AlbumRelease',
+  };
+  return {
+    '@type': 'ItemList',
+    name: 'Records, film and television by Shez Manzoor (SHEZ)',
+    itemListElement: items.map((w, i) => {
+      const own = /^SHEZ$/i.test(w.artist);
+      const lead = w.artist.replace(/ (feat\.|with) .*$/i, '');
+      const item: Json =
+        w.kind === 'record'
+          ? {
+              '@type': 'MusicAlbum',
+              name: w.title,
+              byArtist: own ? me : [{ '@type': 'MusicGroup', name: lead }, me],
+              albumReleaseType: releaseType[w.category] ?? 'https://schema.org/SingleRelease',
+              ...(w.date ? { datePublished: w.date } : {}),
+              ...(w.tracks.length ? { numTracks: w.tracks.length } : {}),
+              ...(w.genre ? { genre: w.genre } : {}),
+              ...(w.listen.apple ? { url: w.listen.apple.url } : {}),
+              sameAs: [w.listen.apple?.url, w.listen.spotify?.exact ? w.listen.spotify.url : undefined].filter(Boolean),
+            }
+          : {
+              '@type': /series/i.test(w.category) ? 'TVSeries' : 'Movie',
+              name: w.title,
+              musicBy: me,
+              ...(w.page ? { url: absolute(w.page, site) } : {}),
+            };
+      return { '@type': 'ListItem', position: i + 1, item };
+    }),
+  };
+}

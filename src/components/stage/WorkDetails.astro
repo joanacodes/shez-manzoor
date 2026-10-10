@@ -1,0 +1,360 @@
+---
+/**
+ * The panel that opens from a card: artwork, release date and credits, the tracklist,
+ * and players for Apple Music and Spotify (loaded only when asked for).
+ * One <template> per piece of work; the carousel script fills the dialog from them.
+ */
+import { Picture } from 'astro:assets';
+import Icon from '../Icon.astro';
+import { spotifyTrackEmbed, type WorkItem } from '../../data/work';
+import { href } from '../../lib/url';
+
+interface Props {
+  items: WorkItem[];
+}
+const { items } = Astro.props;
+---
+
+<dialog class="detail" id="work-dialog" aria-labelledby="detail-title" data-work-dialog>
+  <div class="detail__frame">
+    <div class="detail__bar">
+      <button class="detail__nav" type="button" data-detail-prev aria-label="Previous">
+        <Icon name="chevron-left" />
+      </button>
+      <span class="detail__pos" data-detail-pos aria-hidden="true"></span>
+      <button class="detail__nav" type="button" data-detail-next aria-label="Next">
+        <Icon name="chevron-right" />
+      </button>
+      <button class="detail__close" type="button" data-detail-close aria-label="Close">
+        <Icon name="close" />
+      </button>
+    </div>
+    <div class="detail__body" data-detail-body></div>
+  </div>
+</dialog>
+
+{
+  items.map((w) => (
+    <template id={`work-${w.id}`}>
+      <article class="detail__card" data-kind={w.kind}>
+        <div class="detail__media">
+          {w.image ? (
+            <Picture
+              src={w.image}
+              widths={[360, 560, 760]}
+              sizes="(min-width: 900px) 400px, 86vw"
+              formats={['avif', 'webp']}
+              alt={w.imageAlt}
+              decoding="async"
+            />
+          ) : (
+            <div class={`detail__made detail__made--${w.id}`}>
+              <span>{w.title}</span>
+            </div>
+          )}
+          {w.image2 && (
+            <figure class="detail__second">
+              <Picture src={w.image2} widths={[160, 240]} sizes="120px" formats={['avif', 'webp']} alt={`Artwork for ${w.title}, series 1`} decoding="async" />
+              <figcaption>Series 1</figcaption>
+            </figure>
+          )}
+        </div>
+
+        <div class="detail__text">
+          <p class="detail__cat">
+            {w.category}
+            {w.year && <span> · {w.year}</span>}
+          </p>
+          <h2 class="detail__title" id="detail-title">
+            {w.title}
+          </h2>
+          <p class="detail__by">{w.kind === 'screen' ? w.artist : w.artist}</p>
+          {w.badge && <p class="detail__badge">{w.badge}</p>}
+          <p class="detail__summary">{w.summary}</p>
+
+          <dl class="detail__facts">
+            {w.kind === 'screen' && (
+              <div>
+                <dt>Role</dt>
+                <dd>{w.role}</dd>
+              </div>
+            )}
+            {w.facts
+              .filter((f) => f.value)
+              .map((f) => (
+                <div>
+                  <dt>{f.label}</dt>
+                  <dd>{f.value}</dd>
+                </div>
+              ))}
+          </dl>
+
+          {(w.listen.apple || w.listen.spotify) && (
+            <div class="detail__listen">
+              <p class="label">{w.kind === 'screen' ? 'Listen to the soundtrack' : 'Listen'}</p>
+              <div class="detail__buttons">
+                {w.listen.apple && (
+                  <button class="play play--apple" type="button" data-embed={w.listen.apple.embed} data-height={w.listen.apple.height} data-name="Apple Music">
+                    <Icon name="note" /> Play on Apple Music
+                  </button>
+                )}
+                {w.listen.spotify?.embed ? (
+                  <button class="play play--spotify" type="button" data-embed={w.listen.spotify.embed} data-height={w.listen.spotify.embed.includes('/album/') ? 352 : 152} data-name="Spotify">
+                    <Icon name="spotify" /> Play on Spotify
+                  </button>
+                ) : (
+                  w.listen.spotify && (
+                    <a class="play play--spotify" href={w.listen.spotify.url} target="_blank" rel="noopener">
+                      <Icon name="spotify" /> Find it on Spotify
+                    </a>
+                  )
+                )}
+              </div>
+              {w.listen.spotify?.label && (
+                <p class="detail__note">
+                  Spotify plays {w.listen.spotify.label}.{w.tracks.filter((t) => t.spotify).length > 1 && ' The play buttons in the tracklist play the others.'}
+                </p>
+              )}
+              <div class="detail__player" data-player />
+              <p class="detail__open">
+                {w.listen.apple && (
+                  <a href={w.listen.apple.url} target="_blank" rel="noopener">
+                    Open in Apple Music <Icon name="arrow-up-right" />
+                  </a>
+                )}
+                {w.listen.spotify && (
+                  <a href={w.listen.spotify.url} target="_blank" rel="noopener">
+                    {w.listen.spotify.exact ? 'Open in Spotify' : 'Search Spotify'} <Icon name="arrow-up-right" />
+                  </a>
+                )}
+                {w.listen.soundcloud && (
+                  <a href={w.listen.soundcloud} target="_blank" rel="noopener">
+                    SoundCloud <Icon name="arrow-up-right" />
+                  </a>
+                )}
+              </p>
+            </div>
+          )}
+
+          {w.tracks.length > 1 && (
+            <div class="detail__tracks">
+              <p class="label">
+                {w.kind === 'screen' ? 'Soundtrack' : 'Tracklist'} · {w.tracks.length} tracks
+              </p>
+              <ol role="list">
+                {w.tracks.map((t) => (
+                  <li>
+                    <span class="n">{String(t.n).padStart(2, '0')}</span>
+                    <span class="t">{t.title}</span>
+                    {t.spotify && (
+                      <button class="track-play" type="button" data-embed={spotifyTrackEmbed(t.spotify)} data-height="152" data-name="Spotify" aria-label={`Play ${t.title} on Spotify`}>
+                        <Icon name="play" />
+                      </button>
+                    )}
+                    <span class="l">{t.length}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+
+          {w.body.length > 0 && (
+            <div class="detail__story">
+              {w.body.map((p) => (
+                <p>{p}</p>
+              ))}
+            </div>
+          )}
+
+          {w.page && (
+            <a class="text-link detail__more" href={href(w.page)}>
+              {w.kind === 'screen' ? 'The full credit' : 'More about this release'} <Icon name="arrow" />
+            </a>
+          )}
+        </div>
+      </article>
+    </template>
+  ))
+}
+
+<style is:global>
+  .detail {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: #0c0a12;
+    color: var(--ink);
+    overscroll-behavior: contain;
+  }
+  .detail[open] { animation: detail-in 0.5s var(--ease-out) both; }
+  .detail::backdrop { background: rgb(4 3 8 / 0.72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  @keyframes detail-in {
+    from { opacity: 0; transform: translateY(28px) scale(0.98); }
+  }
+  html:has(.detail[open]) { overflow: hidden; }
+
+  .detail__frame { display: flex; flex-direction: column; height: 100%; }
+  .detail__bar {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: max(0.6rem, env(safe-area-inset-top)) var(--gutter) 0.6rem;
+    background: linear-gradient(#0c0a12 70%, rgb(12 10 18 / 0));
+  }
+  .detail__nav,
+  .detail__close {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--hair-2);
+    background: rgb(255 255 255 / 0.03);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .detail__nav svg,
+  .detail__close svg { width: 20px; height: 20px; }
+  .detail__close { margin-left: auto; }
+  .detail__nav:hover,
+  .detail__close:hover { border-color: var(--accent); }
+  .detail__pos { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em; color: var(--ink-3); min-width: 4.5em; text-align: center; }
+
+  .detail__body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+  .detail__card { display: grid; gap: 1.6rem; padding: 0.4rem var(--gutter) max(2.5rem, env(safe-area-inset-bottom)); }
+  .detail__card[data-kind='screen'] { --accent: var(--mint); --accent-rgb: var(--mint-rgb); }
+
+  .detail__media { position: relative; }
+  .detail__media > picture img,
+  .detail__made {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 18px;
+    box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.9), 0 0 0 1px rgb(242 236 226 / 0.08);
+  }
+  .detail__made {
+    display: grid;
+    place-items: end start;
+    padding: 10%;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(2.4rem, 11vw, 3.6rem);
+    line-height: 0.95;
+    color: #f4efe6;
+    text-shadow: 0 2px 24px rgb(0 0 0 / 0.6);
+  }
+  .detail__made--clarksons-farm {
+    background:
+      radial-gradient(circle at 78% 22%, rgb(255 214 120 / 0.85) 0 9%, rgb(255 190 90 / 0.25) 10% 24%, transparent 25%),
+      repeating-linear-gradient(-28deg, transparent 0 18px, rgb(10 30 14 / 0.55) 18px 23px),
+      linear-gradient(180deg, #e8b765 0%, #c7883e 30%, #4f7a36 31%, #2f5d2a 70%, #183a1b 100%);
+  }
+  .detail__made--bride-or-die {
+    background:
+      linear-gradient(90deg, #0c0a08 0 12%, transparent 12% 88%, #0c0a08 88%),
+      repeating-linear-gradient(180deg, transparent 0 16px, rgb(240 230 210 / 0.9) 16px 30px, transparent 30px 46px) 4% 0 / 6% 100% no-repeat,
+      repeating-linear-gradient(180deg, transparent 0 16px, rgb(240 230 210 / 0.9) 16px 30px, transparent 30px 46px) 96% 0 / 6% 100% no-repeat,
+      radial-gradient(circle at 50% 40%, #e6563a, #8e1f2b 55%, #2a0b14);
+  }
+  .detail__second {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    width: 92px;
+    margin: 0;
+    padding: 5px 5px 4px;
+    border-radius: 12px;
+    background: rgb(12 10 18 / 0.85);
+    box-shadow: 0 10px 30px rgb(0 0 0 / 0.6);
+  }
+  .detail__second img { display: block; width: 100%; height: auto; border-radius: 8px; }
+  .detail__second figcaption { font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); text-align: center; padding-top: 3px; }
+
+  .detail__cat { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+  .detail__title { margin-top: 0.5rem; font-family: var(--serif); font-weight: 400; font-size: clamp(2.2rem, 9vw, 3.4rem); line-height: 0.98; }
+  .detail__by { margin-top: 0.5rem; color: var(--ink-2); }
+  .detail__badge {
+    display: inline-block;
+    margin-top: 0.9rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid rgb(var(--accent-rgb) / 0.5);
+    font-family: var(--mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .detail__summary { margin-top: 1.1rem; font-size: 1.08rem; line-height: 1.55; color: var(--ink); max-width: 46ch; }
+
+  .detail__facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem 1.2rem; margin: 1.5rem 0 0; padding-top: 1.2rem; border-top: 1px solid var(--hair); }
+  .detail__facts dt { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--ink-3); }
+  .detail__facts dd { margin: 0.25rem 0 0; font-size: 0.95rem; color: var(--ink); }
+
+  .detail__listen { margin-top: 1.8rem; display: grid; gap: 0.8rem; }
+  .detail__buttons { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .play {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 46px;
+    padding: 0.7rem 1.1rem;
+    border-radius: 999px;
+    border: 1px solid var(--hair-2);
+    background: rgb(255 255 255 / 0.04);
+    color: var(--ink);
+    font: 600 0.92rem/1 var(--sans);
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+  }
+  .play svg { width: 1.15em; height: 1.15em; }
+  .play--apple:hover, .play--apple.is-on { border-color: #fa5a6e; background: rgb(250 90 110 / 0.12); }
+  .play--spotify:hover, .play--spotify.is-on { border-color: #1ed760; background: rgb(30 215 96 / 0.12); }
+  .detail__note { font-size: 0.82rem; color: var(--ink-3); }
+  .detail__player:empty { display: none; }
+  .detail__player iframe { display: block; width: 100%; border: 0; border-radius: 14px; background: #15111f; }
+  .detail__open { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; }
+  .detail__open a { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--ink-2); font-size: 0.88rem; text-decoration: none; border-bottom: 1px solid var(--hair-2); padding: 0.3rem 0; }
+  .detail__open a:hover { color: var(--ink); border-color: var(--accent); }
+  .detail__open svg { width: 0.9em; height: 0.9em; }
+
+  .detail__tracks { margin-top: 1.8rem; }
+  .detail__tracks ol { margin: 0.7rem 0 0; padding: 0; list-style: none; border-top: 1px solid var(--hair); }
+  .detail__tracks li { display: grid; grid-template-columns: 2.2rem 1fr auto auto; align-items: center; gap: 0.5rem; min-height: 46px; border-bottom: 1px solid var(--hair); }
+  .detail__tracks .n { font-family: var(--mono); font-size: 0.7rem; color: var(--ink-3); }
+  .detail__tracks .t { font-size: 0.95rem; }
+  .detail__tracks .l { font-family: var(--mono); font-size: 0.72rem; color: var(--ink-3); grid-column: 4; }
+  .track-play { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgb(30 215 96 / 0.4); background: transparent; color: #1ed760; cursor: pointer; grid-column: 3; }
+  .track-play svg { width: 14px; height: 14px; }
+  .track-play:hover, .track-play.is-on { background: rgb(30 215 96 / 0.15); }
+
+  .detail__story { margin-top: 1.8rem; display: grid; gap: 0.9rem; color: var(--ink-2); max-width: 60ch; }
+  .detail__more { margin-top: 1.6rem; }
+
+  @media (min-width: 900px) {
+    .detail {
+      width: min(1040px, calc(100% - 4rem));
+      height: auto;
+      max-height: min(860px, calc(100% - 4rem));
+      margin: auto;
+      border-radius: 26px;
+      border: 1px solid var(--hair-2);
+      box-shadow: 0 60px 120px -40px rgb(0 0 0 / 0.9);
+    }
+    .detail__frame { height: auto; max-height: min(860px, calc(100vh - 4rem)); }
+    .detail__bar { padding: 1rem 1.4rem 0.6rem; }
+    .detail__card { grid-template-columns: 400px 1fr; gap: 2.6rem; padding: 0.4rem 2.4rem 2.6rem; align-items: start; }
+    .detail__media { position: sticky; top: 0.5rem; }
+    .detail__second { width: 110px; }
+  }
+</style>
