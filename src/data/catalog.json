@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-10T05:24:13.850Z",
+  "fetchedAt": "2026-10-10T05:47:08.643Z",
   "sources": [
     "iTunes Search API",
     "Spotify oEmbed",
@@ -491,7 +491,141 @@
       "artwork": "release-falling-feat-selome.jpg"
     }
   ],
-  "soundtracks": [],
+  "soundtracks": [
+    {
+      "slug": "we-are-lady-parts-music-from-the-original-series-seasons-1-and-2",
+      "title": "We Are Lady Parts (Music From the Original Series - Seasons 1 & 2)",
+      "artist": "Lady Parts",
+      "appleId": 1748223604,
+      "appleUrl": "https://music.apple.com/gb/album/we-are-lady-parts-music-from-the-original-series-seasons-1-2/1748223604",
+      "releaseDate": "2024-05-31",
+      "trackCount": 15,
+      "genre": "Soundtrack",
+      "artwork": "soundtrack-we-are-lady-parts-music-from-the-original-series-seasons-1-and-2.jpg",
+      "tracks": [
+        {
+          "title": "Ain't No One Gonna Honour Kill My Sister But Me",
+          "number": 1,
+          "disc": 1,
+          "ms": 150734,
+          "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
+          "appleUrl": "https://music.apple.com/gb/album/aint-no-one-gonna-honour-kill-my-sister-but-me/1748223604?i=1748223609"
+        },
+        {
+          "title": "Bashir With the Good Beard",
+          "number": 2,
+          "disc": 1,
+          "ms": 141292,
+          "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
+          "appleUrl": "https://music.apple.com/gb/album/bashir-with-the-good-beard/1748223604?i=1748223612"
+        },
+        {
+          "title": "Voldemort Under My Head Scarf",
+          "number": 3,
+          "disc": 1,
+          "ms": 106734,
+          "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
+          "appleUrl": "https://music.apple.com/gb/album/voldemort-under-my-head-scarf/1748223604?i=1748223617"
+        },
+        {
+          "title": "9 To 5",
+          "number": 4,
+          "disc": 1,
+          "ms": 118095,
+          "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
+          "appleUrl": "https://music.apple.com/gb/album/9-to-5/1748223604?i=1748223744"
+        },
+        {
+          "title": "Fish and Chips",
+          "number": 5,
+          "disc": 1,
+          "ms": 112079,
+          "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
+          "appleUrl": "https://music.apple.com/gb/album/fish-and-chips/1748223604?i=1748223747"
+        },
+        {
+          "title": "Creep",
+          "number": 6,
+          "disc": 1,
+          "ms": 114637,
+          "artist": "Anjana Vasan",
+          "appleUrl": "https://music.apple.com/gb/album/creep/1748223604?i=1748223749"
+        },
+        {
+          "title": "We Are the Champions",
+          "number": 7,
+          "disc": 1,
+          "ms": 165298,
+          "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
+          "appleUrl": "https://music.apple.com/gb/album/we-are-the-champions/1748223604?i=1748223753"
+        },
+        {
+          "title": "Villain Era (feat. Juliette Motamed)",
+          "number": 8,
+          "disc": 1,
+          "ms": 170017,
+          "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey & Faith Omole",
+          "appleUrl": "https://music.apple.com/gb/album/villain-era-feat-juliette-motamed/1748223604?i=1748223764"
+        },
+        {
+          "title": "Bashir With the Good Beard",
+          "number": 9,
+          "disc": 1,
+          "ms": 105325,
+          "artist": "Second Wife",
+          "appleUrl": "https://music.apple.com/gb/album/bashir-with-the-good-beard/1748223604?i=1748223922"
+        },
+        {
+          "title": "Malala Made Me Do It",
+          "number": 10,
+          "disc": 1,
+          "ms": 114940,
+          "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
+          "appleUrl": "https://music.apple.com/gb/album/malala-made-me-do-it/1748223604?i=1748223928"
+        },
+        {
+          "title": "Oops!...I Did It Again",
+          "number": 11,
+          "disc": 1,
+          "ms": 170024,
+          "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
+          "appleUrl": "https://music.apple.com/gb/album/oops-i-did-it-again/1748223604?i=1748223930"
+        },
+        {
+          "title": "Don't Let Me Be Misunderstood",
+          "number": 12,
+          "disc": 1,
+          "ms": 126770,
+          "artist": "Faith Omole",
+          "appleUrl": "https://music.apple.com/gb/album/dont-let-me-be-misunderstood/1748223604?i=1748223931"
+        },
+        {
+          "title": "Glass Ceiling Feeling",
+          "number": 13,
+          "disc": 1,
+          "ms": 147273,
+          "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
+          "appleUrl": "https://music.apple.com/gb/album/glass-ceiling-feeling/1748223604?i=1748223932"
+        },
+        {
+          "title": "Jama Narenji, The Undeniable & Nbeed",
+          "number": 14,
+          "disc": 1,
+          "ms": 236669,
+          "artist": "Elaha Soroor, Shez, Haleemah X, Lauriem, Rasha Nahas & Sai",
+          "appleUrl": "https://music.apple.com/gb/album/jama-narenji-the-undeniable-nbeed/1748223604?i=1748223934"
+        },
+        {
+          "title": "The Reason",
+          "number": 15,
+          "disc": 1,
+          "ms": 157497,
+          "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
+          "appleUrl": "https://music.apple.com/gb/album/the-reason/1748223604?i=1748224101"
+        }
+      ]
+    }
+  ],
   "screen": [
     {
       "slug": "we-are-lady-parts",
@@ -577,7 +711,7 @@
         "id": "6NbaBn9oxJzwnlijBg5jCW",
         "url": "https://open.spotify.com/track/6NbaBn9oxJzwnlijBg5jCW",
         "title": "BURN IT DOWN",
-        "thumbnail": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02fa8b39532e2c2a9a76a1d178"
+        "thumbnail": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02fa8b39532e2c2a9a76a1d178"
       },
       {
         "id": "4J5YNEoA4nobpQyGMr8jUX",
