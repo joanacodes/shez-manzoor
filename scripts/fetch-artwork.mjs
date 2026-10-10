@@ -646,6 +646,16 @@ try {
 
 catalog.releases = catalog.releases.filter((r, i, all) => all.findIndex((x) => x.slug === r.slug) === i);
 catalog.releases.sort((a, b) => (b.releaseDate ?? '').localeCompare(a.releaseDate ?? ''));
-await fs.writeFile(OUT, `${JSON.stringify(catalog, null, 2)}\n`);
+// Spotify serves the same image from several CDN hosts at random: use its canonical host
+const canonical = (text) => text.replace(/https:\/\/image-cdn-[a-z]+\.spotifycdn\.com\/image\//g, 'https://i.scdn.co/image/');
+// keep the previous timestamp when nothing else changed, so a quiet run commits nothing
+try {
+  const previous = JSON.parse(await fs.readFile(OUT, 'utf8'));
+  const strip = (c) => canonical(JSON.stringify({ ...c, fetchedAt: null }));
+  if (strip(previous) === strip(catalog)) catalog.fetchedAt = previous.fetchedAt;
+} catch {
+  /* first run */
+}
+await fs.writeFile(OUT, `${canonical(JSON.stringify(catalog, null, 2))}\n`);
 log(`\nSaved ${catalog.releases.length} releases, ${catalog.soundtracks.length} soundtracks, ${catalog.screen.length} screen posters, ${catalog.spotify.albums.length} Spotify albums.`);
 if (catalog.errors.length) log(`Errors:\n- ${catalog.errors.join('\n- ')}`);
