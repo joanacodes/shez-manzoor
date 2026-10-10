@@ -44,7 +44,9 @@ All facts live in `src/data/`. Pages, structured data and `llms.txt` are generat
 | `catalog.json` | Every release, soundtrack and cover found on Apple Music and Spotify. Written by the fetch job below, not by hand. |
 | `work.ts` | Joins the catalog with the credits above into the list the carousel shows. |
 
-**Artwork and release info.** `scripts/fetch-artwork.mjs` reads his Apple Music artist pages (as SHEZ and as Shez Manzoor) through the public iTunes Search API, and his public Spotify player, with no keys. It saves covers to `src/assets/artwork/` and the facts to `catalog.json`. The `Fetch artwork` workflow runs it on GitHub (Actions, Fetch artwork, Run workflow) and commits the result. Run it again after a new release.
+**Artwork and release info.** `scripts/fetch-artwork.mjs` reads his Apple Music artist pages (as SHEZ and as Shez Manzoor) through the public iTunes Search API, and his public Spotify player. It saves covers to `src/assets/artwork/` and the facts to `catalog.json`. The `Fetch artwork and release info` workflow runs it on GitHub whenever the script changes, commits the result and republishes the preview. Once the workflow is on `main`, it can also be run by hand from the Actions tab (Run workflow), for example after a new release.
+
+**Spotify Web API (optional).** With an app's keys, the job also reads every album, single and feature from the Spotify Web API, so each release gets its exact Spotify player and every track its own play button. Create a free app at [developer.spotify.com/dashboard](https://developer.spotify.com/dashboard) (any name, any redirect URI, tick Web API), then save its Client ID and Client secret in the repository under Settings, Secrets and variables, Actions, as `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET`. Releases that are on Spotify but not on Apple Music get their own card.
 
 **TV clips.** The TV shows posters until clips arrive. Save short MP4s (10–20 seconds, no sound needed, about 640×480) as `public/clips/<slug>.mp4`: `we-are-lady-parts.mp4`, `polite-society.mp4`, `clarksons-farm.mp4`, `bride-or-die.mp4`. The TV plays each one in place of that poster at the next build.
 
@@ -95,6 +97,6 @@ All facts live in `src/data/`. Pages, structured data and `llms.txt` are generat
 - **Clarkson's Farm.** His bio says "compositions for". Public listings credit another composer for the series score, so the site says "Compositions".
 - **Artwork.** Posters for Clarkson's Farm and Bride or Die. They are drawn in CSS until then.
 - **Bride or Die.** His exact role and the year.
-- **Spotify album links.** Spotify's public player only lists his top tracks, so releases without one of those link to a Spotify search. Spotify API keys (free) would give exact album links.
+- **Spotify album links.** Spotify's public player only lists his top tracks, so until the Spotify Web API keys are added, releases without one of those link to a Spotify search.
 - **Links.** YouTube, Facebook, IMDb and Bandcamp URLs, to add to the footer and to `sameAs`.
 - **Photos.** Photographer credits, and more press photos.

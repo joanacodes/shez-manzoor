@@ -1,7 +1,9 @@
 name: Fetch artwork and release info
 
 # Downloads covers, posters, release dates, tracklists and streaming links
-# (iTunes Search API and Spotify public pages) and commits them to this branch.
+# (iTunes Search API, Spotify public pages, and the Spotify Web API when its
+# keys are saved as the SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET secrets)
+# and commits them to this branch, then republishes the preview.
 
 on:
   push:
@@ -11,6 +13,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: fetch-artwork-${{ github.ref }}
@@ -26,7 +29,11 @@ jobs:
           node-version: 22
       - name: Fetch
         run: node scripts/fetch-artwork.mjs
+        env:
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
       - name: Save to the branch
+        id: save
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -35,3 +42,10 @@ jobs:
           git commit -m "Update artwork and release info from Apple Music and Spotify"
           git pull --rebase origin "${GITHUB_REF_NAME}"
           git push origin "HEAD:${GITHUB_REF_NAME}"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+      # commits made by this job do not start other workflows, so ask main to republish the previews
+      - name: Republish the preview
+        if: steps.save.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main --repo "$GITHUB_REPOSITORY"

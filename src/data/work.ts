@@ -36,7 +36,7 @@ export type WorkItem = {
   soundtrack?: { title: string; artist: string; date?: string };
   listen: {
     apple?: { url: string; embed: string; height: number };
-    spotify?: { url: string; embed?: string; exact: boolean; label?: string };
+    spotify?: { url: string; embed?: string; height?: number; exact: boolean; label?: string };
     soundcloud?: string;
   };
 };
@@ -65,10 +65,13 @@ const length = (ms?: number | null) => {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 };
 
-export const formatDate = (iso?: string) =>
-  iso
-    ? new Date(`${iso}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
-    : '';
+export const formatDate = (iso?: string) => {
+  if (!iso) return '';
+  if (/^\d{4}$/.test(iso)) return iso;
+  const [y, m, d] = iso.split('-');
+  const date = new Date(Date.UTC(Number(y), Number(m) - 1, Number(d ?? 1), 12));
+  return date.toLocaleDateString('en-GB', { ...(d ? { day: 'numeric' } : {}), month: 'long', year: 'numeric', timeZone: 'UTC' });
+};
 
 /* ---------- Spotify: track IDs found in his public player ---------- */
 type SpotifyInfo = { name: string; artists: string[]; releaseDate: string | null; album?: string | null; coverFile?: string };
@@ -79,9 +82,34 @@ for (const t of catalog.spotify.topTracks ?? []) {
   const id = String(t.uri).split(':').pop()!;
   if (!spotifyByTitle.has(plain(t.title))) spotifyByTitle.set(plain(t.title), id);
 }
-type SpotifyAlbum = { id: string; url: string; title: string; tracks?: { uri: string; title: string }[] };
+type SpotifyTrack = { uri: string; title: string; ms?: number; number?: number; disc?: number; artists?: string[] };
+type SpotifyAlbum = {
+  id: string;
+  url: string;
+  title: string;
+  type?: string;
+  group?: string | null;
+  releaseDate?: string | null;
+  totalTracks?: number;
+  artists?: { id: string; name: string }[];
+  onApple?: boolean;
+  coverFile?: string;
+  tracks?: SpotifyTrack[];
+};
 const spotifyAlbums = (catalog.spotify.albums ?? []) as SpotifyAlbum[];
-for (const a of spotifyAlbums) for (const t of a.tracks ?? []) spotifyByTitle.set(plain(t.title), String(t.uri).split(':').pop()!);
+const trackId = (t?: SpotifyTrack) => (t ? String(t.uri).split(':').pop() : undefined);
+/** The same release on Spotify: same title (ignoring "- Single", "feat." and punctuation) and the same number of tracks. */
+const squash = (s: string) =>
+  s
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+-\s+(single|ep)$/, '')
+    .replace(/\((feat\.|with)[^)]*\)/g, '')
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '');
+const albumFor = (title: string, count?: number) =>
+  spotifyAlbums.find((a) => squash(a.title) === squash(title) && (!count || !a.totalTracks || a.totalTracks === count));
 
 const spotifyTrack = (id: string) => `https://open.spotify.com/track/${id}`;
 const spotifyEmbed = (type: 'track' | 'album', id: string) => `https://open.spotify.com/embed/${type}/${id}?utm_source=generator&theme=0`;
@@ -117,9 +145,8 @@ function categoryOf(r: CatalogRelease) {
 const curated = new Map(releases.map((r) => [r.slug, r]));
 const curatedFor = (slug: string) => curated.get(slug) ?? curated.get(slug.replace(/-ep$/, '')) ?? null;
 
-function spotifyFor(title: string, artist: string, tracks: Track[]): WorkItem['listen']['spotify'] {
-  const album = spotifyAlbums.find((a) => plain(a.title) === plain(title));
-  if (album) return { url: album.url, embed: spotifyEmbed('album', album.id), exact: true };
+function spotifyFor(title: string, artist: string, tracks: Track[], album?: SpotifyAlbum): WorkItem['listen']['spotify'] {
+  if (album) return { url: album.url, embed: spotifyEmbed('album', album.id), height: tracks.length > 1 ? 352 : 152, exact: true };
   const first = tracks.find((t) => t.spotify);
   if (first) {
     return {
@@ -136,12 +163,15 @@ function recordFrom(r: CatalogRelease): WorkItem {
   const title = cleanTitle(r);
   const category = categoryOf(r);
   const artist = artistLine(r);
+  const album = albumFor(r.title, r.trackCount ?? r.tracks?.length);
   const tracks: Track[] = (r.tracks ?? []).map((t) => ({
     n: t.number,
     title: t.title.replace(/ - Single$/i, ''),
     length: length(t.ms),
     artist: t.artist && t.artist !== r.artist ? t.artist : undefined,
-    spotify: spotifyByTitle.get(plain(t.title)),
+    spotify:
+      trackId(album?.tracks?.find((x) => x.number === t.number && (x.disc ?? 1) === ((t as { disc?: number }).disc ?? 1))) ??
+      spotifyByTitle.get(plain(t.title)),
   }));
   const notes = curatedFor(r.slug);
   const own = category === 'Single' || category === 'EP';
@@ -182,7 +212,7 @@ function recordFrom(r: CatalogRelease): WorkItem {
     genre: r.genre ?? undefined,
     badge: notes?.latest ? 'Latest release' : notes?.label ? `${notes.label} release` : undefined,
     page: notes ? `/music/${notes.slug}/` : undefined,
-    listen: { apple, spotify: spotifyFor(title, artist, tracks), soundcloud: links.soundcloud },
+    listen: { apple, spotify: spotifyFor(title, artist, tracks, album), soundcloud: links.soundcloud },
   };
 }
 
@@ -265,16 +295,54 @@ function screenFrom(p: Project): WorkItem {
   };
 }
 
+/* ---------- releases that are on Spotify but not on Apple Music ---------- */
+function spotifyOnlyFrom(a: SpotifyAlbum): WorkItem {
+  const featured = a.group === 'appears_on';
+  const count = a.totalTracks ?? a.tracks?.length ?? 0;
+  const title = a.title.replace(/\s*\((feat\.|with)[^)]*\)/i, '');
+  const names = (a.artists ?? []).map((x) => x.name);
+  const category = featured ? 'Featuring SHEZ' : a.type === 'album' && count > 6 ? 'Album' : count >= 4 ? 'EP' : 'Single';
+  const tracks: Track[] = (a.tracks ?? []).map((t, i) => ({ n: t.number ?? i + 1, title: t.title, length: length(t.ms), spotify: trackId(t) }));
+  return {
+    id: `spotify-${a.id}`,
+    kind: 'record',
+    category,
+    title,
+    artist: featured && !names.some((n) => /^shez$/i.test(n)) ? `${names.join(', ')} feat. SHEZ` : names.join(', '),
+    role: featured ? 'Featured artist' : 'Artist',
+    date: a.releaseDate ?? undefined,
+    year: (a.releaseDate ?? '').slice(0, 4),
+    image: image(a.coverFile),
+    imageAlt: `Cover of ${title}`,
+    summary: `${title}, ${featured ? `by ${names.join(', ')}, featuring SHEZ` : `${category === 'EP' ? 'an EP' : category === 'Album' ? 'an album' : 'a single'} by ${names.join(', ')}`}.`,
+    body: [],
+    facts: [
+      { label: 'Released', value: formatDate(a.releaseDate ?? undefined) },
+      { label: 'Format', value: featured ? 'Single' : category },
+      ...(count > 1 ? [{ label: 'Tracks', value: String(count) }] : []),
+    ],
+    tracks,
+    listen: {
+      spotify: { url: a.url, embed: spotifyEmbed('album', a.id), height: count > 1 ? 352 : 152, exact: true },
+      soundcloud: links.soundcloud,
+    },
+  };
+}
+
 /* ---------- the list ---------- */
 const records = catalog.releases.filter((r) => r.slug !== soundtrackSlug).map(recordFrom);
 const extras = ((catalog as { extra?: Extra[] }).extra ?? []).filter((e) => !records.some((r) => plain(r.title) === plain(e.title))).map(extraFrom);
 const screen = projects.map(screenFrom);
+const onlyOnSpotify = spotifyAlbums
+  .filter((a) => a.onApple === false && a.coverFile && a.type !== 'compilation')
+  .filter((a) => ![...records, ...extras].some((w) => squash(w.title) === squash(a.title)))
+  .map(spotifyOnlyFrom);
 
 // lead with the highlights, then everything else, newest first
 const lead = ['miscellany-vol-1', 'we-are-lady-parts', 'freeze', 'polite-society'];
-const rest = [...records, ...extras, ...screen].filter((w) => !lead.includes(w.id));
+const rest = [...records, ...extras, ...onlyOnSpotify, ...screen].filter((w) => !lead.includes(w.id));
 rest.sort((a, b) => (b.date ?? b.year ?? '').localeCompare(a.date ?? a.year ?? ''));
-const all = [...records, ...extras, ...screen];
+const all = [...records, ...extras, ...onlyOnSpotify, ...screen];
 export const work: WorkItem[] = [...lead.map((id) => all.find((w) => w.id === id)!).filter(Boolean), ...rest];
 
 /** Song titles for the setlist taped to the stage floor. */

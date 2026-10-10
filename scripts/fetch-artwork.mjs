@@ -520,6 +520,121 @@ for (const id of [...albumIds].filter((x) => !catalog.spotify.albums.some((a) =>
   }
 }
 
+/* ---------- Spotify Web API: exact albums and tracks ----------
+ * Needs SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET (a free app at developer.spotify.com),
+ * saved as GitHub Actions secrets. Without them this part is skipped.
+ */
+const sameTitle = (a, b) => {
+  const n = (s) =>
+    String(s)
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/\s+-\s+(single|ep)$/, '')
+      .replace(/\((feat\.|with)[^)]*\)/g, '')
+      .replace(/&/g, ' and ')
+      .replace(/[^a-z0-9]+/g, '');
+  return n(a) === n(b);
+};
+const spotifyKeys = [process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET];
+if (spotifyKeys.every(Boolean)) {
+  try {
+    const tokenRes = await fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${Buffer.from(spotifyKeys.join(':')).toString('base64')}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: 'grant_type=client_credentials',
+    });
+    if (!tokenRes.ok) throw new Error(`token: HTTP ${tokenRes.status} ${(await tokenRes.text()).slice(0, 200)}`);
+    const { access_token: token } = await tokenRes.json();
+    const api = async (where) => {
+      const url = where.startsWith('http') ? where : `https://api.spotify.com/v1${where}`;
+      for (let attempt = 1; attempt <= 4; attempt++) {
+        const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+        if (res.status === 429) {
+          await new Promise((r) => setTimeout(r, (Number(res.headers.get('retry-after')) || 2) * 1000));
+          continue;
+        }
+        if (!res.ok) throw new Error(`${url.replace('https://api.spotify.com/v1', '')}: HTTP ${res.status} ${(await res.text()).slice(0, 200)}`);
+        return res.json();
+      }
+      throw new Error(`${url}: rate limited`);
+    };
+    // follow `next` links, so the page size Spotify allows does not matter
+    const pages = async (first) => {
+      const items = [];
+      for (let next = first; next; ) {
+        const page = await api(next);
+        items.push(...(page.items ?? []));
+        next = page.next;
+      }
+      return items;
+    };
+    const toAlbum = async (a, group) => {
+      const tracks = await pages(`/albums/${a.id}/tracks?market=GB&limit=10`);
+      return {
+        id: a.id,
+        url: a.external_urls?.spotify ?? `https://open.spotify.com/album/${a.id}`,
+        title: a.name,
+        type: a.album_type,
+        group: group ?? a.album_group ?? null,
+        releaseDate: a.release_date ?? null,
+        totalTracks: a.total_tracks ?? tracks.length,
+        artists: (a.artists ?? []).map((x) => ({ id: x.id, name: x.name })),
+        image: a.images?.[0]?.url ?? null,
+        tracks: tracks.map((t) => ({
+          uri: t.uri,
+          title: t.name,
+          ms: t.duration_ms,
+          number: t.track_number,
+          disc: t.disc_number,
+          artists: (t.artists ?? []).map((x) => x.name),
+        })),
+      };
+    };
+    const albums = [];
+    for (const a of await pages(`/artists/${SPOTIFY_ARTIST}/albums?include_groups=album,single,appears_on,compilation&market=GB&limit=10`)) {
+      albums.push(await toAlbum(a));
+    }
+    // soundtracks and features that live on other artist pages: look them up by title
+    const apple = [...catalog.releases, ...catalog.soundtracks];
+    for (const r of apple.filter((r) => !albums.some((a) => sameTitle(a.title, r.title)))) {
+      const title = r.title.replace(/\s+-\s+(Single|EP)$/i, '').replace(/\s*\(feat\.[^)]*\)/i, '').trim();
+      try {
+        const found = await api(`/search?type=album&market=GB&limit=10&q=${encodeURIComponent(title)}`);
+        const hit = (found.albums?.items ?? []).find((a) => sameTitle(a.name, r.title) && (!r.trackCount || a.total_tracks === r.trackCount));
+        if (hit && !albums.some((a) => a.id === hit.id)) albums.push(await toAlbum(hit, 'search'));
+        log(`- spotify search ${title}: ${hit ? hit.id : 'not found'}`);
+      } catch (err) {
+        catalog.errors.push(`spotify search ${title}: ${err.message}`);
+      }
+    }
+    // covers for anything that is on Spotify but not on Apple Music
+    for (const a of albums) {
+      a.onApple = apple.some((r) => sameTitle(a.title, r.title) && (!r.trackCount || r.trackCount === a.totalTracks));
+      if (!a.onApple && a.image && a.type !== 'compilation') {
+        try {
+          await save(a.image, `spotify-album-${a.id}.jpg`);
+          a.coverFile = `spotify-album-${a.id}.jpg`;
+        } catch (err) {
+          catalog.errors.push(`spotify cover ${a.title}: ${err.message}`);
+        }
+      }
+    }
+    catalog.spotify.albums = albums;
+    catalog.spotify.api = true;
+    catalog.sources.push('Spotify Web API');
+    log(`\n== Spotify Web API: ${albums.length} albums and singles`);
+    for (const a of albums) log(`- ${a.id} | ${a.title} | ${a.type}/${a.group} | ${a.releaseDate} | ${a.totalTracks} tracks | on Apple: ${a.onApple}`);
+  } catch (err) {
+    catalog.errors.push(`spotify api: ${err.message}`);
+  }
+} else {
+  log('\n== Spotify Web API: skipped (add SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET to use it)');
+}
+
 /* ---------- SoundCloud: resolve the short link he shared ---------- */
 try {
   const { url } = await get(SOUNDCLOUD_SHORT, 'text');

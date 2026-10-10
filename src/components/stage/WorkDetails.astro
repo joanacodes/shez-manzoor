@@ -99,7 +99,7 @@ const { items } = Astro.props;
                   </button>
                 )}
                 {w.listen.spotify?.embed ? (
-                  <button class="play play--spotify" type="button" data-embed={w.listen.spotify.embed} data-height={w.listen.spotify.embed.includes('/album/') ? 352 : 152} data-name="Spotify">
+                  <button class="play play--spotify" type="button" data-embed={w.listen.spotify.embed} data-height={w.listen.spotify.height ?? 152} data-name="Spotify">
                     <Icon name="spotify" /> Play on Spotify
                   </button>
                 ) : (
