@@ -53,13 +53,13 @@ const fallbackSrc = (await getImage({ src: stillWide, width: 1280, format: 'jpg'
       <span class="stage__roles">Music producer <span aria-hidden="true">·</span><span class="sr-only">,</span> Singer-songwriter</span>
     </h1>
     <div class="stage__loader" aria-hidden="true"><span></span></div>
+    <p class="stage__tip" data-stage-tip hidden>
+      <Icon name="tv" /> <span data-stage-tip-text>Tap the TV, the guitar or the mic</span>
+    </p>
   </div>
 
   <slot />
 
-  <p class="stage__tip" data-stage-tip hidden>
-    <Icon name="tv" /> <span data-stage-tip-text>Tap the TV, the guitar or the mic</span>
-  </p>
   <button class="stage__skip" type="button" data-stage-skip>Skip intro</button>
   <span class="stage__label" data-stage-label aria-hidden="true"></span>
   <script type="application/json" data-stage-data set:html={data} />
@@ -251,10 +251,9 @@ const fallbackSrc = (await getImage({ src: stillWide, width: 1280, format: 'jpg'
 
   .stage__tip {
     position: absolute;
-    z-index: 2;
     left: 0;
     right: 0;
-    top: calc(var(--header-h) + 0.25rem);
+    bottom: -0.4rem;
     display: flex;
     justify-content: center;
     align-items: center;
