@@ -42,7 +42,7 @@ export const GET: APIRoute = ({ site }) => {
         const where = [w.listen.apple && `Apple Music: ${w.listen.apple.url}`, w.listen.spotify?.exact && `Spotify: ${w.listen.spotify.url}`].filter(Boolean).join('. ');
         const title = w.soundtrack?.title ?? w.title;
         const artist = w.soundtrack?.artist ?? w.artist;
-        const kind = w.soundtrack ? `Soundtrack of ${w.title}` : w.category === 'Guest vocal' ? 'Single featuring SHEZ' : w.category;
+        const kind = w.soundtrack ? `Soundtrack of ${w.title}` : w.category;
         return `- ${title}, ${artist}. ${kind}, released ${formatDate(w.date)}${w.tracks.length > 1 ? `, ${w.tracks.length} tracks` : ''}.${where ? ` ${where}.` : ''}`;
       }),
     '',

@@ -12,7 +12,7 @@ export type Track = { n: number; title: string; length: string; artist?: string;
 export type WorkItem = {
   id: string;
   kind: 'screen' | 'record';
-  /** TV series, Feature film, EP, Single, Soundtrack, Guest vocal… */
+  /** TV series, Feature film, EP, Single, Soundtrack, Featuring SHEZ… */
   category: string;
   title: string;
   artist: string;
@@ -107,7 +107,7 @@ function artistLine(r: CatalogRelease) {
 function categoryOf(r: CatalogRelease) {
   if (/soundtrack/i.test(r.title) || /soundtrack/i.test(r.genre ?? '')) return 'Soundtrack';
   const own = /^shez$/i.test(r.artist);
-  if (!own) return 'Guest vocal';
+  if (!own) return 'Featuring SHEZ';
   if (/\bEP\b/.test(r.title) || (r.trackCount ?? 0) >= 4) return 'EP';
   return 'Single';
 }
@@ -151,7 +151,7 @@ function recordFrom(r: CatalogRelease): WorkItem {
     : undefined;
   const summary =
     notes?.summary ??
-    (category === 'Guest vocal'
+    (category === 'Featuring SHEZ'
       ? `${title}, a ${r.genre ? `${r.genre.toLowerCase()} ` : ''}single by ${r.artist} featuring SHEZ.`
       : category === 'Soundtrack'
         ? `${title}, by ${r.artist}.`
@@ -162,7 +162,7 @@ function recordFrom(r: CatalogRelease): WorkItem {
     category,
     title,
     artist,
-    role: own ? 'Written and performed by SHEZ' : category === 'Guest vocal' ? 'Featured artist' : 'Music by Tom Howe and Shez Manzoor',
+    role: own ? 'Artist' : category === 'Featuring SHEZ' ? 'Featured artist' : 'Music by Tom Howe and Shez Manzoor',
     date: r.releaseDate ?? undefined,
     year: (r.releaseDate ?? '').slice(0, 4),
     image: image(r.artwork),
@@ -171,7 +171,7 @@ function recordFrom(r: CatalogRelease): WorkItem {
     body: notes?.body ?? [],
     facts: [
       { label: 'Released', value: formatDate(r.releaseDate ?? undefined) },
-      { label: 'Format', value: category === 'Guest vocal' ? 'Single' : category },
+      { label: 'Format', value: category === 'Featuring SHEZ' ? 'Single' : category },
       ...(tracks.length > 1 ? [{ label: 'Tracks', value: String(tracks.length) }] : []),
       ...(r.genre ? [{ label: 'Genre', value: r.genre }] : []),
       ...(notes?.label ? [{ label: 'Label', value: notes.label }] : []),

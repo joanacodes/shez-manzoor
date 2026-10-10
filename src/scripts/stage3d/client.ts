@@ -48,9 +48,10 @@ async function init(el: HTMLElement) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const saveData = Boolean((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData);
 
-  let phase: Phase = 'loading';
+  // the page's watchdog may already have shown everything (very slow connections)
+  let phase: Phase = el.dataset.phase === 'ready' ? 'ready' : 'loading';
   let stage: Stage | null = null;
-  let skipped = params.has('skip');
+  let skipped = params.has('skip') || phase === 'ready';
   let gaveUp = false;
   let readyTimer = 0;
 
@@ -65,6 +66,7 @@ async function init(el: HTMLElement) {
     document.dispatchEvent(new CustomEvent('stage:phase', { detail: p }));
   };
   html.dataset.intro = 'on';
+  el.dataset.client = 'on';
   if (still) html.classList.add('still');
 
   /* ---------- the still, for devices without the 3D stage ---------- */
@@ -73,7 +75,7 @@ async function init(el: HTMLElement) {
     html.classList.add('no-3d');
     if (phase === 'loading') {
       setPhase('intro');
-      readyTimer = window.setTimeout(() => setPhase('ready'), skipped ? 0 : 2600);
+      readyTimer = window.setTimeout(() => setPhase('ready'), skipped ? 0 : 3300);
     }
   };
 

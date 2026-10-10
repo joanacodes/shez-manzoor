@@ -28,6 +28,19 @@ const records = work.filter((w) => w.kind === 'record').sort((a, b) => (b.date ?
   type="profile"
   jsonLd={jsonLd}
 >
+  <script is:inline slot="head">
+    // the header waits for the intro from the first paint; if the stage script never runs, show everything
+    document.documentElement.dataset.intro = 'on';
+    setTimeout(function () {
+      var s = document.querySelector('[data-stage]');
+      if (s && !s.dataset.client) {
+        document.documentElement.classList.add('no-3d');
+        s.dataset.phase = 'ready';
+        document.documentElement.dataset.intro = 'off';
+      }
+    }, 6000);
+  </script>
+
   <StageHero>
     <WorkCarousel items={work} />
   </StageHero>
