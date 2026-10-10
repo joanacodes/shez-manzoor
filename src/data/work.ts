@@ -32,6 +32,8 @@ export type WorkItem = {
   badge?: string;
   /** Internal page with the full story */
   page?: string;
+  /** For film and TV: the soundtrack album, when there is one */
+  soundtrack?: { title: string; artist: string; date?: string };
   listen: {
     apple?: { url: string; embed: string; height: number };
     spotify?: { url: string; embed?: string; exact: boolean; label?: string };
@@ -193,8 +195,7 @@ type Extra = {
   apple: null | { url: string; collection: string; artist: string; releaseDate: string | null; ms: number | null; genre: string | null; artwork: string };
 };
 function extraFrom(e: Extra): WorkItem {
-  const others = e.artists.filter((a) => !/^shez$/i.test(a));
-  const artist = `${others[0] ?? ''}${e.artists.length > 1 ? ` with ${[...others.slice(1), 'SHEZ'].join(', ')}` : ''}`.trim();
+  const artist = e.artists.length > 1 ? `${e.artists.slice(0, -1).join(', ')} & ${e.artists.at(-1)}` : (e.artists[0] ?? '');
   const date = e.releaseDate ?? e.apple?.releaseDate ?? undefined;
   return {
     id: e.slug,
@@ -257,6 +258,7 @@ function screenFrom(p: Project): WorkItem {
     tracks: ostItem?.tracks ?? [],
     badge: p.badge,
     page: `/composition/${p.slug}/`,
+    soundtrack: ost ? { title: ost.title, artist: ost.artist, date: ost.releaseDate ?? undefined } : undefined,
     listen: ostItem ? ostItem.listen : {},
   };
 }

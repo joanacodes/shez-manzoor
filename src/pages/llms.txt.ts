@@ -7,6 +7,7 @@ import { award, bios, links, person } from '../data/site';
 import { projects } from '../data/projects';
 import { releases } from '../data/releases';
 import { faq } from '../data/faq';
+import { formatDate, work } from '../data/work';
 import { absolute } from '../lib/url';
 
 export const GET: APIRoute = ({ site }) => {
@@ -33,6 +34,18 @@ export const GET: APIRoute = ({ site }) => {
     '## Releases as SHEZ',
     ...releases.map((r) => `- [${r.title}](${url(`/music/${r.slug}/`)}): ${r.type}, ${r.when}${r.label ? `, ${r.label}` : ''}. ${r.summary}`),
     '',
+    '## Full discography (newest first)',
+    ...work
+      .filter((w) => w.kind === 'record' || w.tracks.length)
+      .sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))
+      .map((w) => {
+        const where = [w.listen.apple && `Apple Music: ${w.listen.apple.url}`, w.listen.spotify?.exact && `Spotify: ${w.listen.spotify.url}`].filter(Boolean).join('. ');
+        const title = w.soundtrack?.title ?? w.title;
+        const artist = w.soundtrack?.artist ?? w.artist;
+        const kind = w.soundtrack ? `Soundtrack of ${w.title}` : w.category === 'Guest vocal' ? 'Single featuring SHEZ' : w.category;
+        return `- ${title}, ${artist}. ${kind}, released ${formatDate(w.date)}${w.tracks.length > 1 ? `, ${w.tracks.length} tracks` : ''}.${where ? ` ${where}.` : ''}`;
+      }),
+    '',
     '## Questions',
     ...faq.flatMap((f) => [`### ${f.q}`, f.a, '']),
     '## Pages',
@@ -45,6 +58,8 @@ export const GET: APIRoute = ({ site }) => {
     '',
     '## Profiles',
     `- Spotify: ${links.spotify}`,
+    `- Apple Music: ${links.appleMusic} (as SHEZ), ${links.appleMusicComposer} (as Shez Manzoor)`,
+    `- SoundCloud: ${links.soundcloud}`,
     `- Instagram: ${links.instagram}`,
     `- British Comedy Guide: ${links.britishComedyGuide}`,
     '',

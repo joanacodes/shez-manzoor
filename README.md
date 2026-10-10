@@ -2,19 +2,21 @@
 
 Website for **Shez Manzoor**, London composer for film and TV, who also releases soul and R&B as **SHEZ**.
 
-The concept is **two stage lights on one dark stage**. Purple lights SHEZ the artist, green lights Shez Manzoor the composer, and the site lives in the dark between them. The homepage opens on six strings of light under both lights. Visitors can strum them with a finger or the mouse, and an optional sound toggle makes them play a chord.
+**Design 2: the stage.** This branch is the second design, published at `/design-2/` for comparison. The homepage opens on his name in the dark, like a preloader. Then a light comes on above a stage set with his electric guitar on its stand, a vocal mic and an old TV that plays his film and TV work. The name dims into the backdrop. After 3.5 seconds a ring of covers and posters for everything he has made turns into view in front. Each one opens a panel with the release date, credits, tracklist, and Apple Music and Spotify players. Scrolling down gives the full story, the film and TV credits, the full discography, press, FAQ and contact.
+
+On stage, the TV changes channel when tapped, the guitar strums, and the mic changes the colour of the light. Purple and green, his colours, wash the curtain either side.
 
 ## Stack
 
 | Part | Choice | Why |
 | --- | --- | --- |
 | Framework | [Astro 7](https://astro.build), static output | Every page is plain HTML that search engines and AI assistants read in full. |
-| 3D | Plain WebGL in a Web Worker (`src/scripts/stage/`) | About 15 KB instead of 150 KB for three.js, and it never blocks the page. |
+| 3D | [three.js](https://threejs.org) (`src/scripts/stage3d/`), every model built in code | No model files to download. The scene (160 KB gzipped) loads only on devices with a real GPU, after the page is ready. |
 | Styling | Plain CSS with design tokens (`src/styles/global.css`) | No framework runtime. CSS is inlined into each page. |
 | Fonts | Instrument Serif, Instrument Sans, DM Mono, self-hosted | Served from this site through Astro's font API, with no request to Google. |
 | Images | `astro:assets`, AVIF and WebP | The live photo goes from 166 KB to 10–30 KB. |
 
-The page itself ships about 11 KB of JavaScript. The 3D scene loads after the page is ready and only on devices with a real GPU. Visitors with reduced motion, data saver or software rendering see a static version of the same hero.
+The page itself ships about 12 KB of JavaScript. Visitors with reduced motion, data saver or software rendering see stills rendered from the same scene (`src/assets/stage/`), with the same intro and carousel.
 
 ## Commands
 
@@ -25,7 +27,9 @@ npm run build     # static site in dist/
 npm run preview   # serve dist/
 ```
 
-Add `?stage` to the homepage URL to force the 3D scene on machines without a GPU, for testing.
+Add `?stage` to the homepage URL to force the 3D scene on machines without a GPU, for testing. `?skip` jumps past the intro.
+
+To render new stills after changing the scene, open `/?stage&still&tier=high` at 1600×900 (scale 1.5) and at 414×896 (scale 2), wait for the stage to settle, and save the canvas as `src/assets/stage/stage-landscape.jpg` and `stage-portrait.jpg`.
 
 ## Editing content
 
@@ -37,8 +41,12 @@ All facts live in `src/data/`. Pages, structured data and `llms.txt` are generat
 | `projects.ts` | Film and TV credits. Each one gets a page at `/composition/<slug>/`. |
 | `releases.ts` | Releases as SHEZ. Each one gets a page at `/music/<slug>/`. |
 | `faq.ts` | Questions and answers, also published as FAQ structured data. |
+| `catalog.json` | Every release, soundtrack and cover found on Apple Music and Spotify. Written by the fetch job below, not by hand. |
+| `work.ts` | Joins the catalog with the credits above into the list the carousel shows. |
 
-Release covers and project cards are drawn in CSS until real artwork is supplied (`src/components/Sleeve.astro`, `ProjectCard.astro`).
+**Artwork and release info.** `scripts/fetch-artwork.mjs` reads his Apple Music artist pages (as SHEZ and as Shez Manzoor) through the public iTunes Search API, and his public Spotify player, with no keys. It saves covers to `src/assets/artwork/` and the facts to `catalog.json`. The `Fetch artwork` workflow runs it on GitHub (Actions, Fetch artwork, Run workflow) and commits the result. Run it again after a new release.
+
+**TV clips.** The TV shows posters until clips arrive. Save short MP4s (10–20 seconds, no sound needed, about 640×480) as `public/clips/<slug>.mp4`: `we-are-lady-parts.mp4`, `polite-society.mp4`, `clarksons-farm.mp4`, `bride-or-die.mp4`. The TV plays each one in place of that poster at the next build.
 
 ## Environment variables
 
@@ -83,9 +91,8 @@ Release covers and project cards are drawn in CSS until real artwork is supplied
 
 - **Representation.** Manners McDade lists him, and SMA Talent announced his signing. The site currently links to Manners McDade.
 - **Clarkson's Farm.** His bio says "compositions for". Public listings credit another composer for the series score, so the site says "Compositions".
-- **Miscellany (Vol. 1).** Release date, label and links. Nothing about it is public online yet.
+- **Artwork.** Posters for Clarkson's Farm and Bride or Die. They are drawn in CSS until then.
 - **Bride or Die.** His exact role and the year.
-- **Rhythm Section.** Whether it was a single or an EP.
-- **Our Time.** The full tracklist. The site lists the three tracks shown on his current site.
-- **Links.** Apple Music, YouTube, SoundCloud, Facebook, IMDb and Bandcamp URLs, to add to the footer and to `sameAs`.
+- **Spotify album links.** Spotify's public player only lists his top tracks, so releases without one of those link to a Spotify search. Spotify API keys (free) would give exact album links.
+- **Links.** YouTube, Facebook, IMDb and Bandcamp URLs, to add to the footer and to `sameAs`.
 - **Photos.** Photographer credits, and more press photos.
