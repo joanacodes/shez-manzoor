@@ -6,9 +6,13 @@
  */
 import Icon from '../Icon.astro';
 import { screenChannels } from '../../lib/channels';
+import { tvChannels } from '../../data/work';
 
 const channels = screenChannels();
 const first = channels[0];
+// one caption for all the clips: the works they come from, in the order of the credits
+const shown = tvChannels.filter((w) => channels.some((c) => c.id === w.id));
+const join = (list: string[]) => (list.length > 1 ? `${list.slice(0, -1).join(', ')} & ${list.at(-1)}` : (list[0] ?? ''));
 
 /* ---------- the audience, drawn from behind ---------- */
 type Who = 'plain' | 'bun' | 'afro' | 'cap' | 'hijab' | 'lean' | 'long';
@@ -60,7 +64,7 @@ const back = row(380, 1, 104, -110, 0);
         <div class="cinema__beam" aria-hidden="true" />
         <div class="cinema__screen" data-cinema-screen role="group" aria-roledescription="slideshow" aria-label="Now showing: clips of his film and television work">
           {channels.map((c, i) => (
-            <figure class:list={['cinema__slide', i === 0 && 'is-on']} data-cinema-slide data-id={c.id} data-title={c.title} data-kind={c.kind}>
+            <figure class:list={['cinema__slide', i === 0 && 'is-on']} data-cinema-slide>
               <video
                 class="cinema__video"
                 muted
@@ -95,14 +99,24 @@ const back = row(380, 1, 104, -110, 0);
 
       <div class="cinema__caption wrap">
         <p class="label cinema__now">Now showing</p>
-        <p class="cinema__title" aria-live="polite">
-          <span data-cinema-title>{first.title ?? 'Music by Shez Manzoor'}</span>
-          <span class="cinema__kind" data-cinema-kind>{first.kind ?? 'Film and television'}</span>
+        <p class="cinema__title">
+          <span class="cinema__name">
+            {shown.length
+              ? shown.map((w, i) => (
+                  <>
+                    {i > 0 && <em class="cinema__amp">{i === shown.length - 1 ? ' & ' : ', '}</em>}
+                    {w.title}
+                  </>
+                ))
+              : 'Music by Shez Manzoor'}
+          </span>
+          <span class="cinema__kind">{join(shown.map((w) => w.kind)) || 'Film and television'}</span>
         </p>
         <div class="cinema__actions">
-          <button class="cinema__btn" type="button" data-open-work={first.id} data-cinema-details hidden={!first.id}>
+          {/* the credits of both are listed right below */}
+          <a class="cinema__btn" href="#screen-title">
             Music and credits <Icon name="arrow" />
-          </button>
+          </a>
           {channels.length > 1 && (
             <button class="cinema__btn cinema__btn--round" type="button" data-cinema-next aria-label="Next clip">
               <Icon name="chevron-right" />
@@ -253,7 +267,14 @@ const back = row(380, 1, 104, -110, 0);
   }
   .cinema__now { color: var(--mint); }
   .cinema__title { margin: 0; display: grid; gap: 0.1rem; }
-  .cinema__title [data-cinema-title] { font-family: var(--serif); font-size: clamp(1.8rem, 7vw, 3rem); line-height: 1; }
+  .cinema__name { font-family: var(--serif); font-size: clamp(1.8rem, 7vw, 3rem); line-height: 1.05; text-wrap: balance; }
+  .cinema__amp {
+    font-style: italic;
+    color: transparent;
+    background: linear-gradient(95deg, var(--lavender), var(--mint));
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
   .cinema__kind { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-2); }
   .cinema__actions { display: flex; gap: 0.5rem; margin-top: 0.6rem; }
   .cinema__btn {
@@ -267,6 +288,7 @@ const back = row(380, 1, 104, -110, 0);
     background: rgb(11 9 18 / 0.6);
     color: var(--ink);
     font: 500 0.9rem/1 var(--sans);
+    text-decoration: none;
     cursor: pointer;
   }
   .cinema__btn[hidden] { display: none; }

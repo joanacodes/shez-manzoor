@@ -8,9 +8,6 @@ if (root) setup(root);
 function setup(root: HTMLElement) {
   const screen = root.querySelector<HTMLElement>('[data-cinema-screen]')!;
   const slides = [...root.querySelectorAll<HTMLElement>('[data-cinema-slide]')];
-  const title = root.querySelector('[data-cinema-title]');
-  const kind = root.querySelector('[data-cinema-kind]');
-  const details = root.querySelector<HTMLElement>('[data-cinema-details]');
   if (!slides.length) return;
   const videoOf = (i: number) => slides[i].querySelector('video')!;
   let index = 0;
@@ -65,13 +62,6 @@ function setup(root: HTMLElement) {
     slides[index].classList.remove('is-on');
     index = (next + slides.length) % slides.length;
     slides[index].classList.add('is-on');
-    const slide = slides[index];
-    if (title) title.textContent = slide.dataset.title || 'Music by Shez Manzoor';
-    if (kind) kind.textContent = slide.dataset.kind || 'Film and television';
-    if (details) {
-      details.hidden = !slide.dataset.id;
-      if (slide.dataset.id) details.dataset.openWork = slide.dataset.id;
-    }
     ready(index);
     ready((index + 1) % slides.length);
     // the old clip starts from the beginning next time round
