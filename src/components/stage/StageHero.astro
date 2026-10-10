@@ -83,7 +83,10 @@ const fallbackSrc = (await getImage({ src: stillWide, width: 1280, format: 'jpg'
   /* the scene sits behind the whole page and is covered as the page scrolls */
   .stage__scene {
     position: fixed;
-    inset: 0;
+    inset: 0 0 auto;
+    /* the largest viewport height: the address bar sliding in and out never resizes the stage */
+    height: 100vh;
+    height: 100lvh;
     z-index: -1;
     background: #040306;
     pointer-events: none;
@@ -314,6 +317,7 @@ const fallbackSrc = (await getImage({ src: stillWide, width: 1280, format: 'jpg'
   :global(html.still .stage > :not(.stage__scene)) { visibility: hidden !important; }
 
   @media (prefers-reduced-motion: reduce) {
+    :global(html.no-3d) .stage .stage__fallback { animation: none; opacity: 1; }
     .stage__inner, .stage__title, .stage__name { transition: none; }
     .stage__loader span { animation: none; }
   }

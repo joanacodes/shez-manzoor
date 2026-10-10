@@ -156,15 +156,18 @@ async function init(el: HTMLElement) {
     return;
   }
   window.clearTimeout(patience);
-  if (gaveUp && (phase as Phase) !== 'ready') {
-    // the still is already playing its intro; the 3D stage takes over quietly once it is done
-    skipped = true;
+  if (gaveUp) {
+    // this device took too long: it keeps the still for this visit rather than swapping mid-intro
+    stage.dispose();
+    stage = null;
+    return;
   }
   if (force) (window as unknown as { __stage: Stage }).__stage = stage;
-  html.classList.remove('no-3d');
   html.classList.add('has-3d');
+  // if the still was showing (the intro was skipped early), the canvas fades in over it first
+  window.setTimeout(() => html.classList.remove('no-3d'), html.classList.contains('no-3d') ? 700 : 0);
   onScroll();
-  stage.start(skipped || still || gaveUp);
+  stage.start(skipped || still);
   if (phase === 'loading') setPhase('intro');
 
   canvas.addEventListener('webglcontextlost', () => {

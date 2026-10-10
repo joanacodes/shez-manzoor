@@ -79,7 +79,16 @@ function setup(root: HTMLElement, dialog: HTMLDialogElement) {
     }
   }
 
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
   function animate() {
+    if (still.matches && !dragging) {
+      // no spinning for people who asked for less motion: the ring jumps
+      cancelAnimationFrame(raf);
+      raf = 0;
+      pos = target;
+      render();
+      return;
+    }
     if (raf) return;
     let last = 0;
     const tick = (now: number) => {

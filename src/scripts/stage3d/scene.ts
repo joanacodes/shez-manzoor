@@ -206,9 +206,12 @@ export async function createStage(opts: StageOptions) {
     o.position.set(x, o.position.y, z);
     o.rotation.y = r;
   };
+  let sizedAs = '';
   function resize() {
     const w = canvas.clientWidth || window.innerWidth;
     const h = canvas.clientHeight || window.innerHeight;
+    if (`${w}x${h}@${pixelRatio}` === sizedAs) return;
+    sizedAs = `${w}x${h}@${pixelRatio}`;
     const aspect = w / h;
     layout = layoutFor(aspect);
     place(mic, layout.mic);
