@@ -76,6 +76,18 @@ const back = row(380, 1, 104, -110, 0);
           <span class="cinema__sheen" aria-hidden="true" />
         </div>
         <svg class="cinema__audience" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+          <defs>
+            {/* light from the screen: the far row catches more of it, the near row only on the tops of heads */}
+            <linearGradient id="audience-far" gradientUnits="userSpaceOnUse" x1="0" y1="135" x2="0" y2="330">
+              <stop offset="0" class="cinema__light cinema__light--far" />
+              <stop offset="0.55" class="cinema__light cinema__light--mid" />
+              <stop offset="1" class="cinema__light cinema__light--dark" />
+            </linearGradient>
+            <linearGradient id="audience-near" gradientUnits="userSpaceOnUse" x1="0" y1="212" x2="0" y2="345">
+              <stop offset="0" class="cinema__light cinema__light--near" />
+              <stop offset="1" class="cinema__light cinema__light--dark" />
+            </linearGradient>
+          </defs>
           <g class="cinema__row cinema__row--front" set:html={front} />
           <g class="cinema__row cinema__row--back" set:html={back} />
         </svg>
@@ -109,6 +121,7 @@ const back = row(380, 1, 104, -110, 0);
 <style>
   .cinema {
     --glow: 205 187 255;
+    --tint: 190 160 255;
     position: relative;
     margin-bottom: clamp(3rem, 9vw, 5rem);
   }
@@ -215,8 +228,15 @@ const back = row(380, 1, 104, -110, 0);
   }
   /* only the top edges catch the light from the screen */
   .cinema__row { fill: #040307; transition: filter 1.2s ease; }
-  .cinema__row--front { filter: drop-shadow(0 -1px 0 rgb(var(--glow) / 0.42)) drop-shadow(0 -4px 8px rgb(var(--glow) / 0.12)); }
-  .cinema__row--back { filter: drop-shadow(0 -1.5px 0 rgb(var(--glow) / 0.55)) drop-shadow(0 -8px 14px rgb(var(--glow) / 0.16)); }
+  .cinema__row--front { fill: url(#audience-far); }
+  .cinema__row--back { fill: url(#audience-near); }
+  /* tinted by the film: --tint is the most vivid colour on screen */
+  .cinema__light { stop-color: #040307; transition: stop-color 1.2s ease; }
+  .cinema__light--far { stop-color: color-mix(in srgb, rgb(var(--tint)) 17%, #040307); }
+  .cinema__light--mid { stop-color: color-mix(in srgb, rgb(var(--tint)) 6%, #040307); }
+  .cinema__light--near { stop-color: color-mix(in srgb, rgb(var(--tint)) 8%, #040307); }
+  .cinema__row--front { filter: drop-shadow(0 -1px 0 rgb(var(--tint) / 0.5)) drop-shadow(0 -4px 8px rgb(var(--tint) / 0.14)); }
+  .cinema__row--back { filter: drop-shadow(0 -1.5px 0 rgb(var(--tint) / 0.6)) drop-shadow(0 -8px 14px rgb(var(--tint) / 0.18)); }
   @media (min-width: 900px) {
     .cinema__audience { --h: min(clamp(220px, 26vw, 340px), 40svh); }
   }

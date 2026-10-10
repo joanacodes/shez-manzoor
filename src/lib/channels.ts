@@ -43,19 +43,25 @@ const workFor = (file: string) =>
     return keys.some((k) => squash(stem(file)).includes(k));
   });
 
+/** "07-polite-society.mp4" plays seventh */
+const position = (file: string) => Number(/^(\d+)[-_ ]/.exec(file)?.[1] ?? Number.NaN);
+
 export function screenChannels(): ScreenChannel[] {
   const all = clips.map((file) => {
     const work = workFor(file);
     const still = files.find((f) => stem(f) === stem(file) && /\.(jpe?g|webp|png)$/i.test(f));
     return {
+      file,
       video: href(`/clips/${encodeURIComponent(file)}`),
       ...(still ? { still: href(`/clips/${encodeURIComponent(still)}`) } : {}),
       ...(work ? { id: work.id, title: work.title, kind: work.kind } : {}),
     };
   });
-  // take turns between works, so the same series does not play twice in a row
-  const groups = [...tvChannels.map((c) => all.filter((ch) => ch.id === c.id)), all.filter((ch) => !ch.id)].filter((g) => g.length);
-  const out: ScreenChannel[] = [];
+  // numbered clips play in their order; the others follow, taking turns between works
+  const numbered = all.filter((c) => !Number.isNaN(position(c.file))).sort((a, b) => position(a.file) - position(b.file));
+  const rest = all.filter((c) => Number.isNaN(position(c.file)));
+  const groups = [...tvChannels.map((c) => rest.filter((ch) => ch.id === c.id)), rest.filter((ch) => !ch.id)].filter((g) => g.length);
+  const out = [...numbered];
   for (let i = 0; out.length < all.length; i++) for (const g of groups) if (g[i]) out.push(g[i]);
-  return out;
+  return out.map(({ file: _file, ...channel }) => channel);
 }

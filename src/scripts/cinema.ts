@@ -18,18 +18,28 @@ function setup(root: HTMLElement) {
   let visible = false;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // the colour of the picture lights the room, a few times a second
+  // the picture lights the room (its average colour) and the audience (its most vivid colour),
+  // read a few times a second from an 8 x 5 thumbnail of the frame
   const tiny = document.createElement('canvas').getContext('2d', { willReadFrequently: true })!;
-  tiny.canvas.width = tiny.canvas.height = 1;
+  tiny.canvas.width = 8;
+  tiny.canvas.height = 5;
   const tint = (source: CanvasImageSource) => {
     try {
-      tiny.drawImage(source, 0, 0, 1, 1);
-      const [r, g, b] = tiny.getImageData(0, 0, 1, 1).data;
-      // lift dark scenes so the glow still reads
+      tiny.drawImage(source, 0, 0, 8, 5);
+      const data = tiny.getImageData(0, 0, 8, 5).data;
+      const px: number[][] = [];
+      for (let i = 0; i < data.length; i += 4) px.push([data[i], data[i + 1], data[i + 2]]);
+      const mean = (list: number[][]) => [0, 1, 2].map((c) => list.reduce((sum, p) => sum + p[c], 0) / list.length);
+      // the room: the average, lifted so dark scenes still glow
       const lift = (v: number) => Math.round(90 + (v / 255) * 165);
-      root.style.setProperty('--glow', `${lift(r)} ${lift(g)} ${lift(b)}`);
+      root.style.setProperty('--glow', mean(px).map(lift).join(' '));
+      // the audience: the most colourful quarter of the picture, brightened to full strength
+      const vivid = (p: number[]) => (Math.max(...p) - Math.min(...p)) * Math.max(...p);
+      const colour = mean([...px].sort((a, b) => vivid(b) - vivid(a)).slice(0, 10));
+      const k = 230 / Math.max(1, ...colour);
+      root.style.setProperty('--tint', colour.map((v) => Math.round(v * k)).join(' '));
     } catch {
-      /* keep the last colour */
+      /* keep the last colours */
     }
   };
   window.setInterval(() => {
