@@ -20,7 +20,7 @@ const {
   description,
   path,
   image = '/og/default.jpg',
-  imageAlt = 'Shez Manzoor, composer and singer-songwriter, under purple and green stage light',
+  imageAlt = 'Shez Manzoor, London music producer, singer-songwriter and film and TV composer, singing on stage with an electric guitar',
   type = 'website',
   jsonLd,
   noindex = false,
@@ -29,7 +29,8 @@ const {
 const site = Astro.site;
 const canonical = absolute(path, site);
 const imageUrl = absolute(image, site);
-const robots = INDEXABLE && !noindex ? 'index, follow, max-image-preview:large, max-snippet:-1' : 'noindex, nofollow';
+const robots = INDEXABLE && !noindex ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' : 'noindex, nofollow';
+const imageType = /\.png$/i.test(image) ? 'image/png' : /\.webp$/i.test(image) ? 'image/webp' : 'image/jpeg';
 ---
 
 <title>{title}</title>
@@ -48,10 +49,21 @@ const robots = INDEXABLE && !noindex ? 'index, follow, max-image-preview:large, 
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:image:alt" content={imageAlt} />
+<meta property="og:image:type" content={imageType} />
+{
+  type === 'profile' && (
+    <>
+      <meta property="profile:first_name" content="Shez" />
+      <meta property="profile:last_name" content="Manzoor" />
+      <meta property="profile:username" content="shezrmusic" />
+    </>
+  )
+}
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={imageUrl} />
+<meta name="twitter:image:alt" content={imageAlt} />
 
 {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}

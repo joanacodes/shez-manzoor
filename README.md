@@ -84,13 +84,17 @@ All facts live in `src/data/`. Pages, structured data and `llms.txt` are generat
 
 ## SEO and AI search
 
-- Real HTML for every word, one `h1` per page, descriptive titles and meta descriptions.
+- Real HTML for every word, one `h1` per page. Titles stay under 60 characters and descriptions under 160, and say what he does and where: music producer, singer-songwriter, film and TV composer ("film composer" is the right term for music written for the screen), London.
 - One page per project and per release, written in plain factual sentences that answers can quote.
-- schema.org structured data: one `Person` entity that links SHEZ and Shez Manzoor (`alternateName`, `sameAs`), plus `TVSeries`, `Movie`, `MusicAlbum`, `FAQPage`, `BreadcrumbList` and `ProfilePage`.
+- schema.org structured data: one `Person` entity that links SHEZ and Shez Manzoor (`alternateName`, `sameAs` with Spotify, Apple Music, SoundCloud, Instagram, IMDb, LinkedIn and his agent), his three occupations, London as home and work location, his award and a real photo. The home and About pages are `ProfilePage`s about him. Plus `TVSeries`, `Movie`, `MusicAlbum`, `FAQPage` and `BreadcrumbList`.
 - `sitemap-index.xml`, `robots.txt`, and `llms.txt`, a plain summary for AI assistants.
-- Open Graph and Twitter cards with a 1200×630 image (`public/og/default.jpg`).
+- Open Graph and Twitter cards with a 1200×630 image (`public/og/default.jpg`), its alt text and type, and `profile` tags (first name, last name, @shezrmusic) on the home and About pages.
 - Redirects from old Squarespace URLs (`/epk/releases`, `/releases`, `/bio`).
 - Lighthouse on mobile: 99–100 for performance, 100 for accessibility, best practices and SEO.
+
+## Awards
+
+The awards are plain text above his photo on the home and About pages (and on the film pages), from `awards` in `src/data/site.ts`. *We Are Lady Parts* won three BAFTA TV Craft Awards in 2022, for writing, costume design and casting, so the site calls him the composer of the BAFTA-winning series. Official logos show next to each line once their files are in `src/assets/awards/`: the README in that folder lists the file names. BAFTA approves every use of its logo.
 
 ## Launch checklist
 
@@ -109,5 +113,7 @@ All facts live in `src/data/`. Pages, structured data and `llms.txt` are generat
 - **Artwork.** Posters for Clarkson's Farm and Bride or Die. They are drawn in CSS until then.
 - **Bride or Die.** His exact role and the year.
 - **Spotify album links.** Releases whose Spotify album is not known yet link to a Spotify search. Send the album links to add them.
-- **Links.** YouTube, Facebook, IMDb and Bandcamp URLs, to add to the footer and to `sameAs`.
+- **Links.** YouTube, Facebook and Bandcamp URLs, to add to the footer and to `sameAs`. IMDb and LinkedIn are in `sameAs` already.
+- **BAFTA.** The site says "Composer of the BAFTA-winning series We Are Lady Parts". If he holds a BAFTA in his own name, add it to `awards` in `site.ts` with its year and category.
+- **Award logos.** The official RTS winner logo and the Music+Sound nominee badge, for `src/assets/awards/`.
 - **Photos.** Photographer credits, and more press photos.

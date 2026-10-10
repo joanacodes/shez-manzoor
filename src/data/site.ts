@@ -9,10 +9,11 @@ export const person = {
   artistName: 'SHEZ',
   location: 'London, United Kingdom',
   origin: 'British-Pakistani',
-  roles: ['Composer', 'Songwriter', 'Multi-instrumentalist'],
+  /** How he is described everywhere, search included: "film composer" is the term for music written for the screen. */
+  roles: ['Music producer', 'Singer-songwriter', 'Film and TV composer'],
   /** One sentence that answers "who is Shez Manzoor?" on its own. */
   oneLiner:
-    'Shez Manzoor, also known as SHEZ, is a British-Pakistani composer, songwriter and multi-instrumentalist based in London, who scores film and television and releases soul and R&B music as SHEZ.',
+    'Shez Manzoor, also known as SHEZ, is a British-Pakistani music producer, singer-songwriter and film and TV composer based in London, who scored the BAFTA-winning series We Are Lady Parts and releases soul and R&B music as SHEZ.',
   influences: [
     'Soul',
     'R&B',
@@ -39,37 +40,35 @@ export const award = {
 } as const;
 
 /**
- * His own awards and nominations, newest first. Checked against the RTS and Music+Sound Awards
- * listings (October 2026). Productions' honours are listed separately: they are not his awards.
+ * Awards, in plain words. Checked in October 2026 against the RTS, Music+Sound Awards and BAFTA
+ * listings. We Are Lady Parts won three BAFTA TV Craft Awards in 2022 (writing, costume design and
+ * casting), none of them for its music: BAFTA is mentioned as "the BAFTA-winning series", never
+ * as his own award.
+ * `logo` names an official logo file in src/assets/awards (see the README there).
  */
-export const honours = [
-  {
-    result: 'Winner',
-    year: 2024,
-    ceremony: 'RTS Craft & Design Awards',
-    body: 'Royal Television Society',
-    category: 'Music – Original Score (Scripted)',
-    work: 'We Are Lady Parts',
-    note: 'Shared with Nida Manzoor, Sanya Manzoor and Benjamin Fregin',
-  },
-  {
-    result: 'Nominee',
-    year: 2024,
-    ceremony: 'Music+Sound Awards',
-    body: 'Music+Sound Awards, International',
-    category: 'Best Original Composition in a Television Programme',
-    work: 'We Are Lady Parts',
-    note: '',
-  },
-] as const;
+export const awardsLead = {
+  text: 'Composer of the BAFTA-winning series',
+  work: 'We Are Lady Parts',
+  logo: 'bafta',
+} as const;
 
-/** Honours won by the productions he scored. */
-export const productionHonours = [
+export const awards = [
   {
-    work: 'We Are Lady Parts',
-    items: ['Peabody Award, 2022 and 2025', 'Three BAFTA TV Craft Awards, 2022', 'Two BAFTA TV Award nominations, 2025'],
+    name: 'RTS Craft & Design Awards 2024',
+    result: 'Winner',
+    category: 'Music – Original Score (Scripted)',
+    work: 'We Are Lady Parts, series 2',
+    note: 'Shared with Nida Manzoor, Sanya Manzoor and Benjamin Fregin',
+    logo: 'rts',
   },
-  { work: 'Polite Society', items: ['World premiere, Sundance Film Festival 2023', 'British Independent Film Awards nominations, 2023'] },
+  {
+    name: 'Music+Sound Awards 2024',
+    result: 'Nominee',
+    category: 'Best Original Composition in a Television Programme',
+    work: 'We Are Lady Parts, series 2',
+    note: '',
+    logo: 'music-and-sound',
+  },
 ] as const;
 
 export const links = {
@@ -80,6 +79,8 @@ export const links = {
   /** His composer page on Apple Music (soundtracks are credited to Shez Manzoor) */
   appleMusicComposer: 'https://music.apple.com/gb/artist/shez-manzoor/1477261034',
   soundcloud: 'https://soundcloud.com/shezrmusic',
+  imdb: 'https://www.imdb.com/name/nm11798949/',
+  linkedin: 'https://www.linkedin.com/in/shez-manzoor-739914160/',
   britishComedyGuide: 'https://www.comedy.co.uk/people/shez_manzoor/',
   stereofox: 'https://label.stereofox.com/?p=3060',
   /** TO CONFIRM: Manners McDade lists him, and SMA Talent announced his signing. Use whichever is current. */
@@ -90,15 +91,25 @@ export const links = {
 } as const;
 
 /** Profiles that describe the same person. Feeds schema.org sameAs for search and AI answers. */
-export const sameAs = [links.spotify, links.appleMusic, links.appleMusicComposer, links.soundcloud, links.instagram, links.agent.url, links.britishComedyGuide];
+export const sameAs = [
+  links.spotify,
+  links.appleMusic,
+  links.appleMusicComposer,
+  links.soundcloud,
+  links.instagram,
+  links.imdb,
+  links.linkedin,
+  links.agent.url,
+  links.britishComedyGuide,
+];
 
 export const bios = {
   short:
-    'Shez Manzoor (SHEZ) is a British-Pakistani composer, songwriter and multi-instrumentalist based in London. He scored series 1 and 2 of the BAFTA-winning comedy We Are Lady Parts, winning an RTS Craft & Design Award, and co-composed the feature film Polite Society.',
+    'Shez Manzoor (SHEZ) is a British-Pakistani music producer, singer-songwriter and composer for film and television, based in London. He scored series 1 and 2 of the BAFTA-winning comedy We Are Lady Parts, winning an RTS Craft & Design Award, and co-composed the feature film Polite Society.',
   medium:
-    'Shez Manzoor, aka SHEZ, is an award-winning British-Pakistani composer, songwriter and multi-instrumentalist based in London. With a background in vocal and guitar performance and jazz, he draws on folk, soul, hip hop, rock and electronic music as well as classical Indian and Pakistani music. He scored and wrote original music for series 1 and 2 of the BAFTA-winning musical comedy We Are Lady Parts, winning the 2024 RTS Craft & Design Award for Music – Original Score (Scripted), and co-composed the score for Polite Society with Tom Howe. As SHEZ, he released his self-produced debut EP Our Time in 2022 and the single Freeze on Stereofox in 2024.',
+    'Shez Manzoor, aka SHEZ, is an award-winning British-Pakistani music producer, singer-songwriter, composer and multi-instrumentalist based in London. With a background in vocal and guitar performance and jazz, he draws on folk, soul, hip hop, rock and electronic music as well as classical Indian and Pakistani music. He scored and wrote original music for series 1 and 2 of the BAFTA-winning musical comedy We Are Lady Parts, winning the 2024 RTS Craft & Design Award for Music – Original Score (Scripted), and co-composed the score for Polite Society with Tom Howe. As SHEZ, he released his self-produced debut EP Our Time in 2022 and the single Freeze on Stereofox in 2024.',
   long: [
-    'Shez Manzoor, aka SHEZ, is an award-winning British-Pakistani composer, songwriter and multi-instrumentalist based in London.',
+    'Shez Manzoor, aka SHEZ, is an award-winning British-Pakistani music producer, singer-songwriter, composer and multi-instrumentalist based in London.',
     'With a background in vocal and guitar performance and jazz, his musical influences come from a variety of genres including folk, soul, hip hop, rock and electronic music, as well as classical Indian and Pakistani music.',
     'His work for film and television includes compositions for Clarkson’s Farm and the score and original music for series 1 and 2 of the BAFTA-winning musical comedy We Are Lady Parts, which won him the 2024 RTS Craft & Design Award for Music – Original Score (Scripted). He also co-composed, with Tom Howe, the score for the Focus Features action comedy Polite Society, which premiered at the 2023 Sundance Film Festival.',
     'As SHEZ, he released his self-produced debut EP Our Time in 2022, and his songs have been played on national radio by the BBC, Reprezent Radio and Threads. His first label release, the single Freeze, came out on Stereofox in November 2024. He has collaborated with artists including Elaha Soroor, anaiis and Victoria Port, and performed at London venues such as Soho Theatre, The Lower Third and Notting Hill Arts Club.',

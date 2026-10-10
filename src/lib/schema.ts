@@ -11,20 +11,58 @@ export const ids = (site: URL | undefined) => ({
   website: `${absolute('/', site)}#website`,
 });
 
+/** London, where he lives and works */
+const london = {
+  '@type': 'Place',
+  name: person.location,
+  address: { '@type': 'PostalAddress', addressLocality: 'London', addressCountry: 'GB' },
+};
+const city = { '@type': 'City', name: 'London' };
+
 export function personSchema(site: URL | undefined, image?: string): Json {
   return {
     '@type': 'Person',
     '@id': ids(site).person,
     name: person.name,
+    givenName: 'Shez',
+    familyName: 'Manzoor',
     alternateName: [person.artistName, 'Shez'],
     description: bios.short,
     url: absolute('/', site),
     ...(image ? { image } : {}),
     jobTitle: [...person.roles],
-    knowsAbout: ['Film scoring', 'Television music', 'Songwriting', 'Guitar', ...person.influences],
-    homeLocation: { '@type': 'Place', name: person.location },
+    hasOccupation: [
+      { '@type': 'Occupation', name: 'Music producer', occupationLocation: city },
+      { '@type': 'Occupation', name: 'Singer-songwriter', occupationLocation: city },
+      {
+        '@type': 'Occupation',
+        name: 'Film and television composer',
+        alternateName: ['Film composer', 'TV composer', 'Screen composer'],
+        occupationLocation: city,
+      },
+    ],
+    knowsAbout: ['Music production', 'Film scoring', 'Television music', 'Songwriting', 'Singing', 'Guitar', ...person.influences],
+    homeLocation: london,
+    workLocation: london,
+    // awards he won himself (nominations are not awards)
     award: [award.label],
     sameAs,
+  };
+}
+
+/** The page about him: Google reads ProfilePage to tie the page to the person it is about. */
+export function profilePageSchema(site: URL | undefined, path: string, name: string, description: string): Json {
+  const url = absolute(path, site);
+  return {
+    '@type': 'ProfilePage',
+    '@id': `${url}#page`,
+    url,
+    name,
+    description,
+    inLanguage: 'en-GB',
+    isPartOf: { '@id': ids(site).website },
+    mainEntity: { '@id': ids(site).person },
+    about: { '@id': ids(site).person },
   };
 }
 

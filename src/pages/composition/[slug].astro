@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import PageHead from '../../components/PageHead.astro';
 import TitleCard from '../../components/TitleCard.astro';
-import Award from '../../components/Award.astro';
+import Awards from '../../components/Awards.astro';
 import ContactCta from '../../components/ContactCta.astro';
 import Icon from '../../components/Icon.astro';
 import { projects, type Project } from '../../data/projects';
@@ -99,7 +99,7 @@ const ogType = p.schema.type === 'Movie' ? 'video.movie' : 'video.tv_show';
         </aside>
       </div>
 
-      {p.slug === 'we-are-lady-parts' && <Award />}
+      {p.slug === 'we-are-lady-parts' && <div class="project-awards" data-reveal><Awards /></div>}
 
       <nav class="pager" aria-label="More projects">
         <a class="pager__link" href={href(`/composition/${prev.slug}/`)} rel="prev">
@@ -136,6 +136,7 @@ const ogType = p.schema.type === 'Movie' ? 'video.movie' : 'video.tv_show';
   .facts dt { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
   .facts dd { color: var(--ink); }
 
+  .project-awards { max-width: 62ch; margin-top: clamp(3rem, 8vw, 5rem); }
   .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: clamp(3rem, 8vw, 5rem); }
   .pager__link {
     display: grid;

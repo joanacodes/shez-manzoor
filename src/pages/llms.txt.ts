@@ -3,7 +3,7 @@
  * Generated from the same data as the pages, so it never drifts.
  */
 import type { APIRoute } from 'astro';
-import { award, bios, links, person } from '../data/site';
+import { awards, awardsLead, bios, links, person } from '../data/site';
 import { projects } from '../data/projects';
 import { releases } from '../data/releases';
 import { faq } from '../data/faq';
@@ -23,7 +23,8 @@ export const GET: APIRoute = ({ site }) => {
     `- Name: ${person.name}. Artist name: ${person.artistName}.`,
     `- Based in ${person.location}. ${person.origin}.`,
     `- Work: ${person.roles.join(', ')}.`,
-    `- Award: ${award.name} ${award.year}, ${award.category}, for ${award.work}, shared with ${award.sharedWith.join(', ')}.`,
+    `- ${awardsLead.text} ${awardsLead.work} (three BAFTA TV Craft Awards, 2022).`,
+    ...awards.map((a) => `- ${a.result}, ${a.name}: ${a.category}, for ${a.work}.${a.note ? ` ${a.note}.` : ''}`),
     `- Influences: ${person.influences.join(', ')}.`,
     `- Collaborations: ${person.collaborators.join(', ')}.`,
     `- Representation for film and TV: ${links.agent.name} (${links.agent.url}).`,

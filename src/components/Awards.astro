@@ -1,0 +1,62 @@
+---
+/**
+ * His awards in plain words: no cards, no badges. Each line shows the award body's official
+ * logo when its file is in src/assets/awards (see the README there); nothing is drawn in its place.
+ */
+import { Image } from 'astro:assets';
+import { awards, awardsLead } from '../data/site';
+
+interface Props {
+  /** id of the heading, unique on the page */
+  id?: string;
+}
+
+const { id = 'awards-title' } = Astro.props;
+
+const files = import.meta.glob<ImageMetadata>('../assets/awards/*.{svg,png,webp,jpg,jpeg}', { eager: true, import: 'default' });
+const logoFor = (key: string) => Object.entries(files).find(([path]) => path.replace(/^.*\/|\.[^.]+$/g, '') === key)?.[1];
+const leadLogo = logoFor(awardsLead.logo);
+---
+
+<section class="awards" aria-labelledby={id}>
+  <h2 class="label awards__title" id={id}>Awards</h2>
+  <p class="awards__line awards__lead">
+    {leadLogo && <Image class="awards__logo" src={leadLogo} alt="" height={64} />}
+    <span>{awardsLead.text} <em>{awardsLead.work}</em></span>
+  </p>
+  <ul class="awards__list" role="list">
+    {
+      awards.map((a) => {
+        const logo = logoFor(a.logo);
+        return (
+          <li class="awards__line">
+            {logo && <Image class="awards__logo" src={logo} alt="" height={64} />}
+            <span>
+              <span class="awards__name">{a.name}</span>
+              <span class="awards__detail">
+                {a.result}, {a.category}, <em>{a.work}</em>.{a.note && ` ${a.note}.`}
+              </span>
+            </span>
+          </li>
+        );
+      })
+    }
+  </ul>
+</section>
+
+<style>
+  .awards {
+    display: grid;
+    gap: 0.85rem;
+    /* reads clearly over the stage behind the page, without a box */
+    text-shadow: 0 1px 2px rgb(5 4 9 / 0.85), 0 0 22px rgb(5 4 9 / 0.9);
+  }
+  .awards__title { color: var(--ink-2); }
+  .awards__lead { margin: 0; font-size: 1.02rem; color: var(--ink); }
+  .awards__list { display: grid; gap: 0.85rem; margin: 0; padding: 0; list-style: none; }
+  .awards__line { display: flex; align-items: center; gap: 0.9rem; line-height: 1.45; }
+  .awards__name { display: block; color: var(--ink); font-size: 0.95rem; }
+  .awards__detail { display: block; margin-top: 0.1rem; color: var(--ink-2); font-size: 0.86rem; }
+  .awards em { font-style: italic; }
+  .awards__logo { flex: none; width: auto; height: 30px; max-width: 92px; object-fit: contain; }
+</style>

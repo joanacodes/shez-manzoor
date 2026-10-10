@@ -2,32 +2,30 @@
 import { Picture } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import PageHead from '../components/PageHead.astro';
-import Award from '../components/Award.astro';
+import Awards from '../components/Awards.astro';
 import Faq from '../components/Faq.astro';
 import ContactCta from '../components/ContactCta.astro';
 import photo from '../assets/shez-live.webp';
 import { faq } from '../data/faq';
 import { bios, links, person } from '../data/site';
-import { absolute } from '../lib/url';
-import { breadcrumbSchema, faqSchema, graph, ids, personSchema } from '../lib/schema';
+import { breadcrumbSchema, faqSchema, graph, personSchema, profilePageSchema } from '../lib/schema';
+import { portraitUrl } from '../lib/portrait';
 
 const site = Astro.site;
+const title = 'About Shez Manzoor | Music Producer & Film Composer, London';
+const description =
+  'Biography of Shez Manzoor (SHEZ), British-Pakistani music producer, singer-songwriter and film & TV composer in London, RTS award winner for We Are Lady Parts.';
 const jsonLd = graph([
-  {
-    '@type': 'ProfilePage',
-    url: absolute('/about/', site),
-    name: 'About Shez Manzoor',
-    mainEntity: { '@id': ids(site).person },
-  },
-  personSchema(site, absolute('/og/default.jpg', site)),
+  profilePageSchema(site, '/about/', title, description),
+  personSchema(site, await portraitUrl(site)),
   faqSchema(faq),
   breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'About', path: '/about/' }], site),
 ]);
 ---
 
 <Base
-  title="About Shez Manzoor (SHEZ) | Composer, songwriter, multi-instrumentalist"
-  description="Biography of Shez Manzoor, aka SHEZ: British-Pakistani composer, songwriter and multi-instrumentalist in London, RTS award winner for We Are Lady Parts."
+  {title}
+  {description}
   path="/about/"
   type="profile"
   jsonLd={jsonLd}
@@ -36,27 +34,30 @@ const jsonLd = graph([
     kicker="About"
     title="Shez Manzoor,"
     titleEm="also known as SHEZ"
-    intro="Composer, songwriter, singer and multi-instrumentalist, moving between scores for the screen and his own soul and R&B."
+    intro="Music producer, singer-songwriter and film and TV composer in London, moving between scores for the screen and his own soul and R&B."
     crumbs={[{ name: 'About', path: '/about/' }]}
   />
 
   <section class="section bio" aria-label="Biography" data-section-light="mixed">
     <div class="wrap bio__grid">
-      <figure class="portrait" data-reveal>
-        <div class="portrait__frame">
-          <Picture
-            src={photo}
-            alt="Shez Manzoor singing and playing an electric guitar on stage under warm light"
-            widths={[360, 540, 720, 960]}
-            sizes="(min-width: 960px) 38vw, 88vw"
-            formats={['avif', 'webp']}
-            fallbackFormat="jpg"
-            loading="lazy"
-            decoding="async"
-          />
-        </div>
-        <figcaption class="label">Live in London</figcaption>
-      </figure>
+      <div class="bio__side">
+        <Awards />
+        <figure class="portrait" data-reveal>
+          <div class="portrait__frame">
+            <Picture
+              src={photo}
+              alt="Shez Manzoor singing and playing an electric guitar on stage under warm light"
+              widths={[360, 540, 720, 960]}
+              sizes="(min-width: 960px) 38vw, 88vw"
+              formats={['avif', 'webp']}
+              fallbackFormat="jpg"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <figcaption class="label">Live in London</figcaption>
+        </figure>
+      </div>
       <div class="bio__text prose" data-reveal>
         {bios.long.map((t) => <p>{t}</p>)}
       </div>
@@ -79,7 +80,6 @@ const jsonLd = graph([
         <div><dt>Live</dt><dd>{person.venues.join(', ')}</dd></div>
         <div><dt>Radio</dt><dd>{person.radio.join(', ')}</dd></div>
       </dl>
-      <Award />
     </div>
   </section>
 
@@ -96,6 +96,8 @@ const jsonLd = graph([
 <style>
   .bio { padding-top: 0; }
   .bio__grid { display: grid; gap: 2.5rem; }
+  /* the awards sit right above his photo */
+  .bio__side { display: grid; gap: 1.75rem; align-content: start; }
   .bio__text { font-size: 1.125rem; }
   .bio__text p:first-child { font-family: var(--serif); font-size: clamp(1.6rem, 6vw, 2.2rem); line-height: 1.2; color: var(--ink); }
 
@@ -119,6 +121,7 @@ const jsonLd = graph([
   }
   @media (min-width: 1000px) {
     .bio__grid { grid-template-columns: 0.8fr 1fr; gap: 5rem; align-items: start; }
+    .bio__side { align-self: stretch; }
     .portrait { position: sticky; top: calc(var(--header-h) + 1.5rem); }
     .glance { grid-template-columns: repeat(4, 1fr); }
     .faq-wrap { display: grid; grid-template-columns: 0.6fr 1.4fr; gap: 4rem; align-items: start; }

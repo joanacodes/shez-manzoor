@@ -4,11 +4,10 @@ import Base from '../layouts/Base.astro';
 import StageHero from '../components/stage/StageHero.astro';
 import WorkCarousel from '../components/stage/WorkCarousel.astro';
 import WorkDetails from '../components/stage/WorkDetails.astro';
-import Honours from '../components/stage/Honours.astro';
 import PreviewPlayer from '../components/stage/PreviewPlayer.astro';
 import Cinema from '../components/stage/Cinema.astro';
 import { thumbOf } from '../lib/thumbs';
-import Award from '../components/Award.astro';
+import Awards from '../components/Awards.astro';
 import Faq from '../components/Faq.astro';
 import ContactCta from '../components/ContactCta.astro';
 import Icon from '../components/Icon.astro';
@@ -16,19 +15,29 @@ import photo from '../assets/shez-live.webp';
 import { work, formatDate } from '../data/work';
 import { faq } from '../data/faq';
 import { bios, links, person, pressQuote } from '../data/site';
-import { absolute, href } from '../lib/url';
-import { faqSchema, graph, personSchema, websiteSchema, workSchema } from '../lib/schema';
+import { href } from '../lib/url';
+import { faqSchema, graph, personSchema, profilePageSchema, websiteSchema, workSchema } from '../lib/schema';
+import { portraitUrl } from '../lib/portrait';
 
 const site = Astro.site;
-const jsonLd = graph([websiteSchema(site), personSchema(site, absolute('/og/default.jpg', site)), workSchema(work, site), faqSchema(faq)]);
+const title = 'Shez Manzoor | Music Producer, Film & TV Composer, London';
+const description =
+  'Shez Manzoor (SHEZ) is a London music producer, singer-songwriter and film & TV composer who scored the BAFTA-winning We Are Lady Parts and Polite Society.';
+const jsonLd = graph([
+  websiteSchema(site),
+  profilePageSchema(site, '/', title, description),
+  personSchema(site, await portraitUrl(site)),
+  workSchema(work, site),
+  faqSchema(faq),
+]);
 const screen = work.filter((w) => w.kind === 'screen');
 const records = work.filter((w) => w.kind === 'record').sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''));
 const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await thumbOf(w.image)] as const)));
 ---
 
 <Base
-  title="Shez Manzoor (SHEZ) | Music Producer, Singer-Songwriter and Composer for Film & TV, London"
-  description="Shez Manzoor, aka SHEZ, is a London music producer, singer-songwriter and award-winning composer for We Are Lady Parts and Polite Society. Every record, with release dates, and where to play it on Apple Music and Spotify."
+  {title}
+  {description}
   path="/"
   type="profile"
   jsonLd={jsonLd}
@@ -53,22 +62,22 @@ const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await t
   <div class="after">
     <!-- ---------- about ---------- -->
     <section id="about" class="section about" aria-labelledby="about-title">
-      <div class="wrap">
-        <Honours />
-      </div>
       <div class="wrap about__grid">
-        <figure class="about__photo" data-reveal data-tint>
-          <Picture
-            src={photo}
-            alt="Shez Manzoor singing and playing an electric guitar on stage under warm light"
-            widths={[360, 540, 720, 960]}
-            sizes="(min-width: 960px) 40vw, 88vw"
-            formats={['avif', 'webp']}
-            loading="lazy"
-            decoding="async"
-          />
-          <figcaption class="label">Live in London</figcaption>
-        </figure>
+        <div class="about__side">
+          <Awards />
+          <figure class="about__photo" data-reveal data-tint>
+            <Picture
+              src={photo}
+              alt="Shez Manzoor singing and playing an electric guitar on stage under warm light"
+              widths={[360, 540, 720, 960]}
+              sizes="(min-width: 960px) 40vw, 88vw"
+              formats={['avif', 'webp']}
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption class="label">Live in London</figcaption>
+          </figure>
+        </div>
         <div class="about__text">
           <p class="kicker" data-reveal>About Shez</p>
           <h2 id="about-title" data-reveal>Producer, singer, <em>songwriter</em>, composer</h2>
@@ -126,7 +135,6 @@ const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await t
             ))
           }
         </ul>
-        <Award />
       </div>
     </section>
 
@@ -232,6 +240,8 @@ const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await t
 
   /* ---------- about ---------- */
   .about__grid { display: grid; gap: 2.5rem; }
+  /* the awards sit right above his photo */
+  .about__side { display: grid; gap: 1.75rem; align-content: start; }
   .about__photo { position: relative; margin: 0; }
   .about__photo :global(picture) {
     position: relative;
@@ -405,6 +415,7 @@ const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await t
   }
   @media (orientation: landscape) and (max-height: 520px) {
     .about__grid { grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr); gap: 2.5rem; align-items: start; }
+    .about__side { align-self: stretch; }
     .about__photo { position: sticky; top: calc(var(--header-h) + 1rem); }
     .about__photo :global(img) { max-height: 78svh; }
     .faq-grid { grid-template-columns: 0.7fr 1.3fr; gap: 2.5rem; }

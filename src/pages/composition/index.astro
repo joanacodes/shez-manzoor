@@ -1,7 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import PageHead from '../../components/PageHead.astro';
-import Award from '../../components/Award.astro';
+import Awards from '../../components/Awards.astro';
 import ContactCta from '../../components/ContactCta.astro';
 import Icon from '../../components/Icon.astro';
 import { projects } from '../../data/projects';
@@ -24,8 +24,8 @@ const partners = ['Nida Manzoor', 'Tom Howe', 'Working Title', 'Focus Features',
 ---
 
 <Base
-  title="Film & TV Composer | Shez Manzoor: We Are Lady Parts, Polite Society"
-  description="Film and television music by Shez Manzoor: the RTS award-winning score and songs for We Are Lady Parts, the Polite Society score with Tom Howe, Clarkson’s Farm and more."
+  title="Film & TV Composer in London | Shez Manzoor"
+  description="Film and TV scores and songs by London composer Shez Manzoor: RTS award-winning music for the BAFTA-winning We Are Lady Parts, Polite Society and more."
   path="/composition/"
   light="green"
   jsonLd={jsonLd}
@@ -41,6 +41,7 @@ const partners = ['Nida Manzoor', 'Tom Howe', 'Working Title', 'Focus Features',
 
   <section class="section credits" data-light="green" data-section-light="green" aria-label="Credits">
     <div class="wrap">
+      <div class="credits__awards" data-reveal><Awards /></div>
       <ol class="credits__list" role="list">
         {
           projects.map((p, i) => (
@@ -64,8 +65,6 @@ const partners = ['Nida Manzoor', 'Tom Howe', 'Working Title', 'Focus Features',
         }
       </ol>
 
-      <Award />
-
       <div class="partners" data-reveal>
         <h2 class="label">Worked with</h2>
         <ul class="chips" role="list">
@@ -80,6 +79,7 @@ const partners = ['Nida Manzoor', 'Tom Howe', 'Working Title', 'Focus Features',
 
 <style>
   .credits { padding-top: 0; }
+  .credits__awards { max-width: 62ch; margin-bottom: clamp(2rem, 6vw, 3rem); }
   .credits__list { margin: 0; padding: 0; border-top: 1px solid rgb(var(--mint-rgb) / 0.18); }
   .credit { border-bottom: 1px solid rgb(var(--mint-rgb) / 0.18); }
   .credit__link {
