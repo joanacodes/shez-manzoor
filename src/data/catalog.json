@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-10T05:11:05.343Z",
+  "fetchedAt": "2026-10-10T05:13:58.368Z",
   "sources": [
     "iTunes Search API",
     "Spotify oEmbed",
@@ -90,26 +90,6 @@
           "number": 1,
           "ms": 213465,
           "appleUrl": "https://music.apple.com/gb/album/freeze/6766996863?i=6766996864&uo=4",
-          "artist": "SHEZ"
-        }
-      ],
-      "artwork": "release-freeze.jpg"
-    },
-    {
-      "slug": "freeze",
-      "title": "Freeze - Single",
-      "artist": "SHEZ",
-      "appleId": 1879961119,
-      "appleUrl": "https://music.apple.com/us/album/freeze/1879961119",
-      "releaseDate": "2024-11-14",
-      "trackCount": 1,
-      "genre": "R&B/Soul",
-      "tracks": [
-        {
-          "title": "Freeze",
-          "number": 1,
-          "ms": 213465,
-          "appleUrl": "https://music.apple.com/us/album/freeze/1879961119?i=1879961120&uo=4",
           "artist": "SHEZ"
         }
       ],
@@ -609,7 +589,7 @@
         "id": "6I0oytpkXMtoaoJ9AGjro5",
         "url": "https://open.spotify.com/track/6I0oytpkXMtoaoJ9AGjro5",
         "title": "Freeze",
-        "thumbnail": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e025300fbbe44223edac445deee"
+        "thumbnail": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e025300fbbe44223edac445deee"
       }
     ],
     "trackMeta": {
@@ -662,6 +642,175 @@
         "album": null,
         "date": null,
         "description": null
+      }
+    },
+    "topTracks": [
+      {
+        "uri": "spotify:track:5Ci2OKV00uh9qzpVWrtWSj",
+        "title": "Jama Narenji, The Undeniable & Nbeed",
+        "subtitle": "Elaha Soroor, SHEZ, Haleemah X, Lauriem, Rasha Nahas, Sai",
+        "ms": 236669
+      },
+      {
+        "uri": "spotify:track:7jtmIUnE94Jan1LQ5WreFw",
+        "title": "A BRIDGE BETWEEN WORLDS",
+        "subtitle": "SHEZ",
+        "ms": 298560
+      },
+      {
+        "uri": "spotify:track:6Byop91LYjc7rhpeGXan0q",
+        "title": "HEY",
+        "subtitle": "SHEZ",
+        "ms": 127826
+      },
+      {
+        "uri": "spotify:track:5HZbbLwrv3mWteZ4l0SCLb",
+        "title": "1 of a kind",
+        "subtitle": "SHEZ",
+        "ms": 204175
+      },
+      {
+        "uri": "spotify:track:104gRXiV2gMhEqnUGmXNs9",
+        "title": "ANTIGONE",
+        "subtitle": "SHEZ",
+        "ms": 119347
+      },
+      {
+        "uri": "spotify:track:3Y4fXYMfviV8V0nqQjOAyy",
+        "title": "HOW FAR WE'VE COME",
+        "subtitle": "SHEZ",
+        "ms": 165473
+      },
+      {
+        "uri": "spotify:track:5Ql3sZbxAAWj8p5Gg0itpZ",
+        "title": "MAWTINI",
+        "subtitle": "SHEZ",
+        "ms": 99890
+      },
+      {
+        "uri": "spotify:track:6NbaBn9oxJzwnlijBg5jCW",
+        "title": "BURN IT DOWN",
+        "subtitle": "SHEZ",
+        "ms": 134736
+      },
+      {
+        "uri": "spotify:track:4J5YNEoA4nobpQyGMr8jUX",
+        "title": "Rhythm Section",
+        "subtitle": "SHEZ",
+        "ms": 204137
+      },
+      {
+        "uri": "spotify:track:6I0oytpkXMtoaoJ9AGjro5",
+        "title": "Freeze",
+        "subtitle": "SHEZ",
+        "ms": 213465
+      }
+    ],
+    "trackInfo": {
+      "5Ci2OKV00uh9qzpVWrtWSj": {
+        "name": "Jama Narenji, The Undeniable & Nbeed",
+        "artists": [
+          "Elaha Soroor",
+          "SHEZ",
+          "Haleemah X",
+          "Lauriem",
+          "Rasha Nahas",
+          "Sai"
+        ],
+        "releaseDate": "2024-05-31",
+        "album": null,
+        "cover": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b2738188d4c88985d83d7e82e063",
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
+      },
+      "7jtmIUnE94Jan1LQ5WreFw": {
+        "name": "A BRIDGE BETWEEN WORLDS",
+        "artists": [
+          "SHEZ"
+        ],
+        "releaseDate": "2026-09-24",
+        "album": null,
+        "cover": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273fa8b39532e2c2a9a76a1d178",
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
+      },
+      "6Byop91LYjc7rhpeGXan0q": {
+        "name": "HEY",
+        "artists": [
+          "SHEZ"
+        ],
+        "releaseDate": "2026-09-24",
+        "album": null,
+        "cover": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273fa8b39532e2c2a9a76a1d178",
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
+      },
+      "5HZbbLwrv3mWteZ4l0SCLb": {
+        "name": "1 of a kind",
+        "artists": [
+          "SHEZ"
+        ],
+        "releaseDate": "2022-09-02",
+        "album": null,
+        "cover": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b27342ba82db6c5605fb3defa0f0",
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
+      },
+      "104gRXiV2gMhEqnUGmXNs9": {
+        "name": "ANTIGONE",
+        "artists": [
+          "SHEZ"
+        ],
+        "releaseDate": "2026-09-24",
+        "album": null,
+        "cover": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273fa8b39532e2c2a9a76a1d178",
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
+      },
+      "3Y4fXYMfviV8V0nqQjOAyy": {
+        "name": "HOW FAR WE'VE COME",
+        "artists": [
+          "SHEZ"
+        ],
+        "releaseDate": "2026-09-24",
+        "album": null,
+        "cover": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273fa8b39532e2c2a9a76a1d178",
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
+      },
+      "5Ql3sZbxAAWj8p5Gg0itpZ": {
+        "name": "MAWTINI",
+        "artists": [
+          "SHEZ"
+        ],
+        "releaseDate": "2026-09-24",
+        "album": null,
+        "cover": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273fa8b39532e2c2a9a76a1d178",
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
+      },
+      "6NbaBn9oxJzwnlijBg5jCW": {
+        "name": "BURN IT DOWN",
+        "artists": [
+          "SHEZ"
+        ],
+        "releaseDate": "2026-09-24",
+        "album": null,
+        "cover": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b273fa8b39532e2c2a9a76a1d178",
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
+      },
+      "4J5YNEoA4nobpQyGMr8jUX": {
+        "name": "Rhythm Section",
+        "artists": [
+          "SHEZ"
+        ],
+        "releaseDate": "2020-07-03",
+        "album": null,
+        "cover": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273b797024adeda01c032d272cb",
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
+      },
+      "6I0oytpkXMtoaoJ9AGjro5": {
+        "name": "Freeze",
+        "artists": [
+          "SHEZ"
+        ],
+        "releaseDate": "2024-11-14",
+        "album": null,
+        "cover": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b2735300fbbe44223edac445deee",
+        "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity"
       }
     }
   },
