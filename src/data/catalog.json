@@ -1,0 +1,569 @@
+{
+  "fetchedAt": "2026-10-10T05:06:32.991Z",
+  "sources": [
+    "iTunes Search API",
+    "Spotify oEmbed",
+    "Spotify public pages"
+  ],
+  "artists": [
+    {
+      "name": "SHEZ",
+      "appleId": "1484492113",
+      "appleUrl": "https://music.apple.com/gb/artist/shez/1484492113?uo=4"
+    },
+    {
+      "name": "Shez Manzoor",
+      "appleId": "1477261034",
+      "appleUrl": "https://music.apple.com/gb/artist/shez-manzoor/1477261034?uo=4"
+    }
+  ],
+  "releases": [
+    {
+      "slug": "miscellany-vol-1",
+      "title": "Miscellany, Vol. 1 - EP",
+      "artist": "SHEZ",
+      "appleArtistId": "1484492113",
+      "appleId": 6799360829,
+      "appleUrl": "https://music.apple.com/gb/album/miscellany-vol-1-ep/6799360829",
+      "releaseDate": "2026-09-24",
+      "trackCount": 6,
+      "genre": "Alternative",
+      "copyright": "℗ 2026 SHEZ",
+      "tracks": [
+        {
+          "title": "HEY",
+          "number": 1,
+          "ms": 127826,
+          "appleUrl": "https://music.apple.com/gb/album/hey/6799360829?i=6799360950&uo=4",
+          "artist": "SHEZ"
+        },
+        {
+          "title": "HOW FAR WE'VE COME",
+          "number": 2,
+          "ms": 165474,
+          "appleUrl": "https://music.apple.com/gb/album/how-far-weve-come/6799360829?i=6799360951&uo=4",
+          "artist": "SHEZ"
+        },
+        {
+          "title": "ANTIGONE",
+          "number": 3,
+          "ms": 119348,
+          "appleUrl": "https://music.apple.com/gb/album/antigone/6799360829?i=6799360952&uo=4",
+          "artist": "SHEZ"
+        },
+        {
+          "title": "A BRIDGE BETWEEN WORLDS",
+          "number": 4,
+          "ms": 298560,
+          "appleUrl": "https://music.apple.com/gb/album/a-bridge-between-worlds/6799360829?i=6799360954&uo=4",
+          "artist": "SHEZ"
+        },
+        {
+          "title": "BURN IT DOWN",
+          "number": 5,
+          "ms": 134737,
+          "appleUrl": "https://music.apple.com/gb/album/burn-it-down/6799360829?i=6799360955&uo=4",
+          "artist": "SHEZ"
+        },
+        {
+          "title": "MAWTINI",
+          "number": 6,
+          "ms": 99891,
+          "appleUrl": "https://music.apple.com/gb/album/mawtini/6799360829?i=6799360956&uo=4",
+          "artist": "SHEZ"
+        }
+      ],
+      "artwork": "release-miscellany-vol-1.jpg"
+    },
+    {
+      "slug": "no-magic-in-the-city-feat-kamy-drums-and-shez",
+      "title": "No Magic in the City (feat. Kamy Drums & SHEZ) - Single",
+      "artist": "Sereta",
+      "appleArtistId": "1484492113",
+      "appleId": 1774238124,
+      "appleUrl": "https://music.apple.com/gb/album/no-magic-in-the-city-feat-kamy-drums-shez-single/1774238124",
+      "releaseDate": "2024-10-11",
+      "trackCount": 1,
+      "genre": "Rock",
+      "copyright": "℗ 2024 Sereta",
+      "tracks": [
+        {
+          "title": "No Magic in the City (feat. Kamy Drums & SHEZ)",
+          "number": 1,
+          "ms": 270097,
+          "appleUrl": "https://music.apple.com/gb/album/no-magic-in-the-city-feat-kamy-drums-shez/1774238124?i=1774238139&uo=4",
+          "artist": "Sereta"
+        }
+      ],
+      "artwork": "release-no-magic-in-the-city-feat-kamy-drums-and-shez.jpg"
+    },
+    {
+      "slug": "let-go",
+      "title": "Let Go - Single",
+      "artist": "SHEZ",
+      "appleArtistId": "1484492113",
+      "appleId": 1754083595,
+      "appleUrl": "https://music.apple.com/gb/album/let-go-single/1754083595",
+      "releaseDate": "2024-07-26",
+      "trackCount": 1,
+      "genre": "R&B/Soul",
+      "copyright": "℗ 2024 SHEZ",
+      "tracks": [
+        {
+          "title": "Let Go",
+          "number": 1,
+          "ms": 192418,
+          "appleUrl": "https://music.apple.com/gb/album/let-go/1754083595?i=1754083596&uo=4",
+          "artist": "SHEZ"
+        }
+      ],
+      "artwork": "release-let-go.jpg"
+    },
+    {
+      "slug": "wdihtbsh",
+      "title": "Wdihtbsh? - Single",
+      "artist": "SHEZ",
+      "appleArtistId": "1484492113",
+      "appleId": 1698685948,
+      "appleUrl": "https://music.apple.com/gb/album/wdihtbsh-single/1698685948",
+      "releaseDate": "2023-08-18",
+      "trackCount": 1,
+      "genre": "Hip-Hop/Rap",
+      "copyright": "℗ 2023 SHEZ",
+      "tracks": [
+        {
+          "title": "Wdihtbsh?",
+          "number": 1,
+          "ms": 184800,
+          "appleUrl": "https://music.apple.com/gb/album/wdihtbsh/1698685948?i=1698685949&uo=4",
+          "artist": "SHEZ"
+        }
+      ],
+      "artwork": "release-wdihtbsh.jpg"
+    },
+    {
+      "slug": "polite-society-original-motion-picture-soundtrack",
+      "title": "Polite Society (Original Motion Picture Soundtrack)",
+      "artist": "Tom Howe & Shez Manzoor",
+      "appleArtistId": "1477261034",
+      "appleId": 1683374665,
+      "appleUrl": "https://music.apple.com/gb/album/polite-society-original-motion-picture-soundtrack/1683374665",
+      "releaseDate": "2023-04-28",
+      "trackCount": 21,
+      "genre": "Soundtrack",
+      "copyright": "℗ 2023 Back Lot Music, a division of Universal Studios Music LLLP",
+      "tracks": [
+        {
+          "title": "Garden Kicks",
+          "number": 1,
+          "ms": 73307,
+          "appleUrl": "https://music.apple.com/gb/album/garden-kicks/1683374665?i=1683374668&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "Emails & Sneaking Around",
+          "number": 2,
+          "ms": 87960,
+          "appleUrl": "https://music.apple.com/gb/album/emails-sneaking-around/1683374665?i=1683374673&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "Ria vs. Kovacs",
+          "number": 3,
+          "ms": 133800,
+          "appleUrl": "https://music.apple.com/gb/album/ria-vs-kovacs/1683374665?i=1683374676&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "Ria Comes Home",
+          "number": 4,
+          "ms": 60000,
+          "appleUrl": "https://music.apple.com/gb/album/ria-comes-home/1683374665?i=1683374680&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "Planning the Heist",
+          "number": 5,
+          "ms": 83360,
+          "appleUrl": "https://music.apple.com/gb/album/planning-the-heist/1683374665?i=1683374927&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "Gym Heist",
+          "number": 6,
+          "ms": 108120,
+          "appleUrl": "https://music.apple.com/gb/album/gym-heist/1683374665?i=1683374930&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "Ria vs. Lena",
+          "number": 7,
+          "ms": 96480,
+          "appleUrl": "https://music.apple.com/gb/album/ria-vs-lena/1683374665?i=1683374932&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "Climbing to Grounded",
+          "number": 8,
+          "ms": 172333,
+          "appleUrl": "https://music.apple.com/gb/album/climbing-to-grounded/1683374665?i=1683374935&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "The Lab",
+          "number": 9,
+          "ms": 129440,
+          "appleUrl": "https://music.apple.com/gb/album/the-lab/1683374665?i=1683374942&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "Lena Moves Out",
+          "number": 10,
+          "ms": 64560,
+          "appleUrl": "https://music.apple.com/gb/album/lena-moves-out/1683374665?i=1683374943&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "Wax Fight",
+          "number": 11,
+          "ms": 174720,
+          "appleUrl": "https://music.apple.com/gb/album/wax-fight/1683374665?i=1683374948&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "Pre Wedding Planning",
+          "number": 12,
+          "ms": 80547,
+          "appleUrl": "https://music.apple.com/gb/album/pre-wedding-planning/1683374665?i=1683374949&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "Weddings & Security Guards",
+          "number": 13,
+          "ms": 120320,
+          "appleUrl": "https://music.apple.com/gb/album/weddings-security-guards/1683374665?i=1683374951&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "Serving Canapes",
+          "number": 14,
+          "ms": 73467,
+          "appleUrl": "https://music.apple.com/gb/album/serving-canapes/1683374665?i=1683374952&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "Wedding Heist",
+          "number": 15,
+          "ms": 126093,
+          "appleUrl": "https://music.apple.com/gb/album/wedding-heist/1683374665?i=1683375438&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "Khan vs. Shah",
+          "number": 16,
+          "ms": 190947,
+          "appleUrl": "https://music.apple.com/gb/album/khan-vs-shah/1683374665?i=1683375443&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "Ria Tied Up",
+          "number": 17,
+          "ms": 100373,
+          "appleUrl": "https://music.apple.com/gb/album/ria-tied-up/1683374665?i=1683375447&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "The Wedding Standoff",
+          "number": 18,
+          "ms": 223080,
+          "appleUrl": "https://music.apple.com/gb/album/the-wedding-standoff/1683374665?i=1683375448&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "Polite Fight Montage",
+          "number": 19,
+          "ms": 108227,
+          "appleUrl": "https://music.apple.com/gb/album/polite-fight-montage/1683374665?i=1683375457&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "I Am the Fury",
+          "number": 20,
+          "ms": 176547,
+          "appleUrl": "https://music.apple.com/gb/album/i-am-the-fury/1683374665?i=1683375463&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        },
+        {
+          "title": "Shooting the Kick",
+          "number": 21,
+          "ms": 51000,
+          "appleUrl": "https://music.apple.com/gb/album/shooting-the-kick/1683374665?i=1683375591&uo=4",
+          "artist": "Tom Howe & Shez Manzoor"
+        }
+      ],
+      "artwork": "release-polite-society-original-motion-picture-soundtrack.jpg"
+    },
+    {
+      "slug": "come-what-may",
+      "title": "Come.What.May - Single",
+      "artist": "SHEZ",
+      "appleArtistId": "1484492113",
+      "appleId": 1659717928,
+      "appleUrl": "https://music.apple.com/gb/album/come-what-may-single/1659717928",
+      "releaseDate": "2023-01-13",
+      "trackCount": 1,
+      "genre": "Hip-Hop/Rap",
+      "copyright": "℗ 2022 SHEZ",
+      "tracks": [
+        {
+          "title": "Come.What.May",
+          "number": 1,
+          "ms": 141250,
+          "appleUrl": "https://music.apple.com/gb/album/come-what-may/1659717928?i=1659717929&uo=4",
+          "artist": "SHEZ"
+        }
+      ],
+      "artwork": "release-come-what-may.jpg"
+    },
+    {
+      "slug": "our-time-ep",
+      "title": "Our Time EP",
+      "artist": "SHEZ",
+      "appleArtistId": "1484492113",
+      "appleId": 1632941421,
+      "appleUrl": "https://music.apple.com/gb/album/our-time-ep/1632941421",
+      "releaseDate": "2022-09-02",
+      "trackCount": 6,
+      "genre": "R&B/Soul",
+      "copyright": "℗ 2022 SHEZ",
+      "tracks": [
+        {
+          "title": "1 Of a Kind",
+          "number": 1,
+          "ms": 204175,
+          "appleUrl": "https://music.apple.com/gb/album/1-of-a-kind/1632941421?i=1632941422&uo=4",
+          "artist": "SHEZ"
+        },
+        {
+          "title": "Our.Time",
+          "number": 2,
+          "ms": 136424,
+          "appleUrl": "https://music.apple.com/gb/album/our-time/1632941421?i=1632941423&uo=4",
+          "artist": "SHEZ"
+        },
+        {
+          "title": "Struck/Gold",
+          "number": 3,
+          "ms": 180000,
+          "appleUrl": "https://music.apple.com/gb/album/struck-gold/1632941421?i=1632941424&uo=4",
+          "artist": "SHEZ"
+        },
+        {
+          "title": "-Ve Space",
+          "number": 4,
+          "ms": 188364,
+          "appleUrl": "https://music.apple.com/gb/album/ve-space/1632941421?i=1632941425&uo=4",
+          "artist": "SHEZ"
+        },
+        {
+          "title": "Set Me Alight",
+          "number": 5,
+          "ms": 191462,
+          "appleUrl": "https://music.apple.com/gb/album/set-me-alight/1632941421?i=1632941426&uo=4",
+          "artist": "SHEZ"
+        },
+        {
+          "title": "I Deserve Better",
+          "number": 6,
+          "ms": 218294,
+          "appleUrl": "https://music.apple.com/gb/album/i-deserve-better/1632941421?i=1632941428&uo=4",
+          "artist": "SHEZ"
+        }
+      ],
+      "artwork": "release-our-time-ep.jpg"
+    },
+    {
+      "slug": "our-time",
+      "title": "Our.Time - Single",
+      "artist": "SHEZ",
+      "appleArtistId": "1484492113",
+      "appleId": 1605386049,
+      "appleUrl": "https://music.apple.com/gb/album/our-time-single/1605386049",
+      "releaseDate": "2022-02-11",
+      "trackCount": 1,
+      "genre": "R&B/Soul",
+      "copyright": "℗ 2022 SHEZ",
+      "tracks": [
+        {
+          "title": "Our.Time",
+          "number": 1,
+          "ms": 136424,
+          "appleUrl": "https://music.apple.com/gb/album/our-time/1605386049?i=1605386050&uo=4",
+          "artist": "SHEZ"
+        }
+      ],
+      "artwork": "release-our-time.jpg"
+    },
+    {
+      "slug": "rhythm-section",
+      "title": "Rhythm Section - Single",
+      "artist": "SHEZ",
+      "appleArtistId": "1484492113",
+      "appleId": 1518828098,
+      "appleUrl": "https://music.apple.com/gb/album/rhythm-section-single/1518828098",
+      "releaseDate": "2020-07-03",
+      "trackCount": 1,
+      "genre": "R&B/Soul",
+      "copyright": "℗ 2020 SHEZ",
+      "tracks": [
+        {
+          "title": "Rhythm Section",
+          "number": 1,
+          "ms": 204138,
+          "appleUrl": "https://music.apple.com/gb/album/rhythm-section/1518828098?i=1518828100&uo=4",
+          "artist": "SHEZ"
+        }
+      ],
+      "artwork": "release-rhythm-section.jpg"
+    },
+    {
+      "slug": "you-saved-me-feat-shez",
+      "title": "You Saved Me (feat. SHEZ) - Single",
+      "artist": "Selomé",
+      "appleArtistId": "1484492113",
+      "appleId": 1490476535,
+      "appleUrl": "https://music.apple.com/gb/album/you-saved-me-feat-shez-single/1490476535",
+      "releaseDate": "2020-01-20",
+      "trackCount": 1,
+      "genre": "Alternative",
+      "copyright": "℗ 2019 Rezoko",
+      "tracks": [
+        {
+          "title": "You Saved Me (feat. SHEZ) - Single",
+          "number": 1,
+          "ms": 164165,
+          "appleUrl": "https://music.apple.com/gb/album/you-saved-me-feat-shez-single/1490476535?i=1490476751&uo=4",
+          "artist": "Selomé"
+        }
+      ],
+      "artwork": "release-you-saved-me-feat-shez.jpg"
+    },
+    {
+      "slug": "falling-feat-selome",
+      "title": "Falling (feat. Selomé) - Single",
+      "artist": "SHEZ",
+      "appleArtistId": "1484492113",
+      "appleId": 1484504154,
+      "appleUrl": "https://music.apple.com/gb/album/falling-feat-selom%C3%A9-single/1484504154",
+      "releaseDate": "2019-11-04",
+      "trackCount": 1,
+      "genre": "R&B/Soul",
+      "copyright": "℗ 2019 Rezoko",
+      "tracks": [
+        {
+          "title": "Falling (feat. Selomé)",
+          "number": 1,
+          "ms": 229724,
+          "appleUrl": "https://music.apple.com/gb/album/falling-feat-selom%C3%A9/1484504154?i=1484504158&uo=4",
+          "artist": "SHEZ"
+        }
+      ],
+      "artwork": "release-falling-feat-selome.jpg"
+    }
+  ],
+  "soundtracks": [],
+  "screen": [
+    {
+      "slug": "we-are-lady-parts",
+      "title": "We Are Lady Parts, Season 2",
+      "releaseDate": "2024-07-07",
+      "appleUrl": "https://itunes.apple.com/us/tv-season/we-are-lady-parts-season-2/id1750318151",
+      "artwork": "screen-we-are-lady-parts.jpg",
+      "seasons": [
+        {
+          "title": "We Are Lady Parts, Season 2",
+          "date": "2024-07-07"
+        },
+        {
+          "title": "We Are Lady Parts, Season 1",
+          "date": "2021-08-21"
+        }
+      ]
+    }
+  ],
+  "spotify": {
+    "artist": {
+      "url": "https://open.spotify.com/artist/3q8Gg6UErCDwopoXFWQwb4",
+      "title": "SHEZ",
+      "image": "spotify-artist.jpg"
+    },
+    "albums": [],
+    "tracks": [
+      {
+        "id": "5Ci2OKV00uh9qzpVWrtWSj",
+        "url": "https://open.spotify.com/track/5Ci2OKV00uh9qzpVWrtWSj",
+        "title": "Jama Narenji, The Undeniable & Nbeed",
+        "thumbnail": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e028188d4c88985d83d7e82e063"
+      },
+      {
+        "id": "7jtmIUnE94Jan1LQ5WreFw",
+        "url": "https://open.spotify.com/track/7jtmIUnE94Jan1LQ5WreFw",
+        "title": "A BRIDGE BETWEEN WORLDS",
+        "thumbnail": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02fa8b39532e2c2a9a76a1d178"
+      },
+      {
+        "id": "6Byop91LYjc7rhpeGXan0q",
+        "url": "https://open.spotify.com/track/6Byop91LYjc7rhpeGXan0q",
+        "title": "HEY",
+        "thumbnail": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02fa8b39532e2c2a9a76a1d178"
+      },
+      {
+        "id": "5HZbbLwrv3mWteZ4l0SCLb",
+        "url": "https://open.spotify.com/track/5HZbbLwrv3mWteZ4l0SCLb",
+        "title": "1 of a kind",
+        "thumbnail": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e0242ba82db6c5605fb3defa0f0"
+      },
+      {
+        "id": "104gRXiV2gMhEqnUGmXNs9",
+        "url": "https://open.spotify.com/track/104gRXiV2gMhEqnUGmXNs9",
+        "title": "ANTIGONE",
+        "thumbnail": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02fa8b39532e2c2a9a76a1d178"
+      },
+      {
+        "id": "3Y4fXYMfviV8V0nqQjOAyy",
+        "url": "https://open.spotify.com/track/3Y4fXYMfviV8V0nqQjOAyy",
+        "title": "HOW FAR WE'VE COME",
+        "thumbnail": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02fa8b39532e2c2a9a76a1d178"
+      },
+      {
+        "id": "5Ql3sZbxAAWj8p5Gg0itpZ",
+        "url": "https://open.spotify.com/track/5Ql3sZbxAAWj8p5Gg0itpZ",
+        "title": "MAWTINI",
+        "thumbnail": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02fa8b39532e2c2a9a76a1d178"
+      },
+      {
+        "id": "6NbaBn9oxJzwnlijBg5jCW",
+        "url": "https://open.spotify.com/track/6NbaBn9oxJzwnlijBg5jCW",
+        "title": "BURN IT DOWN",
+        "thumbnail": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02fa8b39532e2c2a9a76a1d178"
+      },
+      {
+        "id": "4J5YNEoA4nobpQyGMr8jUX",
+        "url": "https://open.spotify.com/track/4J5YNEoA4nobpQyGMr8jUX",
+        "title": "Rhythm Section",
+        "thumbnail": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02b797024adeda01c032d272cb"
+      },
+      {
+        "id": "6I0oytpkXMtoaoJ9AGjro5",
+        "url": "https://open.spotify.com/track/6I0oytpkXMtoaoJ9AGjro5",
+        "title": "Freeze",
+        "thumbnail": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e025300fbbe44223edac445deee"
+      }
+    ]
+  },
+  "soundcloud": {
+    "short": "https://on.soundcloud.com/xJEiUCaJ997a3IyLT1",
+    "url": "https://soundcloud.com/shezrmusic"
+  },
+  "errors": []
+}
