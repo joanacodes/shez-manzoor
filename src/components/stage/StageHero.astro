@@ -4,12 +4,10 @@
  * stand, a mic, an old TV playing his film and TV work) and the name dims into the
  * backdrop. The carousel of his work arrives in front (passed in as the slot).
  */
-import fs from 'node:fs';
-import path from 'node:path';
 import { getImage } from 'astro:assets';
 import Icon from '../Icon.astro';
-import { setlistTitles, tvChannels } from '../../data/work';
-import { href } from '../../lib/url';
+import { setlistTitles } from '../../data/work';
+import { screenChannels } from '../../lib/channels';
 import stillTall from '../../assets/stage/stage-tall.jpg';
 import stillShort from '../../assets/stage/stage-short.jpg';
 import stillTablet from '../../assets/stage/stage-tablet.jpg';
@@ -17,14 +15,7 @@ import stillFourThree from '../../assets/stage/stage-fourthree.jpg';
 import stillWide from '../../assets/stage/stage-wide.jpg';
 import stillPhoneLand from '../../assets/stage/stage-phoneland.jpg';
 
-const shrink = async (src?: ImageMetadata) => (src ? (await getImage({ src, width: 640, format: 'webp', quality: 74 })).src : undefined);
-// a clip at public/clips/<slug>.mp4 plays on the TV instead of the poster
-const clip = (id: string) => (fs.existsSync(path.join(process.cwd(), 'public', 'clips', `${id}.mp4`)) ? href(`/clips/${id}.mp4`) : undefined);
-const channels = [];
-for (const c of tvChannels) {
-  channels.push({ title: c.title, kind: c.kind, image: await shrink(c.image), video: clip(c.id) });
-  if (c.image2 && !clip(c.id)) channels.push({ title: c.title, kind: `${c.kind}, series 1`, image: await shrink(c.image2) });
-}
+const channels = (await screenChannels(640)).map(({ title, kind, image, video }) => ({ title, kind, image, video }));
 const data = JSON.stringify({ channels, setlist: setlistTitles });
 
 // stills of the same stage, one per screen shape, for devices without the 3D scene (rendered from it, see README)

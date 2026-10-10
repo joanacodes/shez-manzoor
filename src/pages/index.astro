@@ -6,6 +6,7 @@ import WorkCarousel from '../components/stage/WorkCarousel.astro';
 import WorkDetails from '../components/stage/WorkDetails.astro';
 import Honours from '../components/stage/Honours.astro';
 import PreviewPlayer from '../components/stage/PreviewPlayer.astro';
+import Cinema from '../components/stage/Cinema.astro';
 import { thumbOf } from '../lib/thumbs';
 import Award from '../components/Award.astro';
 import Faq from '../components/Faq.astro';
@@ -87,6 +88,7 @@ const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await t
 
     <!-- ---------- film and television ---------- -->
     <section id="screen" class="section screen" data-light="green" aria-labelledby="screen-title">
+      <Cinema />
       <div class="wrap">
         <div class="section-head" data-reveal>
           <p class="kicker">Film &amp; television</p>
