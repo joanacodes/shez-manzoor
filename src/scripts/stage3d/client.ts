@@ -208,6 +208,8 @@ async function init(el: HTMLElement) {
       fitBand();
     }, 120);
   });
+  // the covers move up while the music bar is open: frame the set in the space left
+  document.addEventListener('stage:refit', fitBand);
 
   /* ---------- pointer: the camera leans, things on stage answer taps ---------- */
   const label = el.querySelector<HTMLElement>('[data-stage-label]');

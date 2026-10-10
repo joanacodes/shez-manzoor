@@ -1,6 +1,7 @@
 /**
  * 30-second previews: any button with data-preview plays that clip in one shared player,
- * shown as a small bar at the bottom of the screen with links to the full song.
+ * shown as a bar at the bottom of the screen (over the panels too) to pause, play again,
+ * or open the full song. Buttons show a spinner while the song loads, then a pause sign.
  */
 const bar = document.querySelector<HTMLElement>('[data-player-bar]');
 if (bar) setup(bar);
@@ -17,17 +18,27 @@ function setup(bar: HTMLElement) {
   const apple = bar.querySelector<HTMLAnchorElement>('[data-player-apple]')!;
   const spotify = bar.querySelector<HTMLAnchorElement>('[data-player-spotify]')!;
   let current = '';
+  // asked to play, not playing yet (or buffering)
+  let loading = false;
 
   const buttons = () => document.querySelectorAll<HTMLElement>('[data-preview]');
   const sync = () => {
-    const playing = !audio.paused && !audio.ended;
+    const playing = !audio.paused && !audio.ended && !loading;
     bar.classList.toggle('is-playing', playing);
-    toggle.setAttribute('aria-label', playing ? 'Pause preview' : 'Play preview');
+    bar.classList.toggle('is-loading', loading);
+    toggle.setAttribute('aria-label', loading ? 'Loading the preview' : playing ? 'Pause the preview' : 'Play the preview');
     buttons().forEach((b) => {
-      const on = b.dataset.preview === current && playing;
-      b.classList.toggle('is-playing', on);
-      b.setAttribute('aria-pressed', String(on));
+      const mine = b.dataset.preview === current;
+      b.classList.toggle('is-playing', mine && playing);
+      b.classList.toggle('is-loading', mine && loading);
+      b.setAttribute('aria-pressed', String(mine && (playing || loading)));
+      if (mine && loading) b.setAttribute('aria-busy', 'true');
+      else b.removeAttribute('aria-busy');
     });
+  };
+  const setLoading = (on: boolean) => {
+    loading = on;
+    sync();
   };
 
   function load(b: HTMLElement) {
@@ -46,6 +57,7 @@ function setup(bar: HTMLElement) {
       link.hidden = !url;
       if (url) link.href = url;
     }
+    progress.style.setProperty('--p', '0');
     if ('mediaSession' in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: title.textContent ?? '',
@@ -55,6 +67,22 @@ function setup(bar: HTMLElement) {
       });
     }
   }
+
+  // the covers on the first screen make room for the bar; the stage frames the set again after
+  const refit = () => window.setTimeout(() => document.dispatchEvent(new Event('stage:refit')), 500);
+
+  const start = () => {
+    setLoading(true);
+    audio.play().catch(() => setLoading(false));
+  };
+
+  // the bar sits in an open panel, so it stays above it; back on the page when the panel closes
+  const home = bar.parentElement!;
+  const place = () => {
+    const target = document.querySelector('dialog[open]') ?? home;
+    if (bar.parentElement !== target) target.append(bar);
+  };
+  new MutationObserver(place).observe(document.body, { subtree: true, attributeFilter: ['open'] });
 
   document.addEventListener('click', (e) => {
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-preview]');
@@ -66,17 +94,26 @@ function setup(bar: HTMLElement) {
       return;
     }
     if (b.dataset.preview !== current) load(b);
-    bar.hidden = false;
-    requestAnimationFrame(() => bar.classList.add('is-open'));
-    void audio.play().catch(() => sync());
+    place();
+    if (!bar.classList.contains('is-open')) {
+      bar.hidden = false;
+      requestAnimationFrame(() => bar.classList.add('is-open'));
+      refit();
+    }
+    start();
   });
-  toggle.addEventListener('click', () => (audio.paused ? void audio.play() : audio.pause()));
+  toggle.addEventListener('click', () => (audio.paused || audio.ended ? start() : audio.pause()));
   close.addEventListener('click', () => {
     audio.pause();
     bar.classList.remove('is-open');
-    window.setTimeout(() => (bar.hidden = true), 300);
+    window.setTimeout(() => {
+      if (!bar.classList.contains('is-open')) bar.hidden = true;
+    }, 300);
+    refit();
   });
-  for (const ev of ['play', 'pause', 'ended', 'emptied']) audio.addEventListener(ev, sync);
+  audio.addEventListener('playing', () => setLoading(false));
+  audio.addEventListener('waiting', () => !audio.paused && setLoading(true));
+  for (const ev of ['pause', 'ended', 'error', 'emptied']) audio.addEventListener(ev, () => setLoading(false));
   audio.addEventListener('timeupdate', () => {
     const d = audio.duration || 30;
     progress.style.setProperty('--p', String(Math.min(1, audio.currentTime / d)));

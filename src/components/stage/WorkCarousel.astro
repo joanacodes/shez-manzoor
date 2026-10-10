@@ -121,9 +121,11 @@ const thumbs = new Map(await Promise.all(items.map(async (w) => [w.id, await thu
     padding-bottom: max(0.9rem, env(safe-area-inset-bottom));
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.6s ease;
+    transition: opacity 0.6s ease, margin-bottom 0.45s var(--ease-out);
   }
   :global(.stage[data-phase='ready']) .work { opacity: 1; pointer-events: auto; }
+  /* room for the music bar, so it never covers the caption and the arrows */
+  :global(html:has(.player.is-open)) .work { margin-bottom: 4.4rem; }
 
   .work__viewport {
     position: relative;

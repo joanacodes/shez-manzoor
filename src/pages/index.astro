@@ -42,6 +42,9 @@ const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await t
   type="profile"
   jsonLd={jsonLd}
 >
+  <!-- the 30-second previews stream from here: connect early so the first tap starts sooner -->
+  <link rel="preconnect" href="https://audio-ssl.itunes.apple.com" slot="head" />
+  <link rel="preconnect" href="https://p.scdn.co" slot="head" />
   <script is:inline slot="head">
     // the header waits for the intro from the first paint; if the stage script never runs, show everything
     document.documentElement.dataset.intro = 'on';

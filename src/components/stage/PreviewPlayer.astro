@@ -17,6 +17,7 @@ import Icon from '../Icon.astro';
   <button class="player__toggle" type="button" data-player-toggle aria-label="Play preview">
     <span class="player__icon player__icon--play"><Icon name="play" /></span>
     <span class="player__icon player__icon--pause" aria-hidden="true"><i></i><i></i></span>
+    <span class="player__icon player__icon--load" aria-hidden="true"></span>
   </button>
   <button class="player__close" type="button" data-player-close aria-label="Close preview"><Icon name="close" /></button>
 </div>
@@ -80,6 +81,47 @@ import Icon from '../Icon.astro';
   .player__icon--pause i { display: block; width: 4px; height: 14px; border-radius: 1px; background: currentColor; }
   .player.is-playing .player__icon--play { display: none; }
   .player.is-playing .player__icon--pause { display: flex; }
+  .player__icon--load { display: none; }
+  .player.is-loading .player__icon--play,
+  .player.is-loading .player__icon--pause { display: none; }
+  .player.is-loading .player__icon--load { display: block; }
+
+  /* every preview button on the page: a spinner while the song loads, a pause sign while it plays */
+  .player__icon--load,
+  :global([data-preview].is-loading)::before {
+    content: '';
+    flex: none;
+    box-sizing: border-box;
+    width: var(--glyph, 14px);
+    height: var(--glyph, 14px);
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: preview-spin 0.7s linear infinite;
+  }
+  :global([data-preview].is-playing)::before {
+    content: '';
+    flex: none;
+    width: calc(var(--glyph, 14px) * 0.78);
+    height: var(--glyph, 14px);
+    background: linear-gradient(90deg, currentColor 0 34%, transparent 34% 66%, currentColor 66%);
+  }
+  :global([data-preview].is-loading svg),
+  :global([data-preview].is-playing svg) { display: none; }
+  :global(.play--preview) { --glyph: 15px; }
+  :global(.disco__play),
+  :global(.track-preview) { --glyph: 12px; }
+  @keyframes preview-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* room under the last lines of the page and of a panel, so the bar never hides them */
+  :global(html:has(.player.is-open) .site-footer)::after,
+  :global(html:has(.player.is-open) .detail__card)::after {
+    content: '';
+    display: block;
+    height: 4.75rem;
+  }
   @media (max-width: 420px) {
     .player__links { display: none; }
   }
