@@ -82,10 +82,9 @@ const back = row(380, 1, 104, -110, 0);
         <svg class="cinema__audience" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
           <defs>
             {/* light from the screen: the far row catches more of it, the near row only on the tops of heads */}
-            <linearGradient id="audience-far" gradientUnits="userSpaceOnUse" x1="0" y1="135" x2="0" y2="330">
+            <linearGradient id="audience-far" gradientUnits="userSpaceOnUse" x1="0" y1="135" x2="0" y2="360">
               <stop offset="0" class="cinema__light cinema__light--far" />
-              <stop offset="0.55" class="cinema__light cinema__light--mid" />
-              <stop offset="1" class="cinema__light cinema__light--dark" />
+              <stop offset="1" class="cinema__light cinema__light--far-low" />
             </linearGradient>
             <linearGradient id="audience-near" gradientUnits="userSpaceOnUse" x1="0" y1="212" x2="0" y2="345">
               <stop offset="0" class="cinema__light cinema__light--near" />
@@ -246,10 +245,12 @@ const back = row(380, 1, 104, -110, 0);
   .cinema__row--back { fill: url(#audience-near); }
   /* tinted by the film: --tint is the most vivid colour on screen */
   .cinema__light { stop-color: #040307; transition: stop-color 1.2s ease; }
-  .cinema__light--far { stop-color: color-mix(in srgb, rgb(var(--tint)) 17%, #040307); }
-  .cinema__light--mid { stop-color: color-mix(in srgb, rgb(var(--tint)) 6%, #040307); }
-  .cinema__light--near { stop-color: color-mix(in srgb, rgb(var(--tint)) 8%, #040307); }
-  .cinema__row--front { filter: drop-shadow(0 -1px 0 rgb(var(--tint) / 0.5)) drop-shadow(0 -4px 8px rgb(var(--tint) / 0.14)); }
+  /* two rows that read apart: the far row, nearer the screen, lit; the near row almost black in front of it */
+  .cinema__light--far { stop-color: color-mix(in srgb, rgb(var(--tint)) 28%, #15111c); }
+  .cinema__light--far-low { stop-color: color-mix(in srgb, rgb(var(--tint)) 14%, #0f0c15); }
+  .cinema__light--near { stop-color: color-mix(in srgb, rgb(var(--tint)) 5%, #050408); }
+  .cinema__light--dark { stop-color: #020103; }
+  .cinema__row--front { filter: drop-shadow(0 -1px 0 rgb(var(--tint) / 0.35)) drop-shadow(0 -4px 8px rgb(var(--tint) / 0.12)); }
   .cinema__row--back { filter: drop-shadow(0 -1.5px 0 rgb(var(--tint) / 0.6)) drop-shadow(0 -8px 14px rgb(var(--tint) / 0.18)); }
   @media (min-width: 900px) {
     .cinema__audience { --h: min(clamp(220px, 26vw, 340px), 40svh); }
