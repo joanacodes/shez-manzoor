@@ -1,5 +1,4 @@
 ---
-import { INDEXABLE } from 'astro:env/server';
 import { links, nav, person } from '../data/site';
 import { href } from '../lib/url';
 import Icon from './Icon.astro';
@@ -44,7 +43,7 @@ const year = new Date().getFullYear();
         <a href={href('/legal/#terms')}>Terms</a>
         <a href={href('/legal/#privacy')}>Privacy</a>
       </p>
-      {!INDEXABLE && <p class="preview">Preview build, hidden from search engines</p>}
+      <p class="credit">made with love by <a href="https://mlkwebstudio.com" rel="noopener" target="_blank">mlkwebstudio.com</a></p>
     </div>
   </div>
 </footer>
@@ -115,13 +114,10 @@ const year = new Date().getFullYear();
   .legal { display: flex; gap: 1.25rem; }
   .legal a { color: var(--ink-3); text-decoration: none; transition: color 0.3s; }
   .legal a:hover { color: var(--ink); }
-  .preview {
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink-3);
-  }
+  /* the studio's credit: small and quiet */
+  .credit { font-size: 0.72rem; color: rgb(242 236 226 / 0.42); }
+  .credit a { color: inherit; text-decoration: none; transition: color 0.3s; }
+  .credit a:hover { color: var(--ink-2); }
   @media (min-width: 760px) {
     .grid { grid-template-columns: repeat(3, 1fr); }
     .col:first-child { grid-column: auto; }

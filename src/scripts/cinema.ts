@@ -8,6 +8,15 @@
 const root = document.querySelector<HTMLElement>('[data-cinema]');
 if (root) setup(root);
 
+/** The audience rows: [property, the row's own dark, how much of the film's colour it catches]. */
+const ROWS: [string, number[], number][] = [
+  ['--far', [21, 17, 28], 0.28],
+  ['--far-low', [15, 12, 21], 0.14],
+  ['--middle', [14, 11, 20], 0.14],
+  ['--middle-low', [8, 7, 12], 0.06],
+  ['--near', [4, 3, 7], 0.04],
+];
+
 function setup(root: HTMLElement) {
   const screen = root.querySelector<HTMLElement>('[data-cinema-screen]')!;
   const slides = [...root.querySelectorAll<HTMLElement>('[data-cinema-slide]')];
@@ -39,7 +48,12 @@ function setup(root: HTMLElement) {
       const vivid = (p: number[]) => (Math.max(...p) - Math.min(...p)) * Math.max(...p);
       const colour = mean([...px].sort((a, b) => vivid(b) - vivid(a)).slice(0, 10));
       const k = 230 / Math.max(1, ...colour);
-      root.style.setProperty('--tint', colour.map((v) => Math.round(v * k)).join(' '));
+      const lit = colour.map((v) => v * k);
+      root.style.setProperty('--tint', lit.map(Math.round).join(' '));
+      // each row of the audience: that colour mixed into its own dark, the far row most
+      for (const [name, base, share] of ROWS) {
+        root.style.setProperty(name, base.map((b, c) => Math.round(b + (lit[c] - b) * share)).join(' '));
+      }
     } catch {
       /* keep the last colours */
     }

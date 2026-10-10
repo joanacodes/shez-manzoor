@@ -160,11 +160,11 @@ const host = (url: string) => new URL(url).hostname.replace(/^www\./, '');
   }
   :global(html:not(.js)) .contact-bubble,
   :global(html.still) .contact-bubble { display: none; }
+  /* the end of the page scrolls clear of it */
+  :global(html.js .site-footer) { padding-bottom: calc(max(2rem, env(safe-area-inset-bottom)) + 4.5rem); }
   @media (max-width: 760px) {
     /* above the song bar when it is open */
     :global(html:has(.player.is-open)) .contact-bubble { bottom: calc(max(0.75rem, env(safe-area-inset-bottom)) + 74px); }
-    /* the end of the page scrolls clear of it */
-    :global(html.js .site-footer) { padding-bottom: calc(max(2rem, env(safe-area-inset-bottom)) + 4.5rem); }
   }
 
   /* ---------- the window ---------- */

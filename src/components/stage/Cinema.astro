@@ -77,26 +77,31 @@ const near = row(388, 1, 104, -110, 0);
           </button>
           <span class="cinema__sheen" aria-hidden="true" />
         </div>
-        <svg class="cinema__audience" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
-          <defs>
-            {/* light from the screen: the far row catches more of it, the near row only on the tops of heads */}
+        {/* light from the screen: the far row catches more of it, the near row only on the tops of heads.
+            Each row is its own picture, so every browser draws the glow along the tops of its heads. */}
+        <div class="cinema__audience" aria-hidden="true">
+          <svg class="cinema__row cinema__row--far" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMax slice" focusable="false">
             <linearGradient id="audience-far" gradientUnits="userSpaceOnUse" x1="0" y1="140" x2="0" y2="360">
               <stop offset="0" class="cinema__light cinema__light--far" />
               <stop offset="1" class="cinema__light cinema__light--far-low" />
             </linearGradient>
+            <g set:html={far} />
+          </svg>
+          <svg class="cinema__row cinema__row--middle" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMax slice" focusable="false">
             <linearGradient id="audience-middle" gradientUnits="userSpaceOnUse" x1="0" y1="182" x2="0" y2="360">
               <stop offset="0" class="cinema__light cinema__light--middle" />
               <stop offset="1" class="cinema__light cinema__light--middle-low" />
             </linearGradient>
+            <g set:html={middle} />
+          </svg>
+          <svg class="cinema__row cinema__row--near" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMax slice" focusable="false">
             <linearGradient id="audience-near" gradientUnits="userSpaceOnUse" x1="0" y1="232" x2="0" y2="360">
               <stop offset="0" class="cinema__light cinema__light--near" />
               <stop offset="1" class="cinema__light cinema__light--dark" />
             </linearGradient>
-          </defs>
-          <g class="cinema__row cinema__row--far" set:html={far} />
-          <g class="cinema__row cinema__row--middle" set:html={middle} />
-          <g class="cinema__row cinema__row--near" set:html={near} />
-        </svg>
+            <g set:html={near} />
+          </svg>
+        </div>
       </div>
 
       <div class="cinema__caption wrap">
@@ -138,6 +143,12 @@ const near = row(388, 1, 104, -110, 0);
   .cinema {
     --glow: 205 187 255;
     --tint: 190 160 255;
+    /* the rows lit by --tint, until the first picture is read */
+    --far: 68 57 92;
+    --far-low: 40 33 54;
+    --middle: 39 32 53;
+    --middle-low: 19 16 27;
+    --near: 11 9 17;
     position: relative;
     margin-bottom: clamp(3rem, 9vw, 5rem);
   }
@@ -267,18 +278,19 @@ const near = row(388, 1, 104, -110, 0);
     pointer-events: none;
   }
   /* only the top edges catch the light from the screen */
-  .cinema__row { fill: #040307; transition: filter 1.2s ease; }
+  .cinema__row { position: absolute; inset: 0; width: 100%; height: 100%; fill: #040307; transition: filter 1.2s ease; }
   .cinema__row--far { fill: url(#audience-far); }
   .cinema__row--middle { fill: url(#audience-middle); }
   .cinema__row--near { fill: url(#audience-near); }
   /* tinted by the film: --tint is the most vivid colour on screen */
   .cinema__light { stop-color: #040307; transition: stop-color 1.2s ease; }
   /* three rows that read apart: the far row, nearest the screen, catches the most light, the near row almost none */
-  .cinema__light--far { stop-color: color-mix(in srgb, rgb(var(--tint)) 28%, #15111c); }
-  .cinema__light--far-low { stop-color: color-mix(in srgb, rgb(var(--tint)) 14%, #0f0c15); }
-  .cinema__light--middle { stop-color: color-mix(in srgb, rgb(var(--tint)) 14%, #0e0b14); }
-  .cinema__light--middle-low { stop-color: color-mix(in srgb, rgb(var(--tint)) 6%, #08070c); }
-  .cinema__light--near { stop-color: color-mix(in srgb, rgb(var(--tint)) 4%, #040307); }
+  /* the film's colour mixed into each row's own dark (see scripts/cinema.ts) */
+  .cinema__light--far { stop-color: rgb(var(--far)); }
+  .cinema__light--far-low { stop-color: rgb(var(--far-low)); }
+  .cinema__light--middle { stop-color: rgb(var(--middle)); }
+  .cinema__light--middle-low { stop-color: rgb(var(--middle-low)); }
+  .cinema__light--near { stop-color: rgb(var(--near)); }
   .cinema__light--dark { stop-color: #020103; }
   .cinema__row--far { filter: drop-shadow(0 -1px 0 rgb(var(--tint) / 0.3)) drop-shadow(0 -3px 6px rgb(var(--tint) / 0.1)); }
   .cinema__row--middle { filter: drop-shadow(0 -1px 0 rgb(var(--tint) / 0.42)) drop-shadow(0 -5px 10px rgb(var(--tint) / 0.14)); }
