@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-10T06:46:37.724Z",
+  "fetchedAt": "2026-10-10T08:35:20.137Z",
   "sources": [
     "iTunes Search API",
     "Spotify oEmbed",
@@ -35,42 +35,48 @@
           "number": 1,
           "ms": 127826,
           "appleUrl": "https://music.apple.com/gb/album/hey/6799360829?i=6799360950&uo=4",
-          "artist": "SHEZ"
+          "artist": "SHEZ",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/6b/01/ec/6b01ecf8-8667-8c24-b146-f1e6fb459ae2/mzaf_16571065336131216876.plus.aac.p.m4a"
         },
         {
           "title": "HOW FAR WE'VE COME",
           "number": 2,
           "ms": 165474,
           "appleUrl": "https://music.apple.com/gb/album/how-far-weve-come/6799360829?i=6799360951&uo=4",
-          "artist": "SHEZ"
+          "artist": "SHEZ",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/94/cb/f0/94cbf0b5-88e0-2991-5eab-cb2ac8d61762/mzaf_5431379234899235018.plus.aac.p.m4a"
         },
         {
           "title": "ANTIGONE",
           "number": 3,
           "ms": 119348,
           "appleUrl": "https://music.apple.com/gb/album/antigone/6799360829?i=6799360952&uo=4",
-          "artist": "SHEZ"
+          "artist": "SHEZ",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/de/ee/ad/deeead72-77f8-9b09-f858-371fe3287abe/mzaf_1280858857138845836.plus.aac.p.m4a"
         },
         {
           "title": "A BRIDGE BETWEEN WORLDS",
           "number": 4,
           "ms": 298560,
           "appleUrl": "https://music.apple.com/gb/album/a-bridge-between-worlds/6799360829?i=6799360954&uo=4",
-          "artist": "SHEZ"
+          "artist": "SHEZ",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/07/96/b5/0796b586-aa66-5cea-3812-85e338ef431b/mzaf_12074117958226371542.plus.aac.p.m4a"
         },
         {
           "title": "BURN IT DOWN",
           "number": 5,
           "ms": 134737,
           "appleUrl": "https://music.apple.com/gb/album/burn-it-down/6799360829?i=6799360955&uo=4",
-          "artist": "SHEZ"
+          "artist": "SHEZ",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/92/02/59/920259b8-2365-87ba-0566-f3ddc33b14fb/mzaf_7892270583754378138.plus.aac.p.m4a"
         },
         {
           "title": "MAWTINI",
           "number": 6,
           "ms": 99891,
           "appleUrl": "https://music.apple.com/gb/album/mawtini/6799360829?i=6799360956&uo=4",
-          "artist": "SHEZ"
+          "artist": "SHEZ",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/da/91/71/da917131-f371-8782-0325-43b2fe481542/mzaf_12724099013819202418.plus.aac.p.m4a"
         }
       ],
       "artwork": "release-miscellany-vol-1.jpg"
@@ -90,7 +96,8 @@
           "number": 1,
           "ms": 213465,
           "appleUrl": "https://music.apple.com/gb/album/freeze/6766996863?i=6766996864&uo=4",
-          "artist": "SHEZ"
+          "artist": "SHEZ",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/4d/0a/c1/4d0ac192-68fb-d5cf-ffe4-fd98460b0b93/mzaf_6897204672734933073.plus.aac.p.m4a"
         }
       ],
       "artwork": "release-freeze.jpg"
@@ -112,7 +119,8 @@
           "number": 1,
           "ms": 270097,
           "appleUrl": "https://music.apple.com/gb/album/no-magic-in-the-city-feat-kamy-drums-shez/1774238124?i=1774238139&uo=4",
-          "artist": "Sereta"
+          "artist": "Sereta",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/b6/24/67/b6246734-1000-ca52-89e2-a307a1cccb03/mzaf_13624176429898364377.plus.aac.p.m4a"
         }
       ],
       "artwork": "release-no-magic-in-the-city-feat-kamy-drums-and-shez.jpg"
@@ -134,7 +142,8 @@
           "number": 1,
           "ms": 192418,
           "appleUrl": "https://music.apple.com/gb/album/let-go/1754083595?i=1754083596&uo=4",
-          "artist": "SHEZ"
+          "artist": "SHEZ",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/d4/2a/2b/d42a2b35-c131-7537-43e2-3d87d9771d13/mzaf_7333733781456906426.plus.aac.p.m4a"
         }
       ],
       "artwork": "release-let-go.jpg"
@@ -156,7 +165,8 @@
           "number": 1,
           "ms": 184800,
           "appleUrl": "https://music.apple.com/gb/album/wdihtbsh/1698685948?i=1698685949&uo=4",
-          "artist": "SHEZ"
+          "artist": "SHEZ",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/fc/a4/13/fca41318-ebfe-7b3c-2f1d-437185a835b2/mzaf_13702594613944634239.plus.aac.p.m4a"
         }
       ],
       "artwork": "release-wdihtbsh.jpg"
@@ -178,147 +188,168 @@
           "number": 1,
           "ms": 73307,
           "appleUrl": "https://music.apple.com/gb/album/garden-kicks/1683374665?i=1683374668&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/5c/ca/08/5cca08b1-3b3c-2040-fd9b-98843e524034/mzaf_42338712262213433.plus.aac.p.m4a"
         },
         {
           "title": "Emails & Sneaking Around",
           "number": 2,
           "ms": 87960,
           "appleUrl": "https://music.apple.com/gb/album/emails-sneaking-around/1683374665?i=1683374673&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/bb/a1/df/bba1df1c-7f75-c15f-dccb-57a726dfcfd4/mzaf_8628486387690150949.plus.aac.p.m4a"
         },
         {
           "title": "Ria vs. Kovacs",
           "number": 3,
           "ms": 133800,
           "appleUrl": "https://music.apple.com/gb/album/ria-vs-kovacs/1683374665?i=1683374676&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/b0/35/88/b03588eb-7f85-f101-94b2-9f6ad9bc809d/mzaf_17658236287442597248.plus.aac.p.m4a"
         },
         {
           "title": "Ria Comes Home",
           "number": 4,
           "ms": 60000,
           "appleUrl": "https://music.apple.com/gb/album/ria-comes-home/1683374665?i=1683374680&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/bd/3b/c8/bd3bc89d-57c2-27d1-155f-5d8ee3a03c8c/mzaf_9695719631064942949.plus.aac.p.m4a"
         },
         {
           "title": "Planning the Heist",
           "number": 5,
           "ms": 83360,
           "appleUrl": "https://music.apple.com/gb/album/planning-the-heist/1683374665?i=1683374927&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/bd/2b/9b/bd2b9b6c-1fdb-ae21-9795-ae159f03ef97/mzaf_9765871326362156845.plus.aac.p.m4a"
         },
         {
           "title": "Gym Heist",
           "number": 6,
           "ms": 108120,
           "appleUrl": "https://music.apple.com/gb/album/gym-heist/1683374665?i=1683374930&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/76/53/f7/7653f791-d6fd-9e3a-fa1b-b877b826ba65/mzaf_14085887275625310254.plus.aac.p.m4a"
         },
         {
           "title": "Ria vs. Lena",
           "number": 7,
           "ms": 96480,
           "appleUrl": "https://music.apple.com/gb/album/ria-vs-lena/1683374665?i=1683374932&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/75/0a/06/750a0673-3515-e421-9acf-df4034f956b5/mzaf_3624675034626714938.plus.aac.p.m4a"
         },
         {
           "title": "Climbing to Grounded",
           "number": 8,
           "ms": 172333,
           "appleUrl": "https://music.apple.com/gb/album/climbing-to-grounded/1683374665?i=1683374935&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/e7/0e/33/e70e331b-399d-2e0b-f684-96f315b05299/mzaf_11058994786604944070.plus.aac.p.m4a"
         },
         {
           "title": "The Lab",
           "number": 9,
           "ms": 129440,
           "appleUrl": "https://music.apple.com/gb/album/the-lab/1683374665?i=1683374942&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/6f/19/2c/6f192c45-54e1-0c12-5340-7ebb51c7678c/mzaf_1970518816903573307.plus.aac.p.m4a"
         },
         {
           "title": "Lena Moves Out",
           "number": 10,
           "ms": 64560,
           "appleUrl": "https://music.apple.com/gb/album/lena-moves-out/1683374665?i=1683374943&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/05/c9/7f/05c97fb6-b2c9-f0a0-02f2-b7a8b932a86d/mzaf_51017333354165856.plus.aac.p.m4a"
         },
         {
           "title": "Wax Fight",
           "number": 11,
           "ms": 174720,
           "appleUrl": "https://music.apple.com/gb/album/wax-fight/1683374665?i=1683374948&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/c6/b9/38/c6b938c4-ae51-72cb-d62a-4b7b5b30c6ff/mzaf_11358204507859573193.plus.aac.p.m4a"
         },
         {
           "title": "Pre Wedding Planning",
           "number": 12,
           "ms": 80547,
           "appleUrl": "https://music.apple.com/gb/album/pre-wedding-planning/1683374665?i=1683374949&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/3f/31/1c/3f311c01-021e-4cb0-a5e7-7180f4eb05f1/mzaf_15396510931712754699.plus.aac.p.m4a"
         },
         {
           "title": "Weddings & Security Guards",
           "number": 13,
           "ms": 120320,
           "appleUrl": "https://music.apple.com/gb/album/weddings-security-guards/1683374665?i=1683374951&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/b0/b4/39/b0b43981-a6d9-de73-1772-47f5079e6864/mzaf_7421489317552063228.plus.aac.p.m4a"
         },
         {
           "title": "Serving Canapes",
           "number": 14,
           "ms": 73467,
           "appleUrl": "https://music.apple.com/gb/album/serving-canapes/1683374665?i=1683374952&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/64/b8/39/64b839bf-ba93-e9cb-e473-b3996a93eec1/mzaf_14209927941640010866.plus.aac.p.m4a"
         },
         {
           "title": "Wedding Heist",
           "number": 15,
           "ms": 126093,
           "appleUrl": "https://music.apple.com/gb/album/wedding-heist/1683374665?i=1683375438&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/91/f8/b3/91f8b31d-44d8-7862-fca0-a96a3f3fa42b/mzaf_14598869125619479917.plus.aac.p.m4a"
         },
         {
           "title": "Khan vs. Shah",
           "number": 16,
           "ms": 190947,
           "appleUrl": "https://music.apple.com/gb/album/khan-vs-shah/1683374665?i=1683375443&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/07/a4/4d/07a44d15-df0d-27f6-93ef-ad6fd485f7b3/mzaf_13692472383863876345.plus.aac.p.m4a"
         },
         {
           "title": "Ria Tied Up",
           "number": 17,
           "ms": 100373,
           "appleUrl": "https://music.apple.com/gb/album/ria-tied-up/1683374665?i=1683375447&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/fb/22/09/fb22096c-52f6-d276-47ec-98dd73293c03/mzaf_10090749874738709536.plus.aac.p.m4a"
         },
         {
           "title": "The Wedding Standoff",
           "number": 18,
           "ms": 223080,
           "appleUrl": "https://music.apple.com/gb/album/the-wedding-standoff/1683374665?i=1683375448&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/af/3b/73/af3b73ff-5274-fe4a-be41-245b74c5827a/mzaf_392187027348556345.plus.aac.p.m4a"
         },
         {
           "title": "Polite Fight Montage",
           "number": 19,
           "ms": 108227,
           "appleUrl": "https://music.apple.com/gb/album/polite-fight-montage/1683374665?i=1683375457&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/80/2a/1e/802a1ee4-1e64-4fab-408f-c4817a7498d5/mzaf_8032681851433665402.plus.aac.p.m4a"
         },
         {
           "title": "I Am the Fury",
           "number": 20,
           "ms": 176547,
           "appleUrl": "https://music.apple.com/gb/album/i-am-the-fury/1683374665?i=1683375463&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/d2/53/dc/d253dc74-991d-5155-7648-11cd94a22358/mzaf_11898694420276634836.plus.aac.p.m4a"
         },
         {
           "title": "Shooting the Kick",
           "number": 21,
           "ms": 51000,
           "appleUrl": "https://music.apple.com/gb/album/shooting-the-kick/1683374665?i=1683375591&uo=4",
-          "artist": "Tom Howe & Shez Manzoor"
+          "artist": "Tom Howe & Shez Manzoor",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/7f/bf/44/7fbf4432-2bb0-81ee-d0b3-8884bd99391d/mzaf_3155265513149453491.plus.aac.p.m4a"
         }
       ],
       "artwork": "release-polite-society-original-motion-picture-soundtrack.jpg"
@@ -340,7 +371,8 @@
           "number": 1,
           "ms": 141250,
           "appleUrl": "https://music.apple.com/gb/album/come-what-may/1659717928?i=1659717929&uo=4",
-          "artist": "SHEZ"
+          "artist": "SHEZ",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/0e/ef/48/0eef4812-5ae7-ff96-732b-36559faa0eae/mzaf_7536929923777479516.plus.aac.p.m4a"
         }
       ],
       "artwork": "release-come-what-may.jpg"
@@ -362,42 +394,48 @@
           "number": 1,
           "ms": 204175,
           "appleUrl": "https://music.apple.com/gb/album/1-of-a-kind/1632941421?i=1632941422&uo=4",
-          "artist": "SHEZ"
+          "artist": "SHEZ",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/58/b8/6c/58b86c45-0ffc-c279-75c3-8c46c4a10d77/mzaf_5619213779825892821.plus.aac.p.m4a"
         },
         {
           "title": "Our.Time",
           "number": 2,
           "ms": 136424,
           "appleUrl": "https://music.apple.com/gb/album/our-time/1632941421?i=1632941423&uo=4",
-          "artist": "SHEZ"
+          "artist": "SHEZ",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/e4/e5/2d/e4e52de1-897f-f686-fabf-0e655b6a3658/mzaf_144585594123273181.plus.aac.p.m4a"
         },
         {
           "title": "Struck/Gold",
           "number": 3,
           "ms": 180000,
           "appleUrl": "https://music.apple.com/gb/album/struck-gold/1632941421?i=1632941424&uo=4",
-          "artist": "SHEZ"
+          "artist": "SHEZ",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/57/ce/cf/57cecfb4-e22d-b178-0e83-0e68e40a9ad0/mzaf_14872394902724775144.plus.aac.p.m4a"
         },
         {
           "title": "-Ve Space",
           "number": 4,
           "ms": 188364,
           "appleUrl": "https://music.apple.com/gb/album/ve-space/1632941421?i=1632941425&uo=4",
-          "artist": "SHEZ"
+          "artist": "SHEZ",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/00/c0/28/00c02843-1b18-3980-54db-6ef2d4eb6ec7/mzaf_2166929603432599543.plus.aac.p.m4a"
         },
         {
           "title": "Set Me Alight",
           "number": 5,
           "ms": 191462,
           "appleUrl": "https://music.apple.com/gb/album/set-me-alight/1632941421?i=1632941426&uo=4",
-          "artist": "SHEZ"
+          "artist": "SHEZ",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/ba/22/4e/ba224eb2-69ef-80f5-6bd6-6c0dddf5484a/mzaf_5666518675469610357.plus.aac.p.m4a"
         },
         {
           "title": "I Deserve Better",
           "number": 6,
           "ms": 218294,
           "appleUrl": "https://music.apple.com/gb/album/i-deserve-better/1632941421?i=1632941428&uo=4",
-          "artist": "SHEZ"
+          "artist": "SHEZ",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/f5/98/f8/f598f89d-1880-1028-5ad9-efddca0565fe/mzaf_13776411317341511136.plus.aac.p.m4a"
         }
       ],
       "artwork": "release-our-time-ep.jpg"
@@ -419,7 +457,8 @@
           "number": 1,
           "ms": 136424,
           "appleUrl": "https://music.apple.com/gb/album/our-time/1605386049?i=1605386050&uo=4",
-          "artist": "SHEZ"
+          "artist": "SHEZ",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/2d/b1/88/2db188dd-9e21-fbcc-0aad-89d9b06c5ec0/mzaf_1939366341510395305.plus.aac.p.m4a"
         }
       ],
       "artwork": "release-our-time.jpg"
@@ -441,7 +480,8 @@
           "number": 1,
           "ms": 204138,
           "appleUrl": "https://music.apple.com/gb/album/rhythm-section/1518828098?i=1518828100&uo=4",
-          "artist": "SHEZ"
+          "artist": "SHEZ",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview113/v4/3c/b3/52/3cb3527b-20ff-3c08-7fd4-79f5c2926d58/mzaf_10172699495721689923.plus.aac.p.m4a"
         }
       ],
       "artwork": "release-rhythm-section.jpg"
@@ -463,7 +503,8 @@
           "number": 1,
           "ms": 164165,
           "appleUrl": "https://music.apple.com/gb/album/you-saved-me-feat-shez-single/1490476535?i=1490476751&uo=4",
-          "artist": "Selomé"
+          "artist": "Selomé",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview123/v4/90/bb/8e/90bb8e72-3af6-f545-8e91-7f2e0c0a805b/mzaf_81885884758156601.plus.aac.p.m4a"
         }
       ],
       "artwork": "release-you-saved-me-feat-shez.jpg"
@@ -485,7 +526,8 @@
           "number": 1,
           "ms": 229724,
           "appleUrl": "https://music.apple.com/gb/album/falling-feat-selom%C3%A9/1484504154?i=1484504158&uo=4",
-          "artist": "SHEZ"
+          "artist": "SHEZ",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview113/v4/c7/f3/74/c7f37423-a03d-d314-aba7-7a91030e0c9c/mzaf_6420942750870204020.plus.aac.p.m4a"
         }
       ],
       "artwork": "release-falling-feat-selome.jpg"
@@ -509,7 +551,8 @@
           "disc": 1,
           "ms": 150734,
           "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
-          "appleUrl": "https://music.apple.com/gb/album/aint-no-one-gonna-honour-kill-my-sister-but-me/1748223604?i=1748223609"
+          "appleUrl": "https://music.apple.com/gb/album/aint-no-one-gonna-honour-kill-my-sister-but-me/1748223604?i=1748223609",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/64/be/de/64bedef4-a877-151f-623c-c594f4f24c16/mzaf_13946269647969223850.plus.aac.p.m4a"
         },
         {
           "title": "Bashir With the Good Beard",
@@ -517,7 +560,8 @@
           "disc": 1,
           "ms": 141292,
           "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
-          "appleUrl": "https://music.apple.com/gb/album/bashir-with-the-good-beard/1748223604?i=1748223612"
+          "appleUrl": "https://music.apple.com/gb/album/bashir-with-the-good-beard/1748223604?i=1748223612",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/88/98/bb/8898bb83-3b04-e964-a457-a1ba9857b191/mzaf_7071778790871346100.plus.aac.p.m4a"
         },
         {
           "title": "Voldemort Under My Head Scarf",
@@ -525,7 +569,8 @@
           "disc": 1,
           "ms": 106734,
           "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
-          "appleUrl": "https://music.apple.com/gb/album/voldemort-under-my-head-scarf/1748223604?i=1748223617"
+          "appleUrl": "https://music.apple.com/gb/album/voldemort-under-my-head-scarf/1748223604?i=1748223617",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/fe/3f/38/fe3f3805-f986-7cc7-beff-7583888c7af8/mzaf_12484286743143823173.plus.aac.p.m4a"
         },
         {
           "title": "9 To 5",
@@ -533,7 +578,8 @@
           "disc": 1,
           "ms": 118095,
           "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
-          "appleUrl": "https://music.apple.com/gb/album/9-to-5/1748223604?i=1748223744"
+          "appleUrl": "https://music.apple.com/gb/album/9-to-5/1748223604?i=1748223744",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/18/30/81/183081c9-b01e-9f34-176b-fd09fdd76aba/mzaf_8115958413733674875.plus.aac.p.m4a"
         },
         {
           "title": "Fish and Chips",
@@ -541,7 +587,8 @@
           "disc": 1,
           "ms": 112079,
           "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
-          "appleUrl": "https://music.apple.com/gb/album/fish-and-chips/1748223604?i=1748223747"
+          "appleUrl": "https://music.apple.com/gb/album/fish-and-chips/1748223604?i=1748223747",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/59/a0/6f/59a06f21-f763-9b78-0ed5-7d78946865fa/mzaf_13773944308543694600.plus.aac.p.m4a"
         },
         {
           "title": "Creep",
@@ -549,7 +596,8 @@
           "disc": 1,
           "ms": 114637,
           "artist": "Anjana Vasan",
-          "appleUrl": "https://music.apple.com/gb/album/creep/1748223604?i=1748223749"
+          "appleUrl": "https://music.apple.com/gb/album/creep/1748223604?i=1748223749",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/36/80/95/36809557-8d66-f432-29e8-dfa4ba81ebdd/mzaf_13023671686955959418.plus.aac.p.m4a"
         },
         {
           "title": "We Are the Champions",
@@ -557,7 +605,8 @@
           "disc": 1,
           "ms": 165298,
           "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
-          "appleUrl": "https://music.apple.com/gb/album/we-are-the-champions/1748223604?i=1748223753"
+          "appleUrl": "https://music.apple.com/gb/album/we-are-the-champions/1748223604?i=1748223753",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/3d/62/2f/3d622fcc-2a91-e14d-5801-93f3393a9cf8/mzaf_17914019677365600173.plus.aac.p.m4a"
         },
         {
           "title": "Villain Era (feat. Juliette Motamed)",
@@ -565,7 +614,8 @@
           "disc": 1,
           "ms": 170017,
           "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey & Faith Omole",
-          "appleUrl": "https://music.apple.com/gb/album/villain-era-feat-juliette-motamed/1748223604?i=1748223764"
+          "appleUrl": "https://music.apple.com/gb/album/villain-era-feat-juliette-motamed/1748223604?i=1748223764",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/d5/e1/49/d5e14992-03b4-7024-ecca-28d0f71a6634/mzaf_11698127152959300494.plus.aac.p.m4a"
         },
         {
           "title": "Bashir With the Good Beard",
@@ -573,7 +623,8 @@
           "disc": 1,
           "ms": 105325,
           "artist": "Second Wife",
-          "appleUrl": "https://music.apple.com/gb/album/bashir-with-the-good-beard/1748223604?i=1748223922"
+          "appleUrl": "https://music.apple.com/gb/album/bashir-with-the-good-beard/1748223604?i=1748223922",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/81/42/9b/81429b1a-6e6c-9961-5478-7da69a1169c1/mzaf_16031711428704864011.plus.aac.p.m4a"
         },
         {
           "title": "Malala Made Me Do It",
@@ -581,7 +632,8 @@
           "disc": 1,
           "ms": 114940,
           "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
-          "appleUrl": "https://music.apple.com/gb/album/malala-made-me-do-it/1748223604?i=1748223928"
+          "appleUrl": "https://music.apple.com/gb/album/malala-made-me-do-it/1748223604?i=1748223928",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/a4/47/14/a447144e-372e-7442-03b7-770e3d842f22/mzaf_10488476274261118420.plus.aac.p.m4a"
         },
         {
           "title": "Oops!...I Did It Again",
@@ -589,7 +641,8 @@
           "disc": 1,
           "ms": 170024,
           "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
-          "appleUrl": "https://music.apple.com/gb/album/oops-i-did-it-again/1748223604?i=1748223930"
+          "appleUrl": "https://music.apple.com/gb/album/oops-i-did-it-again/1748223604?i=1748223930",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/43/f6/9c/43f69c41-a86b-091a-80d6-952985c65d35/mzaf_13738235284103737036.plus.aac.p.m4a"
         },
         {
           "title": "Don't Let Me Be Misunderstood",
@@ -597,7 +650,8 @@
           "disc": 1,
           "ms": 126770,
           "artist": "Faith Omole",
-          "appleUrl": "https://music.apple.com/gb/album/dont-let-me-be-misunderstood/1748223604?i=1748223931"
+          "appleUrl": "https://music.apple.com/gb/album/dont-let-me-be-misunderstood/1748223604?i=1748223931",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/a0/88/2d/a0882d3c-c7db-1ffd-d5df-ea84e1f74ba6/mzaf_9431113948547445118.plus.aac.p.m4a"
         },
         {
           "title": "Glass Ceiling Feeling",
@@ -605,7 +659,8 @@
           "disc": 1,
           "ms": 147273,
           "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
-          "appleUrl": "https://music.apple.com/gb/album/glass-ceiling-feeling/1748223604?i=1748223932"
+          "appleUrl": "https://music.apple.com/gb/album/glass-ceiling-feeling/1748223604?i=1748223932",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/6a/8c/b8/6a8cb8e8-0b43-af8c-e04d-bd54a2920a36/mzaf_16918852912712143759.plus.aac.p.m4a"
         },
         {
           "title": "Jama Narenji, The Undeniable & Nbeed",
@@ -613,7 +668,8 @@
           "disc": 1,
           "ms": 236669,
           "artist": "Elaha Soroor, Shez, Haleemah X, Lauriem, Rasha Nahas & Sai",
-          "appleUrl": "https://music.apple.com/gb/album/jama-narenji-the-undeniable-nbeed/1748223604?i=1748223934"
+          "appleUrl": "https://music.apple.com/gb/album/jama-narenji-the-undeniable-nbeed/1748223604?i=1748223934",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/cb/4d/0d/cb4d0d6c-5ea0-e039-c30c-2e4b8514db88/mzaf_5145319725277760195.plus.aac.p.m4a"
         },
         {
           "title": "The Reason",
@@ -621,7 +677,8 @@
           "disc": 1,
           "ms": 157497,
           "artist": "Lady Parts, Anjana Vasan, Sarah Kameela Impey, Faith Omole & Juliette Motamed",
-          "appleUrl": "https://music.apple.com/gb/album/the-reason/1748223604?i=1748224101"
+          "appleUrl": "https://music.apple.com/gb/album/the-reason/1748223604?i=1748224101",
+          "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/8c/bf/ee/8cbfee17-2c1b-272c-3c6a-bdca98b47660/mzaf_4028808861276089139.plus.aac.p.m4a"
         }
       ]
     }
@@ -663,7 +720,24 @@
       "title": "SHEZ",
       "image": "spotify-artist.jpg"
     },
-    "albums": [],
+    "albums": [
+      {
+        "id": "0f5viaGiax7fV9JHS5NO2f",
+        "url": "https://open.spotify.com/album/0f5viaGiax7fV9JHS5NO2f",
+        "title": "Our Time EP",
+        "date": null,
+        "songs": [],
+        "thumbnail": "https://i.scdn.co/image/ab67616d00001e0242ba82db6c5605fb3defa0f0"
+      },
+      {
+        "id": "0b3OOvrBz0WAphEUq5dteb",
+        "url": "https://open.spotify.com/album/0b3OOvrBz0WAphEUq5dteb",
+        "title": "Let Go",
+        "date": null,
+        "songs": [],
+        "thumbnail": "https://i.scdn.co/image/ab67616d00001e02878accf20ad252d3510f6a82"
+      }
+    ],
     "tracks": [
       {
         "id": "5Ci2OKV00uh9qzpVWrtWSj",
@@ -997,6 +1071,7 @@
         "releaseDate": "2024-05-31",
         "ms": 236669,
         "genre": "Soundtrack",
+        "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/cb/4d/0d/cb4d0d6c-5ea0-e039-c30c-2e4b8514db88/mzaf_5145319725277760195.plus.aac.p.m4a",
         "artwork": "release-jama-narenji-the-undeniable-and-nbeed.jpg"
       }
     }
