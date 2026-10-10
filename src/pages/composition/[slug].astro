@@ -8,6 +8,7 @@ import Icon from '../../components/Icon.astro';
 import { projects, type Project } from '../../data/projects';
 import { href } from '../../lib/url';
 import { breadcrumbSchema, graph, personSchema, projectSchema } from '../../lib/schema';
+import { describe } from '../../lib/meta';
 
 export function getStaticPaths() {
   return projects.map((project, index) => ({ params: { slug: project.slug }, props: { project, index } }));
@@ -39,7 +40,7 @@ const ogType = p.schema.type === 'Movie' ? 'video.movie' : 'video.tv_show';
 
 <Base
   title={`${p.title}: music by Shez Manzoor | ${p.kind}`}
-  description={p.summary}
+  description={describe(p.summary, 'Music by Shez Manzoor, film and TV composer in London.', 'Music by Shez Manzoor, London.')}
   path={path}
   light="green"
   type={ogType}

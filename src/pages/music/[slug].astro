@@ -8,6 +8,7 @@ import Icon from '../../components/Icon.astro';
 import { releases, type Release } from '../../data/releases';
 import { links } from '../../data/site';
 import { breadcrumbSchema, graph, personSchema, releaseSchema } from '../../lib/schema';
+import { describe } from '../../lib/meta';
 
 export function getStaticPaths() {
   return releases.map((release) => ({ params: { slug: release.slug }, props: { release } }));
@@ -42,7 +43,7 @@ const facts = [
 
 <Base
   title={`${r.title} by SHEZ | ${r.type === 'Release' ? 'Release' : r.type}${r.datePublished ? `, ${r.datePublished.slice(0, 4)}` : ''}`}
-  description={r.summary}
+  description={describe(r.summary, 'By SHEZ (Shez Manzoor), London music producer and singer-songwriter.', 'By SHEZ, London.')}
   path={path}
   light="purple"
   type={r.type === 'Single' ? 'music.song' : 'music.album'}
