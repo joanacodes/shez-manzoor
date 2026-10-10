@@ -4,6 +4,7 @@ import '../styles/global.css';
 import Seo, { type SeoProps } from '../components/Seo.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Contact from '../components/Contact.astro';
 import { href } from '../lib/url';
 
 interface Props extends SeoProps {
@@ -39,6 +40,7 @@ const { light = 'mixed', ...seo } = Astro.props;
       <slot />
     </main>
     <Footer />
+    <Contact />
     <script>
       import '../scripts/ui';
     </script>

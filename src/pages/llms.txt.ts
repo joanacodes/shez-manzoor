@@ -3,7 +3,7 @@
  * Generated from the same data as the pages, so it never drifts.
  */
 import type { APIRoute } from 'astro';
-import { awards, awardsLead, bios, links, person } from '../data/site';
+import { agents, awards, awardsLead, bios, email, links, person } from '../data/site';
 import { projects } from '../data/projects';
 import { releases } from '../data/releases';
 import { faq } from '../data/faq';
@@ -27,7 +27,8 @@ export const GET: APIRoute = ({ site }) => {
     ...awards.map((a) => `- ${a.result}, ${a.name}: ${a.category}, for ${a.work}.${a.note ? ` ${a.note}.` : ''}`),
     `- Influences: ${person.influences.join(', ')}.`,
     `- Collaborations: ${person.collaborators.join(', ')}.`,
-    `- Representation for film and TV: ${links.agent.name} (${links.agent.url}).`,
+    `- Email: ${email}.`,
+    `- Representation for film and TV: ${agents.map((a) => `${a.agency} (${a.email ?? a.url})`).join('; ')}.`,
     '',
     '## Film and television',
     ...projects.map((p) => `- [${p.title}](${url(`/composition/${p.slug}/`)}): ${p.kind}${p.years ? `, ${p.years}` : ''}, ${p.where}. Role: ${p.role}. ${p.summary}`),

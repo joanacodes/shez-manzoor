@@ -1,0 +1,440 @@
+---
+/**
+ * The contact window and the letter bubble that opens it, on every page (see scripts/contact.ts).
+ * At the top, his email address for anyone who would rather write from their own email app,
+ * then his agents, then a short form that FormSubmit delivers to his inbox.
+ */
+import Icon from './Icon.astro';
+import { agents, email } from '../data/site';
+
+const topics = ['Film & TV', 'Music', 'Live', 'Press', 'Other'];
+const host = (url: string) => new URL(url).hostname.replace(/^www\./, '');
+---
+
+<button class="contact-bubble" type="button" data-contact-open data-contact-bubble aria-haspopup="dialog" aria-controls="contact" aria-label="Contact Shez">
+  <Icon name="mail" />
+</button>
+
+<dialog class="contact" id="contact" aria-labelledby="contact-title" data-contact>
+  <div class="contact__sheet">
+    <div class="contact__head">
+      <div>
+        <p class="contact__kicker">Contact</p>
+        <h2 class="contact__title" id="contact-title">Write to <em>Shez</em></h2>
+      </div>
+      <button class="contact__close" type="button" data-contact-close aria-label="Close">
+        <Icon name="close" />
+      </button>
+    </div>
+
+    <a class="contact__direct" href={`mailto:${email}`}>
+      <span class="contact__direct-icon"><Icon name="mail" /></span>
+      <span class="contact__direct-text">
+        <span class="contact__direct-email">{email}</span>
+        <span class="contact__direct-hint">Write from your own email app</span>
+      </span>
+      <span class="contact__direct-go"><Icon name="arrow-up-right" /></span>
+    </a>
+
+    <div class="contact__agents">
+      <p class="contact__label">Film &amp; TV · his agents</p>
+      <ul role="list">
+        {
+          agents.map((a) => (
+            <li>
+              <span class="contact__agency">{a.agency}</span>
+              {a.email ? (
+                <a href={`mailto:${a.email}`}>{a.email}</a>
+              ) : (
+                <a href={a.url} target="_blank" rel="noopener">
+                  {host(a.url)} <Icon name="arrow-up-right" />
+                </a>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <p class="contact__or">or send a message here</p>
+
+    <form class="contact__form" action={`https://formsubmit.co/${email}`} method="POST" data-contact-form data-ajax={`https://formsubmit.co/ajax/${email}`}>
+      <input type="hidden" name="_template" value="table" />
+      <input type="hidden" name="_subject" value="New message from the website" />
+      <input class="contact__honey" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <div class="contact__row">
+        <label class="contact__field">
+          <span>Name</span>
+          <input type="text" name="name" required autocomplete="name" maxlength="120" />
+        </label>
+        <label class="contact__field">
+          <span>Email</span>
+          <input type="email" name="email" required autocomplete="email" maxlength="200" />
+        </label>
+      </div>
+      <fieldset class="contact__topics">
+        <legend>What is it about?</legend>
+        <div>
+          {
+            topics.map((t) => (
+              <label class="contact__topic">
+                <input type="radio" name="topic" value={t} />
+                <span>{t}</span>
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
+      <label class="contact__field">
+        <span>Message</span>
+        <textarea name="message" rows="3" required maxlength="5000"></textarea>
+      </label>
+      <p class="contact__error" data-contact-error role="alert" hidden>
+        That did not go through. Please write to <a href={`mailto:${email}`}>{email}</a> instead.
+      </p>
+      <button class="contact__send" type="submit">
+        <span data-contact-label>Send message</span>
+        <Icon name="arrow" />
+      </button>
+      <p class="contact__small">Your details are only used to reply to you.</p>
+    </form>
+
+    <div class="contact__sent" data-contact-sent hidden tabindex="-1">
+      <span class="contact__sent-icon"><Icon name="check" /></span>
+      <p class="contact__sent-title">Thank you</p>
+      <p class="contact__sent-text">Your message is on its way to Shez.</p>
+      <button class="contact__again" type="button" data-contact-close>Close</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  import '../scripts/contact';
+</script>
+
+<style>
+  /* ---------- the bubble ---------- */
+  .contact-bubble {
+    position: fixed;
+    z-index: 40;
+    right: max(1rem, env(safe-area-inset-right));
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid rgb(var(--lavender-rgb) / 0.42);
+    background: radial-gradient(circle at 30% 25%, rgb(var(--violet-rgb) / 0.62), rgb(15 12 23 / 0.92) 72%);
+    color: var(--ink);
+    box-shadow:
+      0 14px 30px -12px rgb(0 0 0 / 0.9),
+      0 0 26px -8px rgb(var(--violet-rgb) / 0.75);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition:
+      opacity 0.4s ease,
+      visibility 0.4s,
+      transform 0.45s var(--ease-out),
+      bottom 0.45s var(--ease-out),
+      border-color 0.3s,
+      box-shadow 0.3s;
+  }
+  .contact-bubble :global(svg) { width: 24px; height: 24px; }
+  .contact-bubble:hover {
+    transform: translateY(-2px);
+    border-color: var(--mint);
+    box-shadow:
+      0 14px 30px -12px rgb(0 0 0 / 0.9),
+      0 0 30px -6px rgb(var(--mint-rgb) / 0.55);
+  }
+  .contact-bubble:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; }
+  /* away during the intro, and on phones while the carousel's arrows are in its corner */
+  .contact-bubble.is-tucked,
+  :global(html[data-intro='on']) .contact-bubble {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(14px) scale(0.85);
+  }
+  :global(html:not(.js)) .contact-bubble { display: none; }
+  @media (max-width: 760px) {
+    /* above the song bar when it is open */
+    :global(html:has(.player.is-open)) .contact-bubble { bottom: calc(max(0.75rem, env(safe-area-inset-bottom)) + 74px); }
+    /* the end of the page scrolls clear of it */
+    :global(html.js .site-footer) { padding-bottom: calc(max(2rem, env(safe-area-inset-bottom)) + 4.5rem); }
+  }
+
+  /* ---------- the window ---------- */
+  .contact {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0;
+    padding: max(0.75rem, env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right)) max(0.75rem, env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-left));
+    border: 0;
+    color: var(--ink);
+    background: rgb(4 3 8 / 0);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    transition: background-color 0.45s ease;
+  }
+  .contact[open] { display: flex; }
+  .contact::backdrop { background: transparent; }
+  .contact.is-open { background: rgb(4 3 8 / 0.74); }
+  :global(html:has(.contact[open])) { overflow: hidden; }
+  /* the song bar stays over the window: room for it under the form */
+  :global(html:has(.player.is-open)) .contact { padding-bottom: calc(max(0.75rem, env(safe-area-inset-bottom)) + 84px); }
+
+  .contact__sheet {
+    position: relative;
+    display: grid;
+    gap: 0.9rem;
+    width: min(100%, 500px);
+    margin: auto;
+    padding: 1.1rem;
+    border-radius: 24px;
+    border: 1px solid var(--hair-2);
+    background:
+      radial-gradient(120% 55% at 0% 0%, rgb(var(--violet-rgb) / 0.22), transparent 62%),
+      radial-gradient(90% 45% at 100% 100%, rgb(var(--mint-rgb) / 0.08), transparent 60%),
+      #100d18;
+    box-shadow: 0 40px 90px -30px rgb(0 0 0 / 0.95);
+    /* phones: it rises from below the screen to the middle, and goes back down */
+    transform: translateY(calc(50vh + 60%));
+    transition: transform 0.6s var(--ease-out);
+  }
+  .contact.is-open .contact__sheet { transform: none; }
+  /* computers: it appears in the middle */
+  @media (min-width: 761px) {
+    .contact__sheet {
+      gap: 1.1rem;
+      padding: 1.75rem;
+      opacity: 0;
+      transform: translateY(16px) scale(0.97);
+      transition: transform 0.5s var(--ease-out), opacity 0.35s ease;
+    }
+    .contact.is-open .contact__sheet { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .contact__sheet { opacity: 0; transform: none !important; transition: opacity 0.25s ease; }
+    .contact.is-open .contact__sheet { opacity: 1; }
+  }
+
+  .contact__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+  .contact__kicker,
+  .contact__label {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mint);
+  }
+  .contact__title { margin: 0.3rem 0 0; font-family: var(--serif); font-weight: 400; font-size: clamp(2rem, 8.5vw, 2.6rem); line-height: 1; }
+  .contact__title em { color: var(--lavender); }
+  .contact__close {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--hair-2);
+    background: rgb(255 255 255 / 0.03);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .contact__close:hover { border-color: var(--lavender); }
+  .contact__close :global(svg) { width: 20px; height: 20px; }
+
+  /* his address, for writing from one's own email app */
+  .contact__direct {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.7rem 1rem 0.7rem 0.7rem;
+    border-radius: 18px;
+    border: 1px solid rgb(var(--lavender-rgb) / 0.35);
+    background: rgb(var(--lavender-rgb) / 0.07);
+    color: var(--ink);
+    text-decoration: none;
+    transition: border-color 0.3s, background-color 0.3s;
+  }
+  .contact__direct:hover { border-color: var(--lavender); background: rgb(var(--lavender-rgb) / 0.12); }
+  .contact__direct-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--lavender);
+    color: #0b0912;
+  }
+  .contact__direct-icon :global(svg) { width: 22px; height: 22px; }
+  .contact__direct-text { display: grid; gap: 0.1rem; min-width: 0; }
+  .contact__direct-email { font-weight: 500; overflow-wrap: anywhere; }
+  .contact__direct-hint { font-size: 0.8rem; color: var(--ink-2); }
+  .contact__direct-go { display: grid; color: var(--ink-2); }
+  .contact__direct-go :global(svg) { width: 18px; height: 18px; }
+
+  .contact__agents ul { margin: 0.2rem 0 0; padding: 0; list-style: none; }
+  .contact__agents li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.1rem 1rem;
+    padding: 0.45rem 0;
+    border-bottom: 1px solid var(--hair);
+  }
+  .contact__agents li:last-child { border-bottom: 0; padding-bottom: 0; }
+  .contact__agency { font-family: var(--serif); font-size: 1.15rem; }
+  .contact__agents a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.92rem;
+    color: var(--ink-2);
+    text-decoration-color: var(--hair-2);
+    overflow-wrap: anywhere;
+  }
+  .contact__agents a:hover { color: var(--ink); text-decoration-color: var(--lavender); }
+  .contact__agents a :global(svg) { width: 14px; height: 14px; }
+
+  .contact__or {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .contact__or::before,
+  .contact__or::after { content: ''; flex: 1; height: 1px; background: var(--hair); }
+
+  /* ---------- the form ---------- */
+  .contact__form { display: grid; gap: 0.7rem; }
+  .contact__form[hidden] { display: none; }
+  .contact__row { display: grid; gap: 0.7rem; }
+  @media (min-width: 480px) {
+    .contact__row { grid-template-columns: 1fr 1fr; }
+  }
+  .contact__field { display: grid; gap: 0.3rem; }
+  .contact__field > span,
+  .contact__topics legend {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .contact__field input,
+  .contact__field textarea {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    border-radius: 12px;
+    border: 1px solid var(--hair-2);
+    background: rgb(255 255 255 / 0.04);
+    color: var(--ink);
+    font: inherit;
+    /* iPhones zoom into anything smaller */
+    font-size: 16px;
+    transition: border-color 0.25s, background-color 0.25s, box-shadow 0.25s;
+  }
+  .contact__field textarea { min-height: 5.25rem; resize: vertical; }
+  .contact__field input:focus,
+  .contact__field textarea:focus {
+    outline: none;
+    border-color: var(--lavender);
+    background: rgb(255 255 255 / 0.06);
+    box-shadow: 0 0 0 3px rgb(var(--lavender-rgb) / 0.18);
+  }
+  .contact__topics { min-width: 0; margin: 0; padding: 0; border: 0; }
+  .contact__topics legend { padding: 0; margin-bottom: 0.4rem; }
+  .contact__topics > div { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .contact__topic { position: relative; }
+  .contact__topic input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+  .contact__topic span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0.3rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid var(--hair-2);
+    font-size: 0.82rem;
+    color: var(--ink-2);
+    transition: background-color 0.25s, border-color 0.25s, color 0.25s;
+  }
+  .contact__topic:hover span { border-color: var(--lavender); color: var(--ink); }
+  .contact__topic input:checked + span { border-color: var(--mint); background: var(--mint); color: #0b0912; }
+  .contact__topic input:focus-visible + span { outline: 2px solid var(--lavender); outline-offset: 2px; }
+  .contact__honey { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .contact__error {
+    margin: 0;
+    padding: 0.7rem 0.9rem;
+    border-radius: 12px;
+    border: 1px solid rgb(255 128 128 / 0.35);
+    background: rgb(255 128 128 / 0.1);
+    font-size: 0.9rem;
+  }
+  .contact__error[hidden] { display: none; }
+  .contact__error a { color: var(--ink); }
+  .contact__send {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 50px;
+    padding: 0 1.4rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--ink);
+    color: #0b0912;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, opacity 0.3s;
+  }
+  .contact__send:hover { background: #fff; }
+  .contact__send:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; }
+  .contact__send[disabled] { opacity: 0.7; cursor: progress; }
+  .contact__send :global(svg) { width: 18px; height: 18px; }
+  .contact__small { margin: 0; font-size: 0.78rem; color: var(--ink-3); text-align: center; }
+
+  /* ---------- sent ---------- */
+  .contact__sent { display: grid; justify-items: center; gap: 0.45rem; padding: 1.2rem 0 0.4rem; text-align: center; outline: none; }
+  .contact__sent[hidden] { display: none; }
+  .contact__sent-icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--mint);
+    color: #0b0912;
+  }
+  .contact__sent-icon :global(svg) { width: 26px; height: 26px; }
+  .contact__sent-title { margin: 0.4rem 0 0; font-family: var(--serif); font-size: 1.9rem; line-height: 1; }
+  .contact__sent-text { margin: 0; color: var(--ink-2); }
+  .contact__again {
+    min-height: 44px;
+    margin-top: 0.8rem;
+    padding: 0 1.3rem;
+    border-radius: 999px;
+    border: 1px solid var(--hair-2);
+    background: none;
+    color: var(--ink);
+    font: inherit;
+    cursor: pointer;
+  }
+  .contact__again:hover { border-color: var(--lavender); }
+</style>

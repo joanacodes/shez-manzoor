@@ -90,6 +90,20 @@ export const links = {
   },
 } as const;
 
+/** His own inbox. The contact window links to it, and its form is delivered there by FormSubmit. */
+export const email = 'shez.r.music@gmail.com';
+
+/**
+ * Film and TV representation, shown in the contact window.
+ * TO CONFIRM: SMA Talent announced his signing (the address is Carolynne Wyper's, who leads their
+ * composers); Manners McDade, now part of Manners Faber, is the earlier agency, to be removed.
+ * Manners McDade publishes no email address for him, so it links to his page there.
+ */
+export const agents: { agency: string; email?: string; url: string }[] = [
+  { agency: 'SMA Talent', email: 'carolynne@smatalent.com', url: 'https://smatalent.com/' },
+  { agency: 'Manners McDade', url: links.agent.url },
+];
+
 /** Profiles that describe the same person. Feeds schema.org sameAs for search and AI answers. */
 export const sameAs = [
   links.spotify,

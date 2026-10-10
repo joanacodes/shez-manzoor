@@ -48,7 +48,7 @@ All facts live in `src/data/`. Pages, structured data and `llms.txt` are generat
 
 | File | Holds |
 | --- | --- |
-| `site.ts` | Biographies, award, links, collaborators, venues, press quote, navigation. |
+| `site.ts` | Biographies, award, links, his email and agents, collaborators, venues, press quote, navigation. |
 | `projects.ts` | Film and TV credits. Each one gets a page at `/composition/<slug>/`. |
 | `releases.ts` | Releases as SHEZ. Each one gets a page at `/music/<slug>/`. |
 | `faq.ts` | Questions and answers, also published as FAQ structured data. |
@@ -60,6 +60,8 @@ All facts live in `src/data/`. Pages, structured data and `llms.txt` are generat
 **Spotify albums.** Spotify's public player only lists his top tracks. To link an album exactly, add its ID (the part after `/album/` in a Spotify link) to `SPOTIFY_ALBUMS` in the script: its cover, tracks and player are picked up on the next run.
 
 **TV and cinema clips.** The TV on the stage and the cinema screen above Film & Television play every clip in `public/clips`, one after another, always muted, and nothing else (films and series without a clip are only in the credits). Upload videos to that folder on this branch: [upload page](https://github.com/joanacodes/shez-manzoor/upload/claude/shez-manzoor-stage-design/public/clips). GitHub refuses files over 25 MB in the browser, so trim or compress longer recordings first. A few minutes later the *Prepare clips* workflow (`scripts/prepare-clips.mjs`) turns each upload into a small silent MP4: sound removed, black bars and the phone screen around the film cropped off, at most 30 seconds, with a still. Clips can also come straight from Google Drive: put each file's ID or share link on its own line in `public/clips/drive.txt`, share the files with "Anyone with the link", and the same workflow downloads them first. Clips whose file name starts with a number (`01-polite-society.mp4`, `02-…`) play in that order; any others follow, taking turns between works. A file name that contains the title (`We Are Lady Parts 3.mov`, `WALP s2.mp4`, `Polite Society trailer.mov`) links the clip to that work in the cinema caption.
+
+**Contact window.** The letter bubble in the bottom corner of every page opens it (on phones it waits until the carousel's arrows have scrolled away). At the top: his email address, which opens the visitor's own email app, then his agents, then a short form. The address and the agents are `email` and `agents` in `src/data/site.ts`. The form is sent by [FormSubmit](https://formsubmit.co) to that address, with no account and no key. The first message sent from the site makes FormSubmit email shez.r.music@gmail.com an "Activate Form" link: click it once, and messages arrive from then on. FormSubmit may ask again when the site moves to its own domain. Until then, visitors who send a message are asked to write to his address instead. A link to `#contact` on any page also opens the window.
 
 **Posters added by hand.** A poster saved as `src/assets/artwork/screen-<slug>.jpg` (or `.png`, `.webp`), for example `screen-clarksons-farm.jpg`, is used for that credit on the cards, in its panel, on the TV and in the cinema. [Upload page](https://github.com/joanacodes/shez-manzoor/upload/claude/shez-manzoor-stage-design/src/assets/artwork) for that folder.
 
@@ -100,7 +102,7 @@ The awards are plain text above his photo on the home and About pages (and on th
 
 1. Confirm the facts listed below with Shez.
 2. Replace the drawn covers with real artwork, and add photo credits.
-3. Add a contact email, if he wants one public.
+3. Send a test message from the contact window and activate FormSubmit from shez.r.music@gmail.com (again on the real domain if it asks).
 4. Build with `INDEXABLE=true` on the real domain, then check `robots.txt` and the `noindex` tag are gone.
 5. Point `www.shezmanzoormusic.co.uk` at the new host, and keep the old URLs redirecting.
 6. Submit the sitemap in Google Search Console and Bing Webmaster Tools.
@@ -108,7 +110,7 @@ The awards are plain text above his photo on the home and About pages (and on th
 
 ## To confirm with Shez
 
-- **Representation.** Manners McDade lists him, and SMA Talent announced his signing. The site currently links to Manners McDade.
+- **Representation.** Manners McDade lists him, and SMA Talent announced his signing. The contact window lists both: SMA Talent with carolynne@smatalent.com (Carolynne Wyper leads their composers, with Paul Hickson), and Manners McDade, which publishes no email for him, with a link to his page there. To drop one, remove it from `agents` in `site.ts`. The footer, the contact page and the structured data still use `links.agent` (Manners McDade).
 - **Clarkson's Farm.** His bio says "compositions for". Public listings credit another composer for the series score, so the site says "Compositions".
 - **Bride or Die.** His exact role and the year.
 - **Spotify album links.** Releases whose Spotify album is not known yet link to a Spotify search. Send the album links to add them.
