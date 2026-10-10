@@ -1,0 +1,5 @@
+# Clips to download from Google Drive (folder "SHEZ - WEBSITE"), one file ID or share link per line.
+# They must be shared with "Anyone with the link"; the Prepare clips workflow fetches them, then
+# removes their lines here.
+1L7lyhN7jFxj2B0QhnQ-J_rr-pnOc29uO
+15hqhLsT9Q0gpzQa_qwUXGypKH3nQkfOB
