@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-10T05:47:08.643Z",
+  "fetchedAt": "2026-10-10T06:46:37.724Z",
   "sources": [
     "iTunes Search API",
     "Spotify oEmbed",
@@ -669,13 +669,13 @@
         "id": "5Ci2OKV00uh9qzpVWrtWSj",
         "url": "https://open.spotify.com/track/5Ci2OKV00uh9qzpVWrtWSj",
         "title": "Jama Narenji, The Undeniable & Nbeed",
-        "thumbnail": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e028188d4c88985d83d7e82e063"
+        "thumbnail": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e028188d4c88985d83d7e82e063"
       },
       {
         "id": "7jtmIUnE94Jan1LQ5WreFw",
         "url": "https://open.spotify.com/track/7jtmIUnE94Jan1LQ5WreFw",
         "title": "A BRIDGE BETWEEN WORLDS",
-        "thumbnail": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02fa8b39532e2c2a9a76a1d178"
+        "thumbnail": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02fa8b39532e2c2a9a76a1d178"
       },
       {
         "id": "6Byop91LYjc7rhpeGXan0q",
@@ -699,7 +699,7 @@
         "id": "3Y4fXYMfviV8V0nqQjOAyy",
         "url": "https://open.spotify.com/track/3Y4fXYMfviV8V0nqQjOAyy",
         "title": "HOW FAR WE'VE COME",
-        "thumbnail": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02fa8b39532e2c2a9a76a1d178"
+        "thumbnail": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02fa8b39532e2c2a9a76a1d178"
       },
       {
         "id": "5Ql3sZbxAAWj8p5Gg0itpZ",
@@ -717,7 +717,7 @@
         "id": "4J5YNEoA4nobpQyGMr8jUX",
         "url": "https://open.spotify.com/track/4J5YNEoA4nobpQyGMr8jUX",
         "title": "Rhythm Section",
-        "thumbnail": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02b797024adeda01c032d272cb"
+        "thumbnail": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02b797024adeda01c032d272cb"
       },
       {
         "id": "6I0oytpkXMtoaoJ9AGjro5",
@@ -914,7 +914,7 @@
         "releaseDate": "2026-09-24",
         "album": null,
         "related": "spotify:artist:3q8Gg6UErCDwopoXFWQwb4",
-        "cover": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273fa8b39532e2c2a9a76a1d178",
+        "cover": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b273fa8b39532e2c2a9a76a1d178",
         "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity",
         "coverFile": "spotify-cover-2a9a76a1d178.jpg"
       },
@@ -950,7 +950,7 @@
         "releaseDate": "2020-07-03",
         "album": null,
         "related": "spotify:artist:3q8Gg6UErCDwopoXFWQwb4",
-        "cover": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273b797024adeda01c032d272cb",
+        "cover": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b273b797024adeda01c032d272cb",
         "keys": "type,name,uri,id,title,artists,releaseDate,duration,isPlayable,playabilityReason,isExplicit,isNineteenPlus,contentRatings,audioPreview,isMusicVideo,hasVideo,videoPreview,videoThumbnailImage,relatedEntityUri,visualIdentity",
         "coverFile": "spotify-cover-01c032d272cb.jpg"
       },
