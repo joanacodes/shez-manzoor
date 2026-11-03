@@ -83,7 +83,7 @@ export const links = {
   linkedin: 'https://www.linkedin.com/in/shez-manzoor-739914160/',
   britishComedyGuide: 'https://www.comedy.co.uk/people/shez_manzoor/',
   stereofox: 'https://label.stereofox.com/?p=3060',
-  /** TO CONFIRM: Manners McDade lists him, and SMA Talent announced his signing. Use whichever is current. */
+  /** His agency for film and TV, confirmed by Shez */
   agent: {
     name: 'Manners McDade',
     url: 'https://www.mannersmcdade.co.uk/composer/shez-manzoor/',
@@ -94,15 +94,10 @@ export const links = {
 export const email = 'shez.r.music@gmail.com';
 
 /**
- * Film and TV representation, shown in the contact window.
- * TO CONFIRM: SMA Talent announced his signing (the address is Carolynne Wyper's, who leads their
- * composers); Manners McDade, now part of Manners Faber, is the earlier agency, to be removed.
- * Manners McDade publishes no email address for him, so it links to his page there.
+ * Film and TV representation, shown in the contact window. Manners McDade publishes no email
+ * address for him, so it links to his page there; add `email` to show one instead.
  */
-export const agents: { agency: string; email?: string; url: string }[] = [
-  { agency: 'SMA Talent', email: 'carolynne@smatalent.com', url: 'https://smatalent.com/' },
-  { agency: 'Manners McDade', url: links.agent.url },
-];
+export const agents: { agency: string; email?: string; url: string }[] = [{ agency: links.agent.name, url: links.agent.url }];
 
 /** Profiles that describe the same person. Feeds schema.org sameAs for search and AI answers. */
 export const sameAs = [

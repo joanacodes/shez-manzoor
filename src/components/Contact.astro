@@ -2,7 +2,7 @@
 /**
  * The contact window and the letter bubble that opens it, on every page (see scripts/contact.ts).
  * At the top, his email address for anyone who would rather write from their own email app,
- * then his agents, then a short form that FormSubmit delivers to his inbox.
+ * then his agent, then a short form that FormSubmit delivers to his inbox.
  */
 import Icon from './Icon.astro';
 import { agents, email } from '../data/site';
@@ -37,7 +37,7 @@ const host = (url: string) => new URL(url).hostname.replace(/^www\./, '');
     </a>
 
     <div class="contact__agents">
-      <p class="contact__label">Film &amp; TV · his agents</p>
+      <p class="contact__label">Film &amp; TV · {agents.length > 1 ? 'his agents' : 'his agent'}</p>
       <ul role="list">
         {
           agents.map((a) => (
