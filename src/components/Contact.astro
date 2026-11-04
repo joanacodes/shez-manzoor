@@ -265,7 +265,7 @@ const lastWord = (name: string) => {
   .contact__close:hover { border-color: var(--lavender); }
   .contact__close :global(svg) { width: 20px; height: 20px; }
 
-  /* his address, for writing from one's own email app */
+  /* his own address, for writing from one's own email app: the site's two colours, purple to green */
   .contact__direct {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
@@ -273,31 +273,43 @@ const lastWord = (name: string) => {
     gap: 0.85rem;
     padding: 0.7rem 1rem 0.7rem 0.7rem;
     border-radius: 18px;
-    border: 1px solid rgb(var(--lavender-rgb) / 0.35);
-    background: rgb(var(--lavender-rgb) / 0.07);
+    border: 1px solid transparent;
+    background:
+      linear-gradient(120deg, rgb(var(--lavender-rgb) / 0.16), rgb(var(--mint-rgb) / 0.1)) padding-box,
+      linear-gradient(#120f1b, #120f1b) padding-box,
+      linear-gradient(120deg, var(--lavender), var(--mint)) border-box;
     color: var(--ink);
     text-decoration: none;
-    transition: border-color 0.3s, background-color 0.3s;
+    transition: filter 0.3s;
   }
-  .contact__direct:hover { border-color: var(--lavender); background: rgb(var(--lavender-rgb) / 0.12); }
+  .contact__direct:hover { filter: brightness(1.12); }
   .contact__direct-icon {
     display: grid;
     place-items: center;
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: var(--lavender);
+    background: linear-gradient(135deg, var(--lavender), var(--mint));
     color: #0b0912;
   }
   .contact__direct-icon :global(svg) { width: 22px; height: 22px; }
   .contact__direct-text { display: grid; gap: 0.1rem; min-width: 0; }
-  .contact__direct-email { font-weight: 500; overflow-wrap: anywhere; }
+  .contact__direct-email {
+    justify-self: start;
+    font-weight: 600;
+    color: transparent;
+    background: linear-gradient(95deg, var(--lavender), var(--mint));
+    -webkit-background-clip: text;
+    background-clip: text;
+    overflow-wrap: anywhere;
+  }
   .contact__direct-hint { font-size: 0.8rem; color: var(--ink-2); }
-  .contact__direct-go { display: grid; color: var(--ink-2); }
+  .contact__direct-go { display: grid; color: var(--mint); }
   .contact__direct-go :global(svg) { width: 18px; height: 18px; }
 
   .contact__agents ul { display: grid; gap: 0.5rem; margin: 0.45rem 0 0; padding: 0; list-style: none; }
-  /* his agent stands out, in the green of his film and TV work */
+  /* his agent, in purple */
+  .contact__agents .contact__label { color: var(--lavender); }
   .contact__agent {
     display: flex;
     flex-wrap: wrap;
@@ -306,17 +318,17 @@ const lastWord = (name: string) => {
     gap: 0.2rem 1rem;
     padding: 0.85rem 1rem;
     border-radius: 18px;
-    border: 1px solid rgb(var(--mint-rgb) / 0.45);
-    background: linear-gradient(135deg, rgb(var(--mint-rgb) / 0.13), rgb(var(--mint-rgb) / 0.04));
+    border: 1px solid rgb(var(--lavender-rgb) / 0.4);
+    background: rgb(var(--lavender-rgb) / 0.08);
     color: var(--ink);
     text-decoration: none;
-    transition: border-color 0.3s;
+    transition: border-color 0.3s, background-color 0.3s;
   }
-  .contact__agent:hover { border-color: var(--mint); }
-  .contact__agent:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; }
+  .contact__agent:hover { border-color: var(--lavender); background: rgb(var(--lavender-rgb) / 0.13); }
+  .contact__agent:focus-visible { outline: 2px solid var(--lavender); outline-offset: 3px; }
   .contact__agency { font-family: var(--serif); font-size: 1.45rem; line-height: 1.1; color: var(--ink); }
   .contact__agency-last { color: var(--lavender); }
-  .contact__agent-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.95rem; font-weight: 600; color: var(--mint); overflow-wrap: anywhere; }
+  .contact__agent-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.95rem; font-weight: 600; color: var(--lavender); overflow-wrap: anywhere; }
   .contact__agent-link :global(svg) { width: 15px; height: 15px; }
 
   .contact__or {
