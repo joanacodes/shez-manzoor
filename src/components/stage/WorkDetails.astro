@@ -17,6 +17,7 @@ const { items } = Astro.props;
 const thumbs = new Map(await Promise.all(items.map(async (w) => [w.id, await thumbOf(w.image)] as const)));
 // what every preview button of a piece of work carries to the player
 const previewData = (w: WorkItem, title: string) => ({
+  'data-preview-work': w.id,
   'data-preview-title': title,
   'data-preview-by': w.kind === 'screen' ? (w.soundtrack?.artist ?? w.title) : w.artist,
   'data-preview-art': thumbs.get(w.id),

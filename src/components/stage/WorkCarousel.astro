@@ -70,6 +70,7 @@ const thumbs = new Map(await Promise.all(items.map(async (w) => [w.id, await thu
                 class="card__play"
                 type="button"
                 data-preview={w.preview.url}
+                data-preview-work={w.id}
                 data-preview-title={w.preview.title}
                 data-preview-by={w.kind === 'screen' ? w.soundtrack?.artist ?? w.title : w.artist}
                 data-preview-art={thumbs.get(w.id)}

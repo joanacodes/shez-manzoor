@@ -1,15 +1,17 @@
 ---
-/** The bar that plays 30-second previews (see scripts/preview.ts). */
+/** The bar that plays 30-second previews (see scripts/preview.ts). Its cover and title open the song's page. */
 import Icon from '../Icon.astro';
 ---
 
 <div class="player" data-player-bar hidden role="region" aria-label="Song preview">
-  <img class="player__art" data-player-art alt="" width="44" height="44" hidden />
-  <div class="player__text">
-    <p class="player__title" data-player-title></p>
-    <p class="player__by"><span data-player-by></span> <span class="player__tag">30-second preview</span></p>
-    <div class="player__progress" data-player-progress aria-hidden="true"><span></span></div>
-  </div>
+  <button class="player__open" type="button" data-player-open aria-label="Open the song's page">
+    <img class="player__art" data-player-art alt="" width="44" height="44" hidden />
+    <span class="player__text">
+      <span class="player__title" data-player-title></span>
+      <span class="player__by"><span data-player-by></span> <span class="player__tag">30-second preview</span></span>
+      <span class="player__progress" data-player-progress aria-hidden="true"><span></span></span>
+    </span>
+  </button>
   <div class="player__links">
     <a data-player-apple target="_blank" rel="noopener" aria-label="Full song on Apple Music"><Icon name="note" /></a>
     <a data-player-spotify target="_blank" rel="noopener" aria-label="Full song on Spotify"><Icon name="spotify" /></a>
@@ -34,7 +36,7 @@ import Icon from '../Icon.astro';
     bottom: max(0.75rem, env(safe-area-inset-bottom));
     width: min(560px, calc(100% - 1.5rem));
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
     align-items: center;
     gap: 0.6rem;
     padding: 0.5rem 0.55rem 0.5rem 0.5rem;
@@ -49,12 +51,30 @@ import Icon from '../Icon.astro';
   }
   .player.is-open { transform: translate(-50%, 0); }
   .player[hidden] { display: none; }
-  .player__art { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; }
-  .player__text { min-width: 0; }
-  .player__title { margin: 0; font-family: var(--serif); font-size: 1.05rem; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .player__by { margin: 0.1rem 0 0; font-size: 0.74rem; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* the cover and the title: a tap opens the song's page */
+  .player__open {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 12px;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .player__open:disabled { cursor: default; }
+  .player__open:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; }
+  .player__open:not(:disabled):hover .player__title { text-decoration: underline; text-decoration-color: var(--hair-2); text-underline-offset: 0.18em; }
+  .player__art { flex: none; width: 44px; height: 44px; border-radius: 10px; object-fit: cover; }
+  .player__text { display: block; flex: 1; min-width: 0; }
+  .player__title { display: block; margin: 0; font-family: var(--serif); font-size: 1.05rem; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .player__by { display: block; margin: 0.1rem 0 0; font-size: 0.74rem; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .player__tag { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mint); margin-left: 0.3rem; }
-  .player__progress { height: 2px; margin-top: 0.4rem; border-radius: 2px; background: var(--hair); overflow: hidden; }
+  .player__progress { display: block; height: 2px; margin-top: 0.4rem; border-radius: 2px; background: var(--hair); overflow: hidden; }
   .player__progress span { display: block; height: 100%; background: linear-gradient(90deg, var(--lavender), var(--mint)); transform-origin: left; transform: scaleX(var(--p, 0)); }
   .player__links { display: flex; gap: 0.15rem; }
   .player__links a,

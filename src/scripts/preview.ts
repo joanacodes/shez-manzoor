@@ -4,7 +4,8 @@
  * or open the full song. Buttons show a spinner while the song loads, then a pause sign.
  * When a preview ends, the next song plays: the rest of the list it was picked from (the
  * carousel, the discography, a tracklist), then every other song on the page, each once.
- * Songs fade in and out, and the bar fades to the new one.
+ * Songs fade in and out, and the bar fades to the new one. Its cover and title open the
+ * panel of the work the song comes from.
  */
 const bar = document.querySelector<HTMLElement>('[data-player-bar]');
 if (bar) setup(bar);
@@ -17,6 +18,8 @@ function setup(bar: HTMLElement) {
   const by = bar.querySelector<HTMLElement>('[data-player-by]')!;
   const toggle = bar.querySelector<HTMLButtonElement>('[data-player-toggle]')!;
   const close = bar.querySelector<HTMLButtonElement>('[data-player-close]')!;
+  // the carousel opens the panel of whatever carries data-open-work
+  const openPage = bar.querySelector<HTMLButtonElement>('[data-player-open]')!;
   const progress = bar.querySelector<HTMLElement>('[data-player-progress]')!;
   const apple = bar.querySelector<HTMLAnchorElement>('[data-player-apple]')!;
   const spotify = bar.querySelector<HTMLAnchorElement>('[data-player-spotify]')!;
@@ -25,7 +28,7 @@ function setup(bar: HTMLElement) {
   let loading = false;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 
-  type Song = { url: string; title: string; by: string; art?: string; apple?: string; spotify?: string };
+  type Song = { url: string; title: string; by: string; art?: string; apple?: string; spotify?: string; work?: string };
   const songOf = (b: HTMLElement): Song => ({
     url: b.dataset.preview!,
     title: b.dataset.previewTitle ?? '',
@@ -33,6 +36,7 @@ function setup(bar: HTMLElement) {
     art: b.dataset.previewArt,
     apple: b.dataset.previewApple,
     spotify: b.dataset.previewSpotify,
+    work: b.dataset.previewWork,
   });
   // what plays after the song that was picked, which comes first
   let queue: Song[] = [];
@@ -76,6 +80,9 @@ function setup(bar: HTMLElement) {
     audio.src = current;
     title.textContent = song.title;
     by.textContent = song.by;
+    openPage.dataset.openWork = song.work ?? '';
+    openPage.disabled = !song.work;
+    openPage.setAttribute('aria-label', song.work ? `Open the page of ${song.title}` : song.title);
     if (song.art) {
       art.src = song.art;
       art.hidden = false;
