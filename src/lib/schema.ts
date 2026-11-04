@@ -32,13 +32,14 @@ export function personSchema(site: URL | undefined, image?: string): Json {
     ...(image ? { image } : {}),
     jobTitle: [...person.roles],
     hasOccupation: [
+      { '@type': 'Occupation', name: 'Composer', occupationLocation: city },
+      { '@type': 'Occupation', name: 'Singer-songwriter', occupationLocation: city },
       {
         '@type': 'Occupation',
         name: 'Film and television composer',
         alternateName: ['Film composer', 'TV composer', 'Screen composer'],
         occupationLocation: city,
       },
-      { '@type': 'Occupation', name: 'Singer-songwriter', occupationLocation: city },
       { '@type': 'Occupation', name: 'Music producer', occupationLocation: city },
     ],
     knowsAbout: ['Film scoring', 'Television music', 'Songwriting', 'Singing', 'Guitar', 'Music production', ...person.influences],

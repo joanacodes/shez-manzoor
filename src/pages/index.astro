@@ -22,7 +22,7 @@ import { portraitUrl } from '../lib/portrait';
 const site = Astro.site;
 const title = 'Shez Manzoor | Film & TV Composer, Music Producer, London';
 const description =
-  'Shez Manzoor (SHEZ) is a London film & TV composer, singer-songwriter and music producer who scored the BAFTA-winning We Are Lady Parts and Polite Society.';
+  'Shez Manzoor (SHEZ) is a London composer, singer-songwriter, film & TV composer and music producer who scored the BAFTA-winning We Are Lady Parts.';
 const jsonLd = graph([
   websiteSchema(site),
   profilePageSchema(site, '/', title, description),
@@ -83,7 +83,7 @@ const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await t
         </div>
         <div class="about__text">
           <p class="kicker" data-reveal>About Shez</p>
-          <h2 id="about-title" data-reveal>Composer, singer, <em>songwriter</em>, producer</h2>
+          <h2 id="about-title" data-reveal>Composer, <em>singer-songwriter</em>, film &amp; TV composer, music producer</h2>
           <p class="lede about__lede" data-reveal>{person.oneLiner}</p>
           <div class="about__bio" data-reveal>
             {bios.long.slice(1, 4).map((p) => <p>{p}</p>)}
@@ -276,7 +276,8 @@ const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await t
   .about__photo.is-lit :global(img) { filter: none; }
   .about__photo.is-lit :global(picture)::after { opacity: 0; }
   .about__photo figcaption { margin-top: 0.85rem; }
-  .about__text h2 { font-size: var(--fs-h2); margin-top: 1.1rem; }
+  /* his four roles, in his order: a little smaller than the other section titles so they stay a few lines */
+  .about__text h2 { font-size: clamp(2.2rem, 8.6vw, 4.6rem); line-height: 1.02; margin-top: 1.1rem; text-wrap: balance; }
   .about__text h2 em,
   .section-head h2 em {
     color: transparent;
@@ -285,6 +286,8 @@ const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await t
     background-clip: text;
     padding-right: 0.06em;
   }
+  /* the padding keeps the italic's last letter inside the gradient; the comma after it stays close */
+  .about__text h2 em { margin-right: -0.08em; }
   .about__lede { margin-top: 1.5rem; max-width: 40ch; color: var(--ink); }
   .about__bio { display: grid; gap: 1rem; margin-top: 1.2rem; color: var(--ink-2); max-width: 58ch; }
   .about__facts { display: grid; gap: 1rem; margin-block: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--hair); }
