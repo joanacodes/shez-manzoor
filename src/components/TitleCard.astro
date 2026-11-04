@@ -1,18 +1,42 @@
 ---
-/** Wide decorative "title card" for a project page, using the project's pattern. */
+/**
+ * The wide card at the top of a project page: the project's real poster (two when the series has
+ * artwork for each season) over a soft glow of itself. A drawn title card stands in only when
+ * there is no poster.
+ */
+import { Image } from 'astro:assets';
 import type { Project } from '../data/projects';
+import { coverFor } from '../data/work';
 
 interface Props {
   project: Project;
 }
 const { project: p } = Astro.props;
+const cover = coverFor(`/composition/${p.slug}/`);
+const posters = cover ? [...(cover.image2 ? [{ src: cover.image2, alt: `Series 1 artwork for ${p.title}` }] : []), { src: cover.image, alt: cover.alt }] : [];
 ---
 
-<div class="tcard" data-pattern={p.pattern} aria-hidden="true">
-  <span class="tcard__pattern"></span>
-  <span class="tcard__title">{p.title}</span>
-  <span class="tcard__meta">{p.kind}{p.years ? ` · ${p.years}` : ''} · Music by Shez Manzoor</span>
-</div>
+{
+  cover ? (
+    <figure class="tcard tcard--art">
+      <Image class="tcard__glow" src={cover.image} alt="" widths={[320]} sizes="320px" loading="lazy" decoding="async" />
+      <span class="tcard__posters">
+        {posters.map((x) => (
+          <Image class="tcard__poster" src={x.src} alt={x.alt} widths={[320, 480, 720, 960]} sizes="(min-width: 960px) 34vw, 46vw" loading="lazy" decoding="async" />
+        ))}
+      </span>
+    </figure>
+  ) : (
+    <div class="tcard" data-pattern={p.pattern} aria-hidden="true">
+      <span class="tcard__pattern" />
+      <span class="tcard__title">{p.title}</span>
+      <span class="tcard__meta">
+        {p.kind}
+        {p.years ? ` · ${p.years}` : ''} · Music by Shez Manzoor
+      </span>
+    </div>
+  )
+}
 
 <style>
   .tcard {
@@ -63,6 +87,26 @@ const { project: p } = Astro.props;
     font-size: clamp(2.4rem, 10vw, 6rem);
     line-height: 0.95;
     text-shadow: 0 0 40px rgb(var(--mint-rgb) / 0.35);
+  }
+  /* the real poster */
+  .tcard--art { margin: 0; padding: 0; background: #0b0912; }
+  .tcard--art > :global(.tcard__glow) {
+    position: absolute;
+    inset: -12%;
+    z-index: -1;
+    width: 124%;
+    height: 124%;
+    object-fit: cover;
+    filter: blur(36px) saturate(1.2) brightness(0.5);
+  }
+  .tcard__posters { display: flex; justify-content: center; gap: clamp(0.6rem, 2.6vw, 1.5rem); height: 84%; }
+  .tcard__posters :global(.tcard__poster) {
+    height: 100%;
+    width: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 30px 60px -25px rgb(0 0 0 / 0.95);
   }
   .tcard__meta { font-family: var(--mono); font-size: clamp(0.6rem, 2.4vw, 0.75rem); letter-spacing: 0.16em; text-transform: uppercase; color: var(--mint); text-wrap: balance; max-width: 34ch; }
 </style>

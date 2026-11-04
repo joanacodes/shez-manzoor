@@ -396,6 +396,12 @@ rest.sort((a, b) => (b.date ?? b.year ?? '').localeCompare(a.date ?? a.year ?? '
 const all = [...records, ...extras, ...onlyOnSpotify, ...screen];
 export const work: WorkItem[] = [...lead.map((id) => all.find((w) => w.id === id)!).filter(Boolean), ...rest];
 
+/** The real cover (or poster) of the work a page of the site is about, and a second picture when it has one. */
+export function coverFor(page: string) {
+  const w = work.find((x) => x.page === page);
+  return w?.image ? { image: w.image, image2: w.image2, alt: w.imageAlt } : undefined;
+}
+
 /** Song titles for the setlist taped to the stage floor. */
 export const setlistTitles = ['Freeze', 'Let Go', 'HEY', 'Rhythm Section', 'Our.Time', 'ANTIGONE', 'Come.What.May', '1 Of a Kind', 'Falling'];
 

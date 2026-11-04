@@ -103,7 +103,7 @@ The awards are plain text above his photo on the home and About pages (and on th
 ## Launch checklist
 
 1. Confirm the facts listed below with Shez.
-2. Replace the drawn covers with real artwork, and add photo credits.
+2. Add photo credits. (Release pages show the real covers and project pages the real posters, from `src/assets/artwork/`; the drawn ones only stand in for a release or project without artwork.)
 3. Send a test message from the contact window and activate FormSubmit from shez.r.music@gmail.com (again on the real domain if it asks).
 4. Fill in the legal page (`src/pages/legal.astro`): postal address, legal status, terms and retention period. Update the host there if the site moves off GitHub Pages.
 5. Build with `INDEXABLE=true` on the real domain, then check `robots.txt` and the `noindex` tag are gone.
