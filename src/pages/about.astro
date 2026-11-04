@@ -6,6 +6,7 @@ import Awards from '../components/Awards.astro';
 import Faq from '../components/Faq.astro';
 import ContactCta from '../components/ContactCta.astro';
 import photo from '../assets/shez-live.webp';
+import sofa from '../assets/photos/shez-sofa.webp';
 import { faq } from '../data/faq';
 import { bios, links, person } from '../data/site';
 import { breadcrumbSchema, faqSchema, graph, personSchema, profilePageSchema } from '../lib/schema';
@@ -60,6 +61,17 @@ const jsonLd = graph([
       </div>
       <div class="bio__text prose" data-reveal>
         {bios.long.map((t) => <p>{t}</p>)}
+        <figure class="bio__room">
+          <Picture
+            src={sofa}
+            alt="Shez Manzoor sitting on a leather sofa in front of a wall of books, a bass guitar on one side and an electric guitar on the other"
+            widths={[360, 540, 750]}
+            sizes="(min-width: 960px) 50vw, 88vw"
+            formats={['avif', 'webp']}
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
       </div>
     </div>
   </section>
@@ -99,6 +111,8 @@ const jsonLd = graph([
   /* the awards sit right above his photo */
   .bio__side { display: grid; gap: 1.75rem; align-content: start; }
   .bio__text { font-size: 1.125rem; }
+  .bio__room { margin: 2.5rem 0 0; aspect-ratio: 3 / 2; border-radius: var(--radius); overflow: hidden; background: #0b0912; }
+  .bio__room :global(img) { display: block; width: 100%; height: 100%; object-fit: cover; }
   .bio__text p:first-child { font-family: var(--serif); font-size: clamp(1.6rem, 6vw, 2.2rem); line-height: 1.2; color: var(--ink); }
 
   .portrait__frame { position: relative; aspect-ratio: 4 / 5; border-radius: var(--radius); overflow: hidden; background: #0b0912; }

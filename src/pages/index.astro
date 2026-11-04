@@ -12,6 +12,8 @@ import Faq from '../components/Faq.astro';
 import ContactCta from '../components/ContactCta.astro';
 import Icon from '../components/Icon.astro';
 import photo from '../assets/shez-live.webp';
+import sofa from '../assets/photos/shez-sofa.webp';
+import acoustic from '../assets/photos/shez-acoustic.webp';
 import { work, formatDate } from '../data/work';
 import { faq } from '../data/faq';
 import { bios, links, person, pressQuote } from '../data/site';
@@ -88,6 +90,17 @@ const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await t
           <div class="about__bio" data-reveal>
             {bios.long.slice(1, 4).map((p) => <p>{p}</p>)}
           </div>
+          <figure class="about__room" data-reveal>
+            <Picture
+              src={sofa}
+              alt="Shez Manzoor sitting on a leather sofa in front of a wall of books, a bass guitar on one side and an electric guitar on the other"
+              widths={[360, 540, 750]}
+              sizes="(min-width: 1100px) 46vw, 88vw"
+              formats={['avif', 'webp']}
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
           <dl class="about__facts" data-reveal>
             <div><dt class="label">On stage</dt><dd>{person.venues.join(' · ')}</dd></div>
             <div><dt class="label">On air</dt><dd>{person.radio.join(' · ')}</dd></div>
@@ -196,12 +209,25 @@ const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await t
           <a class="btn" href={links.soundcloud} target="_blank" rel="noopener"><Icon name="soundcloud" /> SoundCloud</a>
         </div>
         <figure class="quote" data-reveal>
-          <blockquote>
-            <p>“{pressQuote.text}”</p>
-          </blockquote>
-          <figcaption>
-            <a href={pressQuote.url} rel="noopener" target="_blank">{pressQuote.source}</a>, on Freeze
-          </figcaption>
+          <div class="quote__photo">
+            <Picture
+              src={acoustic}
+              alt="Shez Manzoor playing an acoustic guitar in a dark room, caught in a shaft of light"
+              widths={[480, 720, 1000]}
+              sizes="(min-width: 1100px) 58vw, 92vw"
+              formats={['avif', 'webp']}
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <div class="quote__words">
+            <blockquote>
+              <p>“{pressQuote.text}”</p>
+            </blockquote>
+            <figcaption>
+              <a href={pressQuote.url} rel="noopener" target="_blank">{pressQuote.source}</a>, on Freeze
+            </figcaption>
+          </div>
         </figure>
       </div>
     </section>
@@ -391,7 +417,15 @@ const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await t
 
   .listen-on { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2.5rem; }
 
-  .quote { margin-block: clamp(4rem, 12vw, 7rem) 0; }
+  /* his photo at home with his guitars, after his story */
+  .about__room { margin: 2rem 0 0; aspect-ratio: 3 / 2; border-radius: var(--radius); overflow: hidden; background: #0b0912; }
+  .about__room :global(img) { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* the press quote beside a photo of him playing in the dark */
+  .quote { display: grid; gap: 2rem; margin-block: clamp(4rem, 12vw, 7rem) 0; }
+  .quote__photo { aspect-ratio: 16 / 9; border-radius: var(--radius); overflow: hidden; background: #0b0912; }
+  /* its blacks are a dark grey: a little contrast takes them down to the page's black, so it melts into the dark */
+  .quote__photo :global(img) { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 45% 40%; filter: contrast(1.24); }
   .quote blockquote p {
     max-width: 19ch;
     font-family: var(--serif);
@@ -432,6 +466,7 @@ const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await t
     .about__grid { grid-template-columns: 0.85fr 1fr; gap: 6rem; align-items: center; }
     .faq-grid { grid-template-columns: 0.7fr 1.3fr; gap: 5rem; }
     .faq-grid__head { position: sticky; top: calc(var(--header-h) + 2rem); align-self: start; }
-    .quote { margin-left: 8%; }
+    .quote { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 3.5rem; align-items: center; }
+    .quote blockquote p { font-size: clamp(2.4rem, 3.4vw, 3.6rem); }
   }
 </style>
