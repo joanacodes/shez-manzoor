@@ -88,7 +88,7 @@ All facts live in `src/data/`. Pages, structured data and `llms.txt` are generat
 
 ## SEO and AI search
 
-- Real HTML for every word, one `h1` per page. Titles stay under 60 characters and descriptions under 160, and say what he does and where: music producer, singer-songwriter, film and TV composer ("film composer" is the right term for music written for the screen), London.
+- Real HTML for every word, one `h1` per page. Titles stay under 60 characters and descriptions under 160, and say what he does and where, composer first and producer last, as Shez asked: film and TV composer, singer-songwriter, music producer ("film composer" is the right term for music written for the screen), London.
 - One page per project and per release, written in plain factual sentences that answers can quote.
 - schema.org structured data: one `Person` entity that links SHEZ and Shez Manzoor (`alternateName`, `sameAs` with Spotify, Apple Music, SoundCloud, Instagram, IMDb, LinkedIn and his agent), his three occupations, London as home and work location, his award and a real photo. The home and About pages are `ProfilePage`s about him. Plus `TVSeries`, `Movie`, `MusicAlbum`, `FAQPage` and `BreadcrumbList`.
 - `sitemap-index.xml`, `robots.txt`, and `llms.txt`, a plain summary for AI assistants.

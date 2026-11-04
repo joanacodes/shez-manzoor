@@ -43,7 +43,7 @@ const facts = [
 
 <Base
   title={`${r.title} by SHEZ | ${r.type === 'Release' ? 'Release' : r.type}${r.datePublished ? `, ${r.datePublished.slice(0, 4)}` : ''}`}
-  description={describe(r.summary, 'By SHEZ (Shez Manzoor), London music producer and singer-songwriter.', 'By SHEZ, London.')}
+  description={describe(r.summary, 'By SHEZ (Shez Manzoor), London singer-songwriter and music producer.', 'By SHEZ, London.')}
   path={path}
   light="purple"
   type={r.type === 'Single' ? 'music.song' : 'music.album'}

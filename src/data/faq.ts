@@ -3,7 +3,7 @@
 export const faq = [
   {
     q: 'Who is Shez Manzoor?',
-    a: 'Shez Manzoor is a British-Pakistani music producer, singer-songwriter and composer for film and television, based in London. He scored the BAFTA-winning series We Are Lady Parts and releases his own soul and R&B music under the name SHEZ.',
+    a: 'Shez Manzoor is a British-Pakistani composer for film and television, singer-songwriter and music producer, based in London. He scored the BAFTA-winning series We Are Lady Parts and releases his own soul and R&B music under the name SHEZ.',
   },
   {
     q: 'Is SHEZ the same person as Shez Manzoor?',

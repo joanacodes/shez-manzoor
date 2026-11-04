@@ -20,9 +20,9 @@ import { faqSchema, graph, personSchema, profilePageSchema, websiteSchema, workS
 import { portraitUrl } from '../lib/portrait';
 
 const site = Astro.site;
-const title = 'Shez Manzoor | Music Producer, Film & TV Composer, London';
+const title = 'Shez Manzoor | Film & TV Composer, Music Producer, London';
 const description =
-  'Shez Manzoor (SHEZ) is a London music producer, singer-songwriter and film & TV composer who scored the BAFTA-winning We Are Lady Parts and Polite Society.';
+  'Shez Manzoor (SHEZ) is a London film & TV composer, singer-songwriter and music producer who scored the BAFTA-winning We Are Lady Parts and Polite Society.';
 const jsonLd = graph([
   websiteSchema(site),
   profilePageSchema(site, '/', title, description),
@@ -83,7 +83,7 @@ const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await t
         </div>
         <div class="about__text">
           <p class="kicker" data-reveal>About Shez</p>
-          <h2 id="about-title" data-reveal>Producer, singer, <em>songwriter</em>, composer</h2>
+          <h2 id="about-title" data-reveal>Composer, singer, <em>songwriter</em>, producer</h2>
           <p class="lede about__lede" data-reveal>{person.oneLiner}</p>
           <div class="about__bio" data-reveal>
             {bios.long.slice(1, 4).map((p) => <p>{p}</p>)}

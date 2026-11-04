@@ -9,11 +9,12 @@ export const person = {
   artistName: 'SHEZ',
   location: 'London, United Kingdom',
   origin: 'British-Pakistani',
-  /** How he is described everywhere, search included: "film composer" is the term for music written for the screen. */
-  roles: ['Music producer', 'Singer-songwriter', 'Film and TV composer'],
+  /** How he is described everywhere, search included: "film composer" is the term for music written for the screen.
+   *  Composer always comes first and producer last, as Shez asked. */
+  roles: ['Film and TV composer', 'Singer-songwriter', 'Music producer'],
   /** One sentence that answers "who is Shez Manzoor?" on its own. */
   oneLiner:
-    'Shez Manzoor, also known as SHEZ, is a British-Pakistani music producer, singer-songwriter and film and TV composer based in London, who scored the BAFTA-winning series We Are Lady Parts and releases soul and R&B music as SHEZ.',
+    'Shez Manzoor, also known as SHEZ, is a British-Pakistani film and TV composer, singer-songwriter and music producer based in London, who scored the BAFTA-winning series We Are Lady Parts and releases soul and R&B music as SHEZ.',
   influences: [
     'Soul',
     'R&B',
@@ -114,11 +115,11 @@ export const sameAs = [
 
 export const bios = {
   short:
-    'Shez Manzoor (SHEZ) is a British-Pakistani music producer, singer-songwriter and composer for film and television, based in London. He scored series 1 and 2 of the BAFTA-winning comedy We Are Lady Parts, winning an RTS Craft & Design Award, and co-composed the feature film Polite Society.',
+    'Shez Manzoor (SHEZ) is a British-Pakistani composer for film and television, singer-songwriter and music producer, based in London. He scored series 1 and 2 of the BAFTA-winning comedy We Are Lady Parts, winning an RTS Craft & Design Award, and co-composed the feature film Polite Society.',
   medium:
-    'Shez Manzoor, aka SHEZ, is an award-winning British-Pakistani music producer, singer-songwriter, composer and multi-instrumentalist based in London. With a background in vocal and guitar performance and jazz, he draws on folk, soul, hip hop, rock and electronic music as well as classical Indian and Pakistani music. He scored and wrote original music for series 1 and 2 of the BAFTA-winning musical comedy We Are Lady Parts, winning the 2024 RTS Craft & Design Award for Music – Original Score (Scripted), and co-composed the score for Polite Society with Tom Howe. As SHEZ, he released his self-produced debut EP Our Time in 2022 and the single Freeze on Stereofox in 2024.',
+    'Shez Manzoor, aka SHEZ, is an award-winning British-Pakistani composer, singer-songwriter, multi-instrumentalist and music producer based in London. With a background in vocal and guitar performance and jazz, he draws on folk, soul, hip hop, rock and electronic music as well as classical Indian and Pakistani music. He scored and wrote original music for series 1 and 2 of the BAFTA-winning musical comedy We Are Lady Parts, winning the 2024 RTS Craft & Design Award for Music – Original Score (Scripted), and co-composed the score for Polite Society with Tom Howe. As SHEZ, he released his self-produced debut EP Our Time in 2022 and the single Freeze on Stereofox in 2024.',
   long: [
-    'Shez Manzoor, aka SHEZ, is an award-winning British-Pakistani music producer, singer-songwriter, composer and multi-instrumentalist based in London.',
+    'Shez Manzoor, aka SHEZ, is an award-winning British-Pakistani composer, singer-songwriter, multi-instrumentalist and music producer based in London.',
     'With a background in vocal and guitar performance and jazz, his musical influences come from a variety of genres including folk, soul, hip hop, rock and electronic music, as well as classical Indian and Pakistani music.',
     'His work for film and television includes compositions for Clarkson’s Farm and the score and original music for series 1 and 2 of the BAFTA-winning musical comedy We Are Lady Parts, which won him the 2024 RTS Craft & Design Award for Music – Original Score (Scripted). He also co-composed, with Tom Howe, the score for the Focus Features action comedy Polite Society, which premiered at the 2023 Sundance Film Festival.',
     'As SHEZ, he released his self-produced debut EP Our Time in 2022, and his songs have been played on national radio by the BBC, Reprezent Radio and Threads. His first label release, the single Freeze, came out on Stereofox in November 2024. He has collaborated with artists including Elaha Soroor, anaiis and Victoria Port, and performed at London venues such as Soho Theatre, The Lower Third and Notting Hill Arts Club.',

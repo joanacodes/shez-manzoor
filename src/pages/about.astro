@@ -12,9 +12,9 @@ import { breadcrumbSchema, faqSchema, graph, personSchema, profilePageSchema } f
 import { portraitUrl } from '../lib/portrait';
 
 const site = Astro.site;
-const title = 'About Shez Manzoor | Music Producer & Film Composer, London';
+const title = 'About Shez Manzoor | Film Composer & Music Producer, London';
 const description =
-  'Biography of Shez Manzoor (SHEZ), British-Pakistani music producer, singer-songwriter and film & TV composer in London, RTS award winner for We Are Lady Parts.';
+  'Biography of Shez Manzoor (SHEZ), British-Pakistani film & TV composer, singer-songwriter and music producer in London, RTS award winner for We Are Lady Parts.';
 const jsonLd = graph([
   profilePageSchema(site, '/about/', title, description),
   personSchema(site, await portraitUrl(site)),
@@ -34,7 +34,7 @@ const jsonLd = graph([
     kicker="About"
     title="Shez Manzoor,"
     titleEm="also known as SHEZ"
-    intro="Music producer, singer-songwriter and film and TV composer in London, moving between scores for the screen and his own soul and R&B."
+    intro="Film and TV composer, singer-songwriter and music producer in London, moving between scores for the screen and his own soul and R&B."
     crumbs={[{ name: 'About', path: '/about/' }]}
   />
 

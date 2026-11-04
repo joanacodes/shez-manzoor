@@ -42,14 +42,12 @@ const host = (url: string) => new URL(url).hostname.replace(/^www\./, '');
         {
           agents.map((a) => (
             <li>
-              <span class="contact__agency">{a.agency}</span>
-              {a.email ? (
-                <a href={`mailto:${a.email}`}>{a.email}</a>
-              ) : (
-                <a href={a.url} target="_blank" rel="noopener">
-                  {host(a.url)} <Icon name="arrow-up-right" />
-                </a>
-              )}
+              <a class="contact__agent" href={a.email ? `mailto:${a.email}` : a.url} target={a.email ? undefined : '_blank'} rel={a.email ? undefined : 'noopener'}>
+                <span class="contact__agency">{a.agency}</span>
+                <span class="contact__agent-link">
+                  {a.email ?? host(a.url)} <Icon name="arrow-up-right" />
+                </span>
+              </a>
             </li>
           ))
         }
@@ -284,29 +282,28 @@ const host = (url: string) => new URL(url).hostname.replace(/^www\./, '');
   .contact__direct-go { display: grid; color: var(--ink-2); }
   .contact__direct-go :global(svg) { width: 18px; height: 18px; }
 
-  .contact__agents ul { margin: 0.2rem 0 0; padding: 0; list-style: none; }
-  .contact__agents li {
+  .contact__agents ul { display: grid; gap: 0.5rem; margin: 0.45rem 0 0; padding: 0; list-style: none; }
+  /* his agent stands out, in the green of his film and TV work */
+  .contact__agent {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
     justify-content: space-between;
-    gap: 0.1rem 1rem;
-    padding: 0.45rem 0;
-    border-bottom: 1px solid var(--hair);
+    gap: 0.2rem 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 18px;
+    border: 1px solid rgb(var(--mint-rgb) / 0.45);
+    background: linear-gradient(135deg, rgb(var(--mint-rgb) / 0.13), rgb(var(--mint-rgb) / 0.04));
+    box-shadow: 0 0 28px -14px rgb(var(--mint-rgb) / 0.7);
+    color: var(--ink);
+    text-decoration: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
   }
-  .contact__agents li:last-child { border-bottom: 0; padding-bottom: 0; }
-  .contact__agency { font-family: var(--serif); font-size: 1.15rem; }
-  .contact__agents a {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    font-size: 0.92rem;
-    color: var(--ink-2);
-    text-decoration-color: var(--hair-2);
-    overflow-wrap: anywhere;
-  }
-  .contact__agents a:hover { color: var(--ink); text-decoration-color: var(--lavender); }
-  .contact__agents a :global(svg) { width: 14px; height: 14px; }
+  .contact__agent:hover { border-color: var(--mint); box-shadow: 0 0 34px -12px rgb(var(--mint-rgb) / 0.85); }
+  .contact__agent:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; }
+  .contact__agency { font-family: var(--serif); font-size: 1.45rem; line-height: 1.1; color: var(--ink); }
+  .contact__agent-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.95rem; font-weight: 600; color: var(--mint); overflow-wrap: anywhere; }
+  .contact__agent-link :global(svg) { width: 15px; height: 15px; }
 
   .contact__or {
     display: flex;

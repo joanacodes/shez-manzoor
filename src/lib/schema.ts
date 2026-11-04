@@ -32,16 +32,16 @@ export function personSchema(site: URL | undefined, image?: string): Json {
     ...(image ? { image } : {}),
     jobTitle: [...person.roles],
     hasOccupation: [
-      { '@type': 'Occupation', name: 'Music producer', occupationLocation: city },
-      { '@type': 'Occupation', name: 'Singer-songwriter', occupationLocation: city },
       {
         '@type': 'Occupation',
         name: 'Film and television composer',
         alternateName: ['Film composer', 'TV composer', 'Screen composer'],
         occupationLocation: city,
       },
+      { '@type': 'Occupation', name: 'Singer-songwriter', occupationLocation: city },
+      { '@type': 'Occupation', name: 'Music producer', occupationLocation: city },
     ],
-    knowsAbout: ['Music production', 'Film scoring', 'Television music', 'Songwriting', 'Singing', 'Guitar', ...person.influences],
+    knowsAbout: ['Film scoring', 'Television music', 'Songwriting', 'Singing', 'Guitar', 'Music production', ...person.influences],
     homeLocation: london,
     workLocation: london,
     // awards he won himself (nominations are not awards)
