@@ -84,6 +84,8 @@ All facts live in `src/data/`. Pages, structured data and `llms.txt` are generat
 
 **Design previews.** Branches listed in `PREVIEWS` in the deploy workflow are built into their own folder next to the live site. For example, `claude/shez-manzoor-stage-design` appears at `/design-2/`. A push to such a branch checks the build, then asks `main` to republish.
 
+**If a publish times out.** When GitHub Pages takes longer than 10 minutes, the deploy step cancels that publish, and Pages then refuses to publish the same commit again ("Deployment cancelled"). Re-running the workflow does not help: the next commit pushed to `main` publishes normally.
+
 **Netlify or Vercel.** Import the repository and keep the detected settings. Both work with private repositories on free plans and give each branch its own preview URL. Netlify reads `netlify.toml`, which also turns the old Squarespace URLs into permanent redirects.
 
 ## SEO and AI search
