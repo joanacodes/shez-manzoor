@@ -27,7 +27,6 @@ const SCREEN = [
   { slug: 'we-are-lady-parts', term: 'We Are Lady Parts', media: 'tvShow', entity: 'tvSeason', match: /lady parts/i },
   { slug: 'polite-society', term: 'Polite Society', media: 'movie', entity: 'movie', match: /^polite society/i },
   { slug: 'clarksons-farm', term: "Clarkson's Farm", media: 'tvShow', entity: 'tvSeason', match: /clarkson/i },
-  { slug: 'bride-or-die', term: 'Bride or Die', media: 'movie', entity: 'movie', match: /bride or die/i },
 ];
 // Soundtrack albums he worked on, credited to other artists
 const SOUNDTRACK_SEARCHES = [
