@@ -449,12 +449,15 @@ const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await t
     /* an odd one out at the end takes the whole row */
     .credits > li:last-child:nth-child(odd) { grid-column: 1 / -1; }
     .credit { grid-template-columns: 140px 1fr; padding: 0.9rem; }
-    .credit__badge { display: block; }
     .disco__row { grid-template-columns: 64px minmax(0, 1fr) 9rem 11rem; grid-template-areas: 'art title type date'; }
     .disco__art { width: 64px; }
     .disco__play { left: 17px; }
     .disco__type,
     .disco__date { margin-top: 0; }
+  }
+  /* the award badge, from where it clears the category line */
+  @media (min-width: 960px) {
+    .credit__badge { display: block; }
   }
   @media (orientation: landscape) and (max-height: 520px) {
     .about__grid { grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr); gap: 2.5rem; align-items: start; }
