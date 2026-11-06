@@ -121,24 +121,4 @@ export const projects: Project[] = [
     pattern: 'furrows',
     schema: { type: 'TVSeries' },
   },
-  {
-    slug: 'bride-or-die',
-    title: 'Bride or Die',
-    kind: 'Short film',
-    where: 'Straight 8 · Moxie Pictures',
-    role: 'Music',
-    summary: 'Music for a Straight 8 short film by Moxie Pictures, shot on a single cartridge of Super 8.',
-    body: [
-      'Bride or Die is a short film by Moxie Pictures, made for Straight 8, the challenge where each film is shot on one cartridge of Super 8 and edited in camera, with the soundtrack added separately.',
-      'Shez Manzoor composed the music.',
-    ],
-    facts: [
-      { label: 'Format', value: 'Short film, Super 8' },
-      { label: 'Made for', value: 'Straight 8' },
-      { label: 'Production', value: 'Moxie Pictures' },
-      { label: 'Music', value: 'Shez Manzoor' },
-    ],
-    pattern: 'film',
-    schema: { type: 'Movie' },
-  },
 ];
