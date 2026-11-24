@@ -5,10 +5,12 @@ import TitleCard from '../../components/TitleCard.astro';
 import Awards from '../../components/Awards.astro';
 import ContactCta from '../../components/ContactCta.astro';
 import Icon from '../../components/Icon.astro';
+import ReelCard from '../../components/ReelCard.astro';
 import { projects, type Project } from '../../data/projects';
 import { href } from '../../lib/url';
-import { breadcrumbSchema, graph, personSchema, projectSchema } from '../../lib/schema';
+import { breadcrumbSchema, graph, personSchema, projectSchema, reelSchema } from '../../lib/schema';
 import { describe } from '../../lib/meta';
+import { reelFor } from '../../lib/reels';
 
 export function getStaticPaths() {
   return projects.map((project, index) => ({ params: { slug: project.slug }, props: { project, index } }));
@@ -23,9 +25,11 @@ const site = Astro.site;
 const next = projects[(index + 1) % projects.length];
 const prev = projects[(index - 1 + projects.length) % projects.length];
 const path = `/composition/${p.slug}/`;
+const reel = reelFor(p.slug);
 const jsonLd = graph([
   personSchema(site),
   projectSchema(p, site),
+  ...(reel ? [reelSchema(reel, site)] : []),
   breadcrumbSchema(
     [
       { name: 'Home', path: '/' },
@@ -63,6 +67,7 @@ const ogType = p.schema.type === 'Movie' ? 'video.movie' : 'video.tv_show';
 
       <div class="project__grid">
         <div class="project__body">
+          {reel && <div class="project__reel" data-reveal><ReelCard reel={reel} /></div>}
           <div class="prose project__prose" data-reveal>
             {p.body.map((t) => <p>{t}</p>)}
           </div>
@@ -121,6 +126,7 @@ const ogType = p.schema.type === 'Movie' ? 'video.movie' : 'video.tv_show';
 <style>
   .project { padding-top: 0; }
   .project__grid { display: grid; gap: 2.5rem; margin-top: clamp(2.5rem, 7vw, 4.5rem); }
+  .project__reel { margin-bottom: clamp(2rem, 6vw, 3rem); }
   .project__prose { font-size: 1.125rem; }
   .project__prose p:first-child { font-size: var(--fs-lede); color: var(--ink); line-height: 1.5; }
 

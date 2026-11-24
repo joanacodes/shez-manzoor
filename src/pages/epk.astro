@@ -3,13 +3,16 @@ import { Picture, getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import PageHead from '../components/PageHead.astro';
 import Icon from '../components/Icon.astro';
+import ReelCard from '../components/ReelCard.astro';
 import photo from '../assets/shez-live.webp';
 import { award, bios, links, person, pressQuote } from '../data/site';
 import { projects } from '../data/projects';
 import { releases } from '../data/releases';
 import { breadcrumbSchema, graph, personSchema } from '../lib/schema';
+import { reels } from '../lib/reels';
 
 const site = Astro.site;
+const reelList = reels();
 const pressPhoto = await getImage({ src: photo, format: 'jpg', width: 1500, quality: 90 });
 const jsonLd = graph([
   personSchema(site),
@@ -80,6 +83,19 @@ const blocks = [
           </figcaption>
         </figure>
 
+        {
+          reelList.length > 0 && (
+            <div class="reels" data-reveal>
+              <h2 class="epk__h">{reelList.length > 1 ? 'Showreels' : 'Showreel'}</h2>
+              <div class="reels__list">
+                {reelList.map((r) => (
+                  <ReelCard reel={r} compact />
+                ))}
+              </div>
+            </div>
+          )
+        }
+
         <div class="keyfacts" data-reveal>
           <h2 class="epk__h">Key facts</h2>
           <dl>
@@ -138,6 +154,8 @@ const blocks = [
   .press-photo :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius); }
   .press-photo figcaption { display: grid; gap: 0.75rem; justify-items: start; margin-top: 1rem; }
 
+  .reels { margin-top: 3rem; }
+  .reels__list { display: grid; gap: 0.9rem; }
   .keyfacts { margin-top: 3rem; }
   .keyfacts dl div { padding: 0.8rem 0; border-top: 1px solid var(--hair); display: grid; gap: 0.2rem; }
   .keyfacts dt { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }

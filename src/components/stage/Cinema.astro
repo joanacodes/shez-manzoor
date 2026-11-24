@@ -7,9 +7,12 @@
 import Icon from '../Icon.astro';
 import { screenChannels } from '../../lib/channels';
 import { tvChannels } from '../../data/work';
+import { reels } from '../../lib/reels';
 
 const channels = screenChannels();
 const first = channels[0];
+// his showreel, to watch with sound in the showreel window
+const reel = reels()[0];
 // one caption for all the clips: the works they come from, in the order of the credits
 const shown = tvChannels.filter((w) => channels.some((c) => c.id === w.id));
 const join = (list: string[]) => (list.length > 1 ? `${list.slice(0, -1).join(', ')} & ${list.at(-1)}` : (list[0] ?? ''));
@@ -120,6 +123,11 @@ const near = row(388, 1, 104, -110, 0);
           <span class="cinema__kind">{join(shown.map((w) => w.kind)) || 'Film and television'}</span>
         </p>
         <div class="cinema__actions">
+          {reel && (
+            <a class="cinema__btn cinema__btn--reel" href={reel.video} data-reel-open={reel.id} data-astro-prefetch="false">
+              <Icon name="play" /> Watch the showreel
+            </a>
+          )}
           {/* the credits of both are listed right below */}
           <a class="cinema__btn" href="#screen-title">
             Music and credits <Icon name="arrow" />
@@ -320,7 +328,7 @@ const near = row(388, 1, 104, -110, 0);
     background-clip: text;
   }
   .cinema__kind { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-2); }
-  .cinema__actions { display: flex; gap: 0.5rem; margin-top: 0.6rem; }
+  .cinema__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 0.6rem; }
   .cinema__btn {
     display: inline-flex;
     align-items: center;
@@ -339,6 +347,9 @@ const near = row(388, 1, 104, -110, 0);
   .cinema__btn :global(svg) { width: 1em; height: 1em; }
   .cinema__btn--round { width: 44px; padding: 0; justify-content: center; }
   .cinema__btn:hover { border-color: var(--mint); }
+  .cinema__btn:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+  .cinema__btn--reel { border-color: var(--mint); background: var(--mint); color: #0b0912; font-weight: 600; }
+  .cinema__btn--reel:hover { border-color: #a8ffe0; background: #a8ffe0; }
 
   @media (prefers-reduced-motion: reduce) {
     .cinema__sheen,

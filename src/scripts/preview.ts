@@ -133,10 +133,11 @@ function setup(bar: HTMLElement) {
     return true;
   };
 
-  // the bar sits in an open panel, so it stays above it; back on the page when the panel closes
+  // the bar sits in an open panel, so it stays above it; back on the page when the panel closes.
+  // Not in the showreel window: the reel has the screen and the sound to itself.
   const home = bar.parentElement!;
   const place = () => {
-    const target = document.querySelector('dialog[open]') ?? home;
+    const target = document.querySelector('dialog[open]:not([data-reel])') ?? home;
     if (bar.parentElement !== target) target.append(bar);
   };
   new MutationObserver(place).observe(document.body, { subtree: true, attributeFilter: ['open'] });
@@ -221,6 +222,15 @@ function setup(bar: HTMLElement) {
   document.addEventListener('click', (e) => {
     if ((e.target as HTMLElement).closest('[data-embed]')) audio.pause();
   });
+  // so does a video with sound, such as a showreel (the clips on the screens are silent)
+  document.addEventListener(
+    'play',
+    (e) => {
+      const media = e.target;
+      if (media instanceof HTMLVideoElement && !media.muted) audio.pause();
+    },
+    true,
+  );
   // buttons inside panels are created after load: keep their state in step
   new MutationObserver(sync).observe(document.body, { childList: true, subtree: true });
 }

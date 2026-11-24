@@ -7,12 +7,14 @@
  * The file must be shared with "Anyone with the link"; until it is, the script keeps trying
  * (WAIT_MINUTES, 30 by default). It becomes public/reels/<name>.mp4: H.264 and AAC that every
  * browser streams, at most 1280 px wide, sound kept, about 1.5 Mb/s (a four-minute reel is
- * under 50 MB), plus a still, <name>.jpg, for the player to show before it plays. Its line then
+ * under 50 MB), plus a still, <name>.jpg, for the player to show before it plays: a colourful,
+ * well-lit moment, cut to the film's picture when the reel has black bands above and below it
+ * (the site gives the player the still's shape). A still made by hand is kept. Its line then
  * leaves drive.txt. Needs ffmpeg and ffprobe.
  *
  *   node scripts/prepare-reels.mjs
  */
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -73,9 +75,52 @@ function encode(src, name) {
   const still = path.join(dir, `${name}.jpg`);
   if (!fs.existsSync(still)) {
     const duration = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', out], { encoding: 'utf8' })) || 0;
-    run('ffmpeg', ['-v', 'error', '-y', '-ss', String(duration / 3), '-i', out, '-frames:v', '1', '-q:v', '4', still]);
-    console.log(`${name}.jpg: still at ${(duration / 3).toFixed(1)} s`);
+    const crop = picture(out);
+    const at = bestMoment(out, duration, crop);
+    run('ffmpeg', ['-v', 'error', '-y', '-ss', String(at), '-i', out, '-frames:v', '1', ...(crop ? ['-vf', crop] : []), '-q:v', '3', still]);
+    console.log(`${name}.jpg: still at ${at.toFixed(1)} s${crop ? `, ${crop}` : ''}`);
   }
+}
+
+/** The film's picture inside black bands, as an ffmpeg crop (the one found most often, a frame a second), or null. */
+function picture(file) {
+  const res = spawnText(['-i', file, '-vf', 'fps=1,cropdetect=limit=24:round=2:reset=1', '-an', '-f', 'null', '-']);
+  const counts = new Map();
+  for (const m of res.matchAll(/crop=(\d+):(\d+):(\d+):(\d+)/g)) counts.set(m[0], (counts.get(m[0]) ?? 0) + 1);
+  const [best] = [...counts.entries()].sort((a, b) => b[1] - a[1])[0] ?? [];
+  const info = JSON.parse(execFileSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'json', file], { encoding: 'utf8' })).streams[0];
+  const [, w, h] = best?.match(/crop=(\d+):(\d+)/) ?? [];
+  // only bands across the whole width, and a picture of at least half the height
+  if (!best || Number(w) !== info.width || Number(h) >= info.height || Number(h) < info.height / 2) return null;
+  return best;
+}
+
+/** The most colourful well-lit moment, from frames between 15% and 85% of the reel. */
+function bestMoment(file, duration, crop) {
+  const from = duration * 0.15;
+  const step = Math.max(1, (duration * 0.7) / 48);
+  const res = spawnText(['-ss', String(from), '-t', String(duration * 0.7), '-i', file, '-vf', `fps=1/${step},${crop ? `${crop},` : ''}signalstats,metadata=print:file=-`, '-an', '-f', 'null', '-']);
+  let best = { at: duration / 3, score: -1 };
+  let at = 0, y = 0;
+  for (const line of res.split('\n')) {
+    const t = /pts_time:([\d.]+)/.exec(line);
+    if (t) at = from + Number(t[1]);
+    const lum = /YAVG=([\d.]+)/.exec(line);
+    if (lum) y = Number(lum[1]);
+    const sat = /SATAVG=([\d.]+)/.exec(line);
+    // colour counts, darkness does not; a frame that is mostly black or blown out never wins
+    if (sat && y > 45 && y < 190) {
+      const score = Number(sat[1]) * Math.min(1, y / 110);
+      if (score > best.score) best = { at, score };
+    }
+  }
+  return best.at;
+}
+
+/** What ffmpeg prints (it writes its log and filter output to stderr and stdout). */
+function spawnText(args) {
+  const res = spawnSync('ffmpeg', ['-v', 'info', ...args], { encoding: 'utf8', maxBuffer: 1 << 26 });
+  return `${res.stdout}\n${res.stderr}`;
 }
 
 const deadline = Date.now() + Number(process.env.WAIT_MINUTES ?? 30) * 60_000;

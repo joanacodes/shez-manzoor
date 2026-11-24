@@ -1,0 +1,92 @@
+---
+/**
+ * A showreel to open in the showreel window: its still with a play button, its title and length.
+ * "compact" is a small row (the press kit). Without JavaScript it is a link to the video itself.
+ */
+import Icon from './Icon.astro';
+import { clock, type Reel } from '../lib/reels';
+
+interface Props {
+  reel: Reel;
+  compact?: boolean;
+  /** shown above the title; "Showreel" by default */
+  kicker?: string;
+}
+const { reel, compact = false, kicker = 'Showreel' } = Astro.props;
+---
+
+<a class:list={['reel-card', compact && 'reel-card--compact']} href={reel.video} data-reel-open={reel.id} data-astro-prefetch="false" style={`--aspect: ${reel.aspect}`}>
+  <span class="reel-card__frame">
+    {reel.still && <img src={reel.still} alt="" width="1280" height={Math.round(1280 / reel.aspect)} loading="lazy" decoding="async" />}
+    <span class="reel-card__play" aria-hidden="true"><Icon name="play" /></span>
+  </span>
+  <span class="reel-card__text">
+    <span class="reel-card__kicker">
+      {kicker}
+      {reel.duration && <span class="reel-card__time"> · {clock(reel.duration)}</span>}
+    </span>
+    <span class="reel-card__title">{reel.title}</span>
+    {!compact && reel.role && <span class="reel-card__role">{reel.role}</span>}
+  </span>
+</a>
+
+<style>
+  .reel-card {
+    display: grid;
+    gap: 0.9rem;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .reel-card__frame {
+    position: relative;
+    display: block;
+    /* the film's own shape (the still has no black bands), or the one a grid of reels gives them all (--shape) */
+    aspect-ratio: var(--shape, var(--aspect));
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: #07060b;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.07), 0 24px 50px -28px rgb(0 0 0 / 0.9);
+  }
+  .reel-card__frame img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s var(--ease-out), filter 0.5s; }
+  .reel-card__frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, transparent 30%, rgb(4 3 8 / 0.45));
+    pointer-events: none;
+  }
+  .reel-card__play {
+    position: absolute;
+    z-index: 1;
+    left: 50%;
+    top: 50%;
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    margin: -32px 0 0 -32px;
+    border-radius: 50%;
+    background: var(--mint);
+    color: #0b0912;
+    box-shadow: 0 0 0 8px rgb(var(--mint-rgb) / 0.18), 0 14px 30px -10px rgb(0 0 0 / 0.8);
+    transition: transform 0.45s var(--ease-out), box-shadow 0.45s;
+  }
+  .reel-card__play :global(svg) { width: 26px; height: 26px; margin-left: 3px; }
+  .reel-card:hover .reel-card__frame img { transform: scale(1.03); }
+  .reel-card:hover .reel-card__play { transform: scale(1.08); box-shadow: 0 0 0 12px rgb(var(--mint-rgb) / 0.16), 0 14px 30px -10px rgb(0 0 0 / 0.8); }
+  .reel-card:focus-visible { outline: none; }
+  .reel-card:focus-visible .reel-card__frame { outline: 2px solid var(--mint); outline-offset: 3px; }
+  .reel-card__text { display: grid; gap: 0.3rem; }
+  .reel-card__kicker { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mint); }
+  .reel-card__time { color: var(--ink-3); }
+  .reel-card__title { font-family: var(--serif); font-size: clamp(1.6rem, 5vw, 2.2rem); line-height: 1; }
+  .reel-card__role { font-size: 0.92rem; color: var(--ink-2); }
+
+  /* a small row: the still on the left */
+  .reel-card--compact { grid-template-columns: 7.5rem minmax(0, 1fr); align-items: center; gap: 0.9rem; }
+  .reel-card--compact .reel-card__frame { border-radius: 10px; }
+  .reel-card--compact .reel-card__play { width: 26px; height: 26px; margin: -13px 0 0 -13px; box-shadow: 0 0 0 4px rgb(var(--mint-rgb) / 0.16); }
+  .reel-card--compact .reel-card__play :global(svg) { width: 11px; height: 11px; margin-left: 2px; }
+  .reel-card--compact .reel-card__title { font-size: 1.3rem; }
+  .reel-card--compact:hover .reel-card__title { color: var(--mint); }
+</style>

@@ -18,7 +18,8 @@ import { work, formatDate } from '../data/work';
 import { faq } from '../data/faq';
 import { bios, links, person, pressQuote } from '../data/site';
 import { href } from '../lib/url';
-import { faqSchema, graph, personSchema, profilePageSchema, websiteSchema, workSchema } from '../lib/schema';
+import { faqSchema, graph, personSchema, profilePageSchema, reelSchema, websiteSchema, workSchema } from '../lib/schema';
+import { reels } from '../lib/reels';
 import { portraitUrl } from '../lib/portrait';
 
 const site = Astro.site;
@@ -30,6 +31,7 @@ const jsonLd = graph([
   profilePageSchema(site, '/', title, description),
   personSchema(site, await portraitUrl(site)),
   workSchema(work, site),
+  ...reels().map((r) => reelSchema(r, site)),
   faqSchema(faq),
 ]);
 const screen = work.filter((w) => w.kind === 'screen');

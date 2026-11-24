@@ -3,6 +3,7 @@ import { award, bios, person, sameAs } from '../data/site';
 import type { Project } from '../data/projects';
 import type { Release } from '../data/releases';
 import { absolute } from './url';
+import { isoDuration, reelsAdded, type Reel } from './reels';
 
 type Json = Record<string, unknown>;
 
@@ -145,6 +146,28 @@ export function breadcrumbSchema(trail: { name: string; path: string }[], site: 
       name: step.name,
       item: absolute(step.path, site),
     })),
+  };
+}
+
+/** A showreel, so search engines can show it with its still. */
+export function reelSchema(r: Reel, site: URL | undefined): Json {
+  // "Composer · Original songs" reads "Composer, original songs"; names keep their capitals
+  const plain = (t?: string, lower = false) =>
+    t
+      ?.split(' · ')
+      .map((part, i) => (lower && i > 0 && !/^[A-Z]{2}/.test(part) ? part.charAt(0).toLowerCase() + part.slice(1) : part))
+      .join(', ');
+  return {
+    '@type': 'VideoObject',
+    '@id': `${absolute(r.path, site)}#video`,
+    name: `${r.title}: showreel, music by Shez Manzoor`,
+    description: [`Showreel of the music Shez Manzoor wrote for ${r.title}.`, r.role && `${plain(r.role, true)}.`, r.where && `${plain(r.where)}.`].filter(Boolean).join(' '),
+    ...(r.stillPath ? { thumbnailUrl: absolute(r.stillPath, site) } : {}),
+    uploadDate: reelsAdded,
+    ...(r.duration ? { duration: isoDuration(r.duration) } : {}),
+    contentUrl: absolute(r.path, site),
+    creator: { '@id': ids(site).person },
+    inLanguage: 'en',
   };
 }
 

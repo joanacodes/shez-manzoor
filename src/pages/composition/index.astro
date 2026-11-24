@@ -4,9 +4,11 @@ import PageHead from '../../components/PageHead.astro';
 import Awards from '../../components/Awards.astro';
 import ContactCta from '../../components/ContactCta.astro';
 import Icon from '../../components/Icon.astro';
+import ReelCard from '../../components/ReelCard.astro';
 import { projects } from '../../data/projects';
 import { href } from '../../lib/url';
-import { breadcrumbSchema, graph, ids, personSchema, projectSchema } from '../../lib/schema';
+import { reels } from '../../lib/reels';
+import { breadcrumbSchema, graph, ids, personSchema, projectSchema, reelSchema } from '../../lib/schema';
 
 const site = Astro.site;
 const jsonLd = graph([
@@ -18,8 +20,10 @@ const jsonLd = graph([
     about: { '@id': ids(site).person },
     hasPart: projects.map((p) => projectSchema(p, site)),
   },
+  ...reels().map((r) => reelSchema(r, site)),
   breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Composition', path: '/composition/' }], site),
 ]);
+const reelList = reels();
 const partners = ['Nida Manzoor', 'Tom Howe', 'Working Title', 'Focus Features', 'Channel 4', 'Peacock', 'Prime Video', 'Moxie Pictures'];
 ---
 
@@ -41,6 +45,18 @@ const partners = ['Nida Manzoor', 'Tom Howe', 'Working Title', 'Focus Features',
 
   <section class="section credits" data-light="green" data-section-light="green" aria-label="Credits">
     <div class="wrap">
+      {
+        reelList.length > 0 && (
+          <div class="showreels" id="showreels" data-reveal>
+            <h2 class="label">{reelList.length > 1 ? 'Showreels' : 'Showreel'}</h2>
+            <div class="showreels__grid">
+              {reelList.map((r) => (
+                <ReelCard reel={r} />
+              ))}
+            </div>
+          </div>
+        )
+      }
       <div class="credits__awards" data-reveal><Awards /></div>
       <ol class="credits__list" role="list">
         {
@@ -79,6 +95,13 @@ const partners = ['Nida Manzoor', 'Tom Howe', 'Working Title', 'Focus Features',
 
 <style>
   .credits { padding-top: 0; }
+  .showreels { display: grid; gap: 1.1rem; margin-bottom: clamp(3rem, 8vw, 4.5rem); scroll-margin-top: calc(var(--header-h) + 1rem); }
+  .showreels__grid { display: grid; gap: 2.2rem 1.5rem; }
+  /* side by side, the reels take one shape (a 2.35 and a 2.39 film), so their titles line up */
+  .showreels__grid > :global(.reel-card) { --shape: 2.37; }
+  @media (min-width: 760px) {
+    .showreels__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
   .credits__awards { max-width: 62ch; margin-bottom: clamp(2rem, 6vw, 3rem); }
   .credits__list { margin: 0; padding: 0; border-top: 1px solid rgb(var(--mint-rgb) / 0.18); }
   .credit { border-bottom: 1px solid rgb(var(--mint-rgb) / 0.18); }

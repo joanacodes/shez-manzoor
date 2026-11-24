@@ -9,6 +9,7 @@ import Icon from '../Icon.astro';
 import { spotifyTrackEmbed, type WorkItem } from '../../data/work';
 import { href } from '../../lib/url';
 import { thumbOf } from '../../lib/thumbs';
+import { clock, reelFor } from '../../lib/reels';
 
 interface Props {
   items: WorkItem[];
@@ -99,6 +100,18 @@ const previewData = (w: WorkItem, title: string) => ({
                 </div>
               ))}
           </dl>
+
+          {reelFor(w.id) && (
+            <div class="detail__listen detail__reel">
+              <p class="label">Showreel</p>
+              <div class="detail__buttons">
+                <a class="play play--reel" href={reelFor(w.id)!.video} data-reel-open={w.id} data-astro-prefetch="false">
+                  <Icon name="play" /> Watch the showreel
+                  {reelFor(w.id)!.duration && <span class="play__time">{clock(reelFor(w.id)!.duration)}</span>}
+                </a>
+              </div>
+            </div>
+          )}
 
           {(w.listen.apple || w.listen.spotify) && (
             <div class="detail__listen">
@@ -369,6 +382,16 @@ const previewData = (w: WorkItem, title: string) => ({
   .track-preview svg { width: 13px; height: 13px; margin-left: 2px; }
   .track-preview:hover, .track-preview.is-playing { background: var(--mint); color: #0b0912; }
   .play--preview { background: var(--mint); border-color: var(--mint); color: #0b0912; }
+  /* the showreel: the site's two colours around it */
+  .play--reel {
+    border-color: transparent;
+    background:
+      linear-gradient(120deg, rgb(var(--lavender-rgb) / 0.16), rgb(var(--mint-rgb) / 0.1)) padding-box,
+      linear-gradient(#141020, #141020) padding-box,
+      linear-gradient(120deg, var(--lavender), var(--mint)) border-box;
+  }
+  .play--reel:hover { box-shadow: 0 0 24px -6px rgb(var(--lavender-rgb) / 0.6); }
+  .play__time { font-family: var(--mono); font-size: 0.74rem; font-weight: 400; letter-spacing: 0.06em; color: var(--ink-3); }
   .play--preview:hover, .play--preview.is-playing { background: #a8ffe0; border-color: #a8ffe0; }
   .detail__tracks .n { font-family: var(--mono); font-size: 0.7rem; color: var(--ink-3); }
   .detail__tracks .t { font-size: 0.95rem; }

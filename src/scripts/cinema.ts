@@ -27,6 +27,8 @@ function setup(root: HTMLElement) {
   let timer = 0;
   let visible = false;
   let blocked = false;
+  /** the showreel window is open: the clips wait behind it (it may have opened first, from a link to #showreel) */
+  let held = !!document.querySelector('dialog[data-reel][open]');
   let reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // the picture lights the room (its average colour) and the audience (its most vivid colour),
@@ -91,7 +93,7 @@ function setup(root: HTMLElement) {
     window.clearTimeout(timer);
     const src = slides[index].dataset.video!;
     if (video.getAttribute('src') !== src) video.src = src;
-    if (!visible) return;
+    if (!visible || held) return;
     if (reduced) {
       playButton.hidden = false;
       return;
@@ -158,6 +160,12 @@ function setup(root: HTMLElement) {
     screen.addEventListener('click', () => performance.now() - startedAt > 500 && show(index + 1));
     root.querySelector('[data-cinema-next]')?.addEventListener('click', () => show(index + 1));
   }
+  document.addEventListener('showreel', (e) => {
+    held = (e as CustomEvent<boolean>).detail;
+    if (!held) return play();
+    window.clearTimeout(timer);
+    video.pause();
+  });
   new IntersectionObserver(
     ([entry]) => {
       visible = entry.isIntersecting;

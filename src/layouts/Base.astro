@@ -5,6 +5,7 @@ import Seo, { type SeoProps } from '../components/Seo.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Contact from '../components/Contact.astro';
+import Showreel from '../components/Showreel.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 import { href } from '../lib/url';
 
@@ -42,6 +43,7 @@ const { light = 'mixed', ...seo } = Astro.props;
     </main>
     <Footer />
     <Contact />
+    <Showreel />
     <CookieConsent />
     <script>
       import '../scripts/ui';
