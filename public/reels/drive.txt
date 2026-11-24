@@ -1,0 +1,4 @@
+# Showreels to fetch from Google Drive: a file ID and the reel's name per line.
+# The files must be shared with "Anyone with the link". See scripts/prepare-reels.mjs.
+1SA5qv4CKKQ78WFP61OwNr8xSzpyDJSFb we-are-lady-parts
+1ut1QCLNuaerwm-2_JyCF44AueMHd4M3X polite-society
