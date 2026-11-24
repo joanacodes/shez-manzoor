@@ -222,6 +222,8 @@ function setup(bar: HTMLElement) {
   document.addEventListener('click', (e) => {
     if ((e.target as HTMLElement).closest('[data-embed]')) audio.pause();
   });
+  // a song that starts stops a showreel (scripts/reel-player.ts)
+  audio.addEventListener('play', () => document.dispatchEvent(new Event('songplay')));
   // so does a video with sound, such as a showreel (the clips on the screens are silent)
   document.addEventListener(
     'play',

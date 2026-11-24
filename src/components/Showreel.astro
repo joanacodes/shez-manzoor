@@ -1,62 +1,26 @@
 ---
 /**
- * The showreel window. Anything with data-reel-open="<reel>" opens it and plays that reel with
- * sound; it is a link to the reel's MP4, which a browser without JavaScript simply plays.
- * On a phone it rises from the bottom of the screen, on a computer it appears in the middle.
- * Each reel picks up where it was left. A link to #showreel opens it too. See lib/reels.ts.
+ * The showreel window: a ReelPlayer with a close button. Anything with data-reel-open="<reel>"
+ * opens it on that reel and plays it with sound; it is a link to the reel's MP4, which a browser
+ * without JavaScript simply plays. On a phone it rises from the bottom of the screen, on a
+ * computer it appears in the middle. A link to #showreel opens it too, except on the home page,
+ * where the showreel is on the page (that link goes to it). See scripts/showreel.ts.
  */
 import Icon from './Icon.astro';
-import { clock, reels } from '../lib/reels';
+import ReelPlayer from './ReelPlayer.astro';
+import { reels } from '../lib/reels';
 
-const list = reels();
-const first = list[0];
-const data = list.map((r) => ({ id: r.id, title: r.title, role: r.role ?? '', where: r.where ?? '', video: r.video, still: r.still, aspect: r.aspect }));
+const any = reels().length > 0;
 ---
 
 {
-  first && (
-    <dialog class="reel" id="showreel" aria-labelledby="reel-title" data-reel style={`--aspect: ${first.aspect}`}>
-      <div class="reel__sheet">
-        <div class="reel__head">
-          <div class="reel__heading">
-            <p class="reel__kicker">Showreel</p>
-            <h2 class="reel__title" id="reel-title" data-reel-title>
-              {first.title}
-            </h2>
-            <p class="reel__role">
-              <span data-reel-role>{first.role}</span>
-              <span class="reel__where" data-reel-where>
-                {first.where}
-              </span>
-            </p>
-          </div>
-          <button class="reel__close" type="button" data-reel-close aria-label="Close">
-            <Icon name="close" />
-          </button>
-        </div>
-
-        <div class="reel__frame">
-          <video class="reel__video" data-reel-video controls playsinline preload="none" poster={first.still} aria-labelledby="reel-title" />
-        </div>
-
-        {list.length > 1 && (
-          <div class="reel__choices" role="group" aria-label="Showreels">
-            {list.map((r, i) => (
-              <button class="reel__choice" type="button" data-reel-choice={r.id} aria-pressed={i === 0 ? 'true' : 'false'} style={`--shape: ${r.aspect}`}>
-                {r.still && <img class="reel__thumb" src={r.still} alt="" width="160" height="90" loading="lazy" decoding="async" />}
-                <span class="reel__choice-text">
-                  <span class="reel__choice-title">{r.title}</span>
-                  <span class="reel__choice-meta">
-                    <span class="reel__now">Playing</span>
-                    {clock(r.duration)}
-                  </span>
-                </span>
-              </button>
-            ))}
-          </div>
-        )}
-        <script type="application/json" data-reel-list set:html={JSON.stringify(data)} />
-      </div>
+  any && (
+    <dialog class="reel" id="showreel-window" aria-labelledby="reel-title" data-reel>
+      <ReelPlayer variant="dialog" titleId="reel-title">
+        <button slot="close" class="reel__close" type="button" data-reel-close aria-label="Close">
+          <Icon name="close" />
+        </button>
+      </ReelPlayer>
     </dialog>
   )
 }
@@ -69,6 +33,7 @@ const data = list.map((r) => ({ id: r.id, title: r.title, role: r.role ?? '', wh
   .reel {
     /* room the head, the choices and the padding take around the video */
     --chrome: 16rem;
+    --sheet-max: 1180px;
     position: fixed;
     inset: 0;
     width: 100%;
@@ -89,56 +54,27 @@ const data = list.map((r) => ({ id: r.id, title: r.title, role: r.role ?? '', wh
   .reel.is-open { background: rgb(4 3 8 / 0.9); }
   :global(html:has(.reel[open])) { overflow: hidden; }
 
-  .reel__sheet {
-    position: relative;
-    display: grid;
-    gap: 0.8rem;
-    /* as wide as fits, and never so tall that the video leaves the screen */
-    width: min(100%, 1180px, calc((100dvh - var(--chrome)) * var(--aspect) + 2.8rem));
-    min-width: min(100%, 320px);
+  /* phones: it rises from below the screen to the middle, and goes back down */
+  .reel :global(.reel__sheet) {
     margin: auto;
-    padding: 1rem;
-    border-radius: 24px;
-    border: 1px solid var(--hair-2);
-    background:
-      radial-gradient(120% 55% at 0% 0%, rgb(var(--violet-rgb) / 0.2), transparent 62%),
-      radial-gradient(90% 45% at 100% 100%, rgb(var(--mint-rgb) / 0.08), transparent 60%),
-      #0e0b15;
-    box-shadow: 0 40px 90px -30px rgb(0 0 0 / 0.95);
-    /* phones: it rises from below the screen to the middle, and goes back down */
     transform: translateY(calc(50vh + 60%));
     transition: transform 0.6s var(--ease-out);
   }
-  .reel.is-open .reel__sheet { transform: none; }
+  .reel.is-open :global(.reel__sheet) { transform: none; }
+  /* computers: it appears in the middle */
   @media (min-width: 761px) {
-    .reel__sheet {
-      padding: 1.4rem;
-      gap: 1rem;
+    .reel :global(.reel__sheet) {
       opacity: 0;
       transform: translateY(16px) scale(0.97);
       transition: transform 0.5s var(--ease-out), opacity 0.35s ease;
     }
-    .reel.is-open .reel__sheet { opacity: 1; transform: none; }
+    .reel.is-open :global(.reel__sheet) { opacity: 1; transform: none; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .reel__sheet { opacity: 0; transform: none !important; transition: opacity 0.25s ease; }
-    .reel.is-open .reel__sheet { opacity: 1; }
+    .reel :global(.reel__sheet) { opacity: 0; transform: none !important; transition: opacity 0.25s ease; }
+    .reel.is-open :global(.reel__sheet) { opacity: 1; }
   }
 
-  .reel__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
-  .reel__heading { min-width: 0; }
-  .reel__kicker {
-    margin: 0;
-    font-family: var(--mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--mint);
-  }
-  .reel__title { margin: 0.25rem 0 0; font-family: var(--serif); font-weight: 400; font-size: clamp(1.7rem, 6vw, 2.4rem); line-height: 1; }
-  .reel__role { display: flex; flex-wrap: wrap; gap: 0 0.9rem; margin: 0.35rem 0 0; font-size: 0.86rem; color: var(--ink-2); }
-  .reel__where { color: var(--ink-3); }
-  .reel__role span:empty { display: none; }
   .reel__close {
     flex: none;
     display: grid;
@@ -154,75 +90,9 @@ const data = list.map((r) => ({ id: r.id, title: r.title, role: r.role ?? '', wh
   .reel__close:hover { border-color: var(--lavender); }
   .reel__close:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
   .reel__close :global(svg) { width: 20px; height: 20px; }
-
-  /* the film's own shape: the black bands of a widescreen film are cropped off */
-  .reel__frame {
-    position: relative;
-    aspect-ratio: var(--aspect);
-    border-radius: 14px;
-    overflow: hidden;
-    background: #000;
-    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.06);
-  }
-  .reel__video { display: block; width: 100%; height: 100%; object-fit: cover; background: #000; }
-
-  /* the reels to choose from: the one playing has the site's two colours */
-  .reel__choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap: 0.6rem; }
-  .reel__choice {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: center;
-    gap: 0.7rem;
-    padding: 0.45rem 0.8rem 0.45rem 0.45rem;
-    border-radius: 14px;
-    border: 1px solid var(--hair-2);
-    background: rgb(255 255 255 / 0.02);
-    color: var(--ink);
-    font: inherit;
-    text-align: left;
-    cursor: pointer;
-    transition: border-color 0.3s, background-color 0.3s;
-  }
-  .reel__choice:hover { border-color: rgb(var(--mint-rgb) / 0.55); }
-  .reel__choice:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
-  .reel__choice[aria-pressed='true'] {
-    border-color: transparent;
-    background:
-      linear-gradient(120deg, rgb(var(--lavender-rgb) / 0.14), rgb(var(--mint-rgb) / 0.08)) padding-box,
-      linear-gradient(#120f1b, #120f1b) padding-box,
-      linear-gradient(120deg, var(--lavender), var(--mint)) border-box;
-  }
-  .reel__thumb { display: block; width: 96px; height: auto; aspect-ratio: var(--shape); border-radius: 7px; object-fit: cover; background: #000; }
-  .reel__choice-text { display: grid; gap: 0.15rem; min-width: 0; }
-  .reel__choice-title { font-family: var(--serif); font-size: 1.15rem; line-height: 1.05; }
-  .reel__choice-meta { display: flex; gap: 0.5rem; font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
-  .reel__now { display: none; color: var(--mint); }
-  .reel__choice[aria-pressed='true'] .reel__now { display: inline; }
-
-  /* a phone on its side: the video as big as the screen allows, a narrow column beside it */
+  /* a phone on its side: the close button at the top of the narrow column */
   @media (orientation: landscape) and (max-height: 520px) {
-    .reel { --chrome: 2rem; }
-    .reel__sheet {
-      width: min(100%, 1180px);
-      grid-template-columns: minmax(0, 1fr) 9.5rem;
-      grid-template-areas: 'frame head' 'frame choices';
-      grid-template-rows: auto 1fr;
-      align-items: start;
-      gap: 0.6rem 0.8rem;
-      padding: 0.6rem;
-      border-radius: 18px;
-    }
-    .reel__frame { grid-area: frame; align-self: center; max-height: calc(100dvh - 2.8rem); }
-    /* the close button first, at the top of the column */
-    .reel__head { grid-area: head; flex-direction: column-reverse; align-items: stretch; gap: 0.3rem; }
     .reel__close { align-self: flex-end; width: 36px; height: 36px; }
     .reel__close :global(svg) { width: 17px; height: 17px; }
-    .reel__title { font-size: 1.15rem; }
-    .reel__role { flex-direction: column; font-size: 0.72rem; line-height: 1.35; }
-    .reel__choices { grid-area: choices; grid-template-columns: 1fr; gap: 0.4rem; }
-    .reel__choice { grid-template-columns: 1fr; gap: 0.15rem; padding: 0.4rem 0.6rem; border-radius: 12px; }
-    .reel__thumb { display: none; }
-    .reel__choice-title { font-size: 0.95rem; }
-    .reel__choice-meta { font-size: 0.6rem; }
   }
 </style>

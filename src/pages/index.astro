@@ -6,6 +6,7 @@ import WorkCarousel from '../components/stage/WorkCarousel.astro';
 import WorkDetails from '../components/stage/WorkDetails.astro';
 import PreviewPlayer from '../components/stage/PreviewPlayer.astro';
 import Cinema from '../components/stage/Cinema.astro';
+import ReelPlayer from '../components/ReelPlayer.astro';
 import { thumbOf } from '../lib/thumbs';
 import Awards from '../components/Awards.astro';
 import Faq from '../components/Faq.astro';
@@ -117,6 +118,13 @@ const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await t
     <section id="screen" class="section screen" data-light="green" aria-labelledby="screen-title">
       <Cinema />
       <div class="wrap">
+        {
+          reels().length > 0 && (
+            <div class="screen-reel" id="showreel" data-reveal>
+              <ReelPlayer variant="inline" titleId="showreel-title" />
+            </div>
+          )
+        }
         <div class="section-head" data-reveal>
           <p class="kicker">Film &amp; television</p>
           <h2 id="screen-title">Music for the <em>screen</em></h2>
@@ -323,6 +331,10 @@ const thumbs = new Map(await Promise.all(records.map(async (w) => [w.id, await t
   .about__facts dd { margin-top: 0.25rem; color: var(--ink); }
 
   /* ---------- screen ---------- */
+  /* his showreel, right under the cinema */
+  .screen-reel { margin: 0 0 clamp(3rem, 6vw, 4.5rem); scroll-margin-top: calc(var(--header-h) + 1rem); }
+  /* the cinema's caption leads straight into it */
+  .screen:has(.screen-reel) :global(.cinema) { margin-bottom: clamp(1.75rem, 3vw, 2.75rem); }
   .credits { display: grid; gap: 0.8rem; margin: 0; padding: 0; list-style: none; }
   .credit {
     position: relative;

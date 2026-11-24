@@ -1,0 +1,229 @@
+---
+/**
+ * A showreel player: the reel's title and credits, the video in the film's own shape, and the
+ * reels to choose from. "inline" is the one on the home page, under the cinema: its still waits
+ * with a big play button, and without JavaScript the browser's own player plays the first reel.
+ * "dialog" is the inside of the showreel window (Showreel.astro), which passes its close button
+ * in the "close" slot. Behaviour: scripts/reel-player.ts.
+ */
+import Icon from './Icon.astro';
+import { clock, reels } from '../lib/reels';
+
+interface Props {
+  variant: 'inline' | 'dialog';
+  /** id of the title, which names the video */
+  titleId: string;
+}
+const { variant, titleId } = Astro.props;
+const list = reels();
+const first = list[0];
+const data = list.map((r) => ({ id: r.id, title: r.title, role: r.role ?? '', where: r.where ?? '', video: r.video, still: r.still, aspect: r.aspect }));
+const Heading = variant === 'dialog' ? 'h2' : 'h3';
+const inline = variant === 'inline';
+---
+
+{
+  first && (
+    <div class:list={['reel__sheet', `reel__sheet--${variant}`]} data-reel-player={variant} style={`--aspect: ${first.aspect}`}>
+      <div class="reel__head">
+        <div class="reel__heading">
+          <p class="reel__kicker">Showreel</p>
+          <Heading class="reel__title" id={titleId} data-reel-title>
+            {first.title}
+          </Heading>
+          <p class="reel__role">
+            <span data-reel-role>{first.role}</span>
+            <span class="reel__where" data-reel-where>
+              {first.where}
+            </span>
+          </p>
+        </div>
+        <slot name="close" />
+      </div>
+
+      <div class="reel__frame">
+        <video
+          class="reel__video"
+          data-reel-video
+          controls
+          playsinline
+          preload="none"
+          src={inline ? first.video : undefined}
+          poster={first.still}
+          aria-labelledby={titleId}
+        />
+        {inline && (
+          <button class="reel__start" type="button" data-reel-start aria-label="Play the showreel">
+            <span class="reel__start-icon">
+              <Icon name="play" />
+            </span>
+          </button>
+        )}
+      </div>
+
+      {list.length > 1 && (
+        <div class="reel__choices" role="group" aria-label="Showreels">
+          {list.map((r, i) => (
+            <button class="reel__choice" type="button" data-reel-choice={r.id} aria-pressed={i === 0 ? 'true' : 'false'} style={`--shape: ${r.aspect}`}>
+              {r.still && <img class="reel__thumb" src={r.still} alt="" width="160" height={Math.round(160 / r.aspect)} loading="lazy" decoding="async" />}
+              <span class="reel__choice-text">
+                <span class="reel__choice-title">{r.title}</span>
+                <span class="reel__choice-meta">
+                  <span class="reel__now">Playing</span>
+                  {clock(r.duration)}
+                </span>
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+      <script type="application/json" data-reel-list set:html={JSON.stringify(data)} />
+    </div>
+  )
+}
+
+<script>
+  import { setupPlayer } from '../scripts/reel-player';
+
+  // the players on the page (the window's is set up with the window)
+  document.querySelectorAll<HTMLElement>('[data-reel-player="inline"]').forEach(setupPlayer);
+</script>
+
+<style>
+  .reel__sheet {
+    position: relative;
+    display: grid;
+    gap: 0.8rem;
+    /* as wide as fits, and never so tall that the video leaves the screen */
+    width: min(100%, var(--sheet-max, 100%), calc((100dvh - var(--chrome, 20rem)) * var(--aspect) + 2.8rem));
+    min-width: min(100%, 320px);
+    margin-inline: auto;
+    padding: 1rem;
+    border-radius: 24px;
+    border: 1px solid var(--hair-2);
+    background:
+      radial-gradient(120% 55% at 0% 0%, rgb(var(--violet-rgb) / 0.2), transparent 62%),
+      radial-gradient(90% 45% at 100% 100%, rgb(var(--mint-rgb) / 0.08), transparent 60%),
+      #0e0b15;
+    box-shadow: 0 40px 90px -30px rgb(0 0 0 / 0.95);
+    color: var(--ink);
+  }
+  @media (min-width: 761px) {
+    .reel__sheet { padding: 1.4rem; gap: 1rem; }
+  }
+
+  .reel__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+  .reel__heading { min-width: 0; }
+  .reel__kicker {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mint);
+  }
+  .reel__title { margin: 0.25rem 0 0; font-family: var(--serif); font-weight: 400; font-size: clamp(1.7rem, 6vw, 2.4rem); line-height: 1; }
+  .reel__role { display: flex; flex-wrap: wrap; gap: 0 0.9rem; margin: 0.35rem 0 0; font-size: 0.86rem; color: var(--ink-2); }
+  .reel__where { color: var(--ink-3); }
+  .reel__role span:empty { display: none; }
+
+  /* the film's own shape: the black bands of a widescreen film are cropped off */
+  .reel__frame {
+    position: relative;
+    aspect-ratio: var(--aspect);
+    border-radius: 14px;
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.06);
+  }
+  .reel__video { display: block; width: 100%; height: 100%; object-fit: cover; background: #000; }
+
+  /* before the first play: the still, and a big play button over all of it */
+  .reel__start {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: radial-gradient(circle at 50% 50%, transparent 30%, rgb(4 3 8 / 0.42));
+    color: #0b0912;
+    cursor: pointer;
+  }
+  .reel__start-icon {
+    display: grid;
+    place-items: center;
+    width: clamp(56px, 9vw, 76px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--mint);
+    box-shadow: 0 0 0 9px rgb(var(--mint-rgb) / 0.18), 0 16px 34px -10px rgb(0 0 0 / 0.85);
+    transition: transform 0.45s var(--ease-out), box-shadow 0.45s;
+  }
+  .reel__start-icon :global(svg) { width: 38%; height: 38%; margin-left: 6%; }
+  .reel__start:hover .reel__start-icon { transform: scale(1.08); box-shadow: 0 0 0 13px rgb(var(--mint-rgb) / 0.16), 0 16px 34px -10px rgb(0 0 0 / 0.85); }
+  .reel__start:focus-visible { outline: none; }
+  .reel__start:focus-visible .reel__start-icon { outline: 2px solid var(--ink); outline-offset: 4px; }
+  .reel__sheet.is-started .reel__start { display: none; }
+  /* without JavaScript, the browser's own player */
+  :global(html:not(.js)) .reel__start { display: none; }
+
+  /* the reels to choose from: the one playing has the site's two colours */
+  .reel__choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap: 0.6rem; }
+  .reel__choice {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.45rem 0.8rem 0.45rem 0.45rem;
+    border-radius: 14px;
+    border: 1px solid var(--hair-2);
+    background: rgb(255 255 255 / 0.02);
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.3s, background-color 0.3s;
+  }
+  .reel__choice:hover { border-color: rgb(var(--mint-rgb) / 0.55); }
+  .reel__choice:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+  .reel__choice[aria-pressed='true'] {
+    border-color: transparent;
+    background:
+      linear-gradient(120deg, rgb(var(--lavender-rgb) / 0.14), rgb(var(--mint-rgb) / 0.08)) padding-box,
+      linear-gradient(#120f1b, #120f1b) padding-box,
+      linear-gradient(120deg, var(--lavender), var(--mint)) border-box;
+  }
+  .reel__thumb { display: block; width: 96px; height: auto; aspect-ratio: var(--shape); border-radius: 7px; object-fit: cover; background: #000; }
+  .reel__choice-text { display: grid; gap: 0.15rem; min-width: 0; }
+  .reel__choice-title { font-family: var(--serif); font-size: 1.15rem; line-height: 1.05; }
+  .reel__choice-meta { display: flex; gap: 0.5rem; font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+  .reel__now { display: none; color: var(--mint); }
+  /* "Playing" once a reel has started */
+  .reel__sheet--dialog .reel__choice[aria-pressed='true'] .reel__now,
+  .reel__sheet.is-started .reel__choice[aria-pressed='true'] .reel__now { display: inline; }
+
+  /* a phone on its side: the video as big as the screen allows, a narrow column beside it */
+  @media (orientation: landscape) and (max-height: 520px) {
+    .reel__sheet {
+      --chrome: 2rem;
+      grid-template-columns: minmax(0, 1fr) 9.5rem;
+      grid-template-areas: 'frame head' 'frame choices';
+      grid-template-rows: auto 1fr;
+      align-items: start;
+      gap: 0.6rem 0.8rem;
+      padding: 0.6rem;
+      border-radius: 18px;
+    }
+    .reel__frame { grid-area: frame; align-self: center; max-height: calc(100dvh - 2.8rem); }
+    .reel__head { grid-area: head; flex-direction: column-reverse; align-items: stretch; gap: 0.3rem; }
+    .reel__title { font-size: 1.15rem; }
+    .reel__role { flex-direction: column; font-size: 0.72rem; line-height: 1.35; }
+    .reel__choices { grid-area: choices; grid-template-columns: 1fr; gap: 0.4rem; }
+    .reel__choice { grid-template-columns: 1fr; gap: 0.15rem; padding: 0.4rem 0.6rem; border-radius: 12px; }
+    .reel__thumb { display: none; }
+    .reel__choice-title { font-size: 0.95rem; }
+    .reel__choice-meta { font-size: 0.6rem; }
+  }
+</style>
